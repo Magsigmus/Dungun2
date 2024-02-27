@@ -3,32 +3,49 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UnityEngine.UIElements.Experimental;
 using static UnityEngine.InputSystem.Controls.AxisControl;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    [Header("Movement Settings")]
+    [Header("Basic Movement Settings")]
     public float acceleration;
     public float deacceleration, maxSpeed, drag;
+
+    [Header("Dashing Movement Settings")]
+    public float dashingDistance;
+    public float dashingTime;
+    public float dashingCooldown = 1;
+    public int numberOfGhosts = 5;
+    public GameObject ghostPrefab;
+    public bool dashing = false;
+    private float dashingTimer = 0;
 
     [Header("Combat Settings")]
     public GameObject gunObject;
     public GameObject bulletPrefab;
     public float cooldownTime = 1f;
+    public int healthPoints = 5;
 
     private Vector2 vel, dir;
     private Rigidbody2D rb2D;
     private PlayerControls playerControls;
     private float cooldown = 0f;
+    private SpriteRenderer[] renderers;
+    private Collider2D[] colliders;
 
     private void Awake()
     {
         playerControls = new PlayerControls();
         rb2D = GetComponent<Rigidbody2D>();
+        renderers = GetComponentsInChildren<SpriteRenderer>();
+        colliders = GetComponents<Collider2D>();
     }
 
     private void OnEnable() { playerControls.Enable(); }
@@ -36,18 +53,22 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Update()
     {
-        PointGun();
         cooldown += Time.deltaTime;
-
-        if(playerControls.Default.Shoot.phase == InputActionPhase.Performed)
-        {
-            Shoot();
-        }
+        dashingTimer += Time.deltaTime;
     }
 
     void FixedUpdate()
     {
+        if (dashing) { return; }
+        if (dashingTimer > dashingCooldown && playerControls.Default.Dash.phase == InputActionPhase.Performed) { StartCoroutine("Dash"); return; }
+
+        PointGun();
         Move();
+
+        if (playerControls.Default.Shoot.phase == InputActionPhase.Performed)
+        {
+            Shoot();
+        }
     }
 
     void Shoot()
@@ -88,6 +109,8 @@ public class PlayerBehaviour : MonoBehaviour
     void Move()
     { //Sig: Makes the player move dependent on inputs
 
+        Debug.Log("MOVING");
+
         Vector2 input = playerControls.Default.Move.ReadValue<Vector2>(); //Sig: Reads input
 
         vel.x = AccelerateVelocity(input.x, vel.x);
@@ -118,5 +141,70 @@ public class PlayerBehaviour : MonoBehaviour
         else { result += -Math.Sign(val) * drag; ; }
 
         return result;
+    }
+
+    void TakeDamage(int damage)
+    {
+        healthPoints -= damage;
+
+        if(healthPoints <= 0)
+        {
+            Debug.Log("PLAYER DEAD!");
+        }
+    }
+
+    IEnumerator Dash()
+    {
+        Vector2 dashDir = vel.normalized;
+        RaycastHit2D hit = Physics2D.Raycast(
+            transform.position, dashDir, dashingDistance, LayerMask.GetMask("Obstacles"));
+        dashing = true;
+
+        rb2D.velocity = new Vector2();
+
+        float maxDist = dashingDistance;
+        float distTravelled = 0;
+        if (hit.collider != null)
+        {
+            maxDist = Vector2.Distance(transform.position, hit.point - dashDir);
+        }
+
+        Debug.Log($"MaxDist: {maxDist}");
+
+        Hide();
+        for(int i = 0; i < numberOfGhosts; i++)
+        {
+            distTravelled += dashingDistance / (float)numberOfGhosts;
+            Debug.Log(distTravelled);
+            distTravelled = Math.Clamp(distTravelled, 0, maxDist);
+            GameObject newGhost = Instantiate(ghostPrefab);
+            newGhost.transform.position = transform.position + distTravelled * dashDir.ConvertTo<Vector3>();
+            
+            yield return new WaitForSecondsRealtime(dashingTime / (float)numberOfGhosts);
+        }
+
+        Debug.Log($"DashTravelled: {distTravelled}");
+        Debug.Log(dashDir);
+        Debug.Log(dashDir.ConvertTo<Vector3>());
+
+        transform.position += maxDist * dashDir.ConvertTo<Vector3>();
+        Show();
+
+        rb2D.velocity = vel;
+        
+        dashing = false;
+        dashingTimer = 0;
+    }
+
+    void Hide()
+    {
+        foreach(SpriteRenderer rnd in renderers) { rnd.enabled = false; }
+        foreach(Collider2D col in colliders) { col.enabled = false; }
+    }
+
+    void Show()
+    {
+        foreach (SpriteRenderer rnd in renderers) { rnd.enabled = true; }
+        foreach (Collider2D col in colliders) { col.enabled = true; }
     }
 }
