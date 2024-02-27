@@ -7,23 +7,63 @@ public class EnemyBehavior : MonoBehaviour
 {
     [SerializeField] Transform target;
     public NavMeshAgent agent;
-    public float dist;
+    public GameObject bulletPrefab;
+    public float cooldownTime = 1f;
+    private float cooldown = 0f;
+    public float minWalkDistance = 1f;
+    public float maxShootDistance = 10f;
+    
 
-    // Start is called before the first frame update
-    void Start()
+    void Start() //
     {
         var agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        dist = Vector3.Distance(target.position, transform.position);
     }
 
-    void Update()
+    void Update() //
     {
-        if (dist > 2)
+        cooldown += Time.deltaTime;
+        move(target.position, minWalkDistance);
+        Shoot(target.position, maxShootDistance);
+    }
+
+    void move(Vector2 targetPos, float minDist)
+    {
+        float dist = Vector2.Distance(target.position, transform.position);  //rasj: Get distance
+        if (dist > minDist)
         {
-            agent.SetDestination(target.position);
+            agent.SetDestination(targetPos);  //rasj: Sets destination to target
         }
-        dist = Vector3.Distance(target.position, transform.position);
+        else
+        {
+            agent.SetDestination(transform.position);  //rasj: Stops enemy from going further
+        }
+    }
+
+    Vector2 pointTo(Vector2 targetPos)  //rasj: Sets rotation
+    {
+        Vector2 dir = new Vector2(targetPos.x - transform.position.x, targetPos.y - transform.position.y); //rasj: findes the vector to the target
+        //transform.up = dir;
+        return dir;
+    }
+
+    void Shoot(Vector2 targetPos, float maxDist)
+    {
+        Vector3 dir = pointTo(targetPos);
+        float dist = Vector2.Distance(target.position, transform.position);  //rasj: Get distance
+
+        if (cooldown > cooldownTime)
+        {
+            cooldown = 0f;
+            if (dist <= maxDist) //rasj: if close enough
+            {
+                GameObject newBullet = Instantiate(bulletPrefab);
+                newBullet.transform.up = dir;
+                newBullet.transform.position = dir + transform.position;
+                Debug.Log("pewpew");  //rasj: shoot
+            }
+            
+        }
     }
 }
