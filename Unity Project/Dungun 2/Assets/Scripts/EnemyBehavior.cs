@@ -7,6 +7,7 @@ public class EnemyBehavior : MonoBehaviour
 {
     [SerializeField] Transform target;
     public NavMeshAgent agent;
+    public float dist;
 
     // Start is called before the first frame update
     void Start()
@@ -14,11 +15,15 @@ public class EnemyBehavior : MonoBehaviour
         var agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+        dist = Vector3.Distance(target.position, transform.position);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        agent.SetDestination(target.position);
+        if (dist > 2)
+        {
+            agent.SetDestination(target.position);
+        }
+        dist = Vector3.Distance(target.position, transform.position);
     }
 }
