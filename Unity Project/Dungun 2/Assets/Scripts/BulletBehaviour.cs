@@ -5,6 +5,7 @@ using UnityEngine;
 public class BulletBehaviour : MonoBehaviour
 {
     public float startVelocity = 1;
+    public GameObject ObjectCollide;
 
     void Start()
     {
