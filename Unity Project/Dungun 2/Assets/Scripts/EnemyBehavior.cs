@@ -8,10 +8,17 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField] Transform target;
     public NavMeshAgent agent;
     public GameObject bulletPrefab;
-    public float cooldownTime = 1f;
+
+    public float shootCooldownTime = 1f;  //1 second
     private float cooldown = 0f;
-    public float minWalkDistance = 1f;
-    public float maxShootDistance = 10f;
+
+    public float minTargetDistance = 1f;
+    public float maxTargetDistance = 10f;
+
+    private Vector3 wandDesti = new Vector3 (0f, 0f, 0f);
+    public float maxWanderDistance = 5f;
+    public float maxWanderTime = 15f;
+    private float wanderTime = 0f;
     
 
     void Start() //
@@ -24,46 +31,60 @@ public class EnemyBehavior : MonoBehaviour
     void Update() //
     {
         cooldown += Time.deltaTime;
-        move(target.position, minWalkDistance);
-        Shoot(target.position, maxShootDistance);
+        wanderTime += Time.deltaTime;
+        move(target.position, minTargetDistance, maxTargetDistance);
+        Shoot(target.position, maxTargetDistance);
     }
 
-    void move(Vector2 targetPos, float minDist)
+    void move(Vector3 targetPos, float minDist, float maxDist)
     {
-        float dist = Vector2.Distance(target.position, transform.position);  //rasj: Get distance
-        if (dist > minDist)
+        float dist = Vector3.Distance(targetPos, transform.position);  //rasj: Get distance
+        if (dist > minDist && dist < maxDist)  //rasj: if enemy is far enough away from target
         {
             agent.SetDestination(targetPos);  //rasj: Sets destination to target
         }
-        else
+        else if (dist > maxDist)  //rasj: if enemy is too far away from target
+        {
+            wander(-maxWanderDistance, maxWanderDistance);
+        }
+        else  //rasj: if enemy is too close to target
         {
             agent.SetDestination(transform.position);  //rasj: Stops enemy from going further
         }
     }
 
-    Vector2 pointTo(Vector2 targetPos)  //rasj: Sets rotation
+    void wander(float min, float max)
     {
-        Vector2 dir = new Vector2(targetPos.x - transform.position.x, targetPos.y - transform.position.y); //rasj: findes the vector to the target
-        //transform.up = dir;
-        return dir;
+        
+        if (wandDesti == transform.position || wanderTime >= maxWanderTime)  //rasj: if wander reached or too much time has passed
+        {
+            wanderTime = 0;
+            Vector3 randVect = new Vector2(Random.Range(min, max), Random.Range(min, max));
+            wandDesti = randVect + transform.position;
+            agent.SetDestination(wandDesti);
+        }
     }
 
-    void Shoot(Vector2 targetPos, float maxDist)
+    void Shoot(Vector3 targetPos, float maxDist)
     {
         Vector3 dir = pointTo(targetPos);
-        float dist = Vector2.Distance(target.position, transform.position);  //rasj: Get distance
+        float dist = Vector3.Distance(targetPos, transform.position);  //rasj: Get distance
 
-        if (cooldown > cooldownTime)
+        if (cooldown > shootCooldownTime)
         {
             cooldown = 0f;
             if (dist <= maxDist) //rasj: if close enough
             {
                 GameObject newBullet = Instantiate(bulletPrefab);
                 newBullet.transform.up = dir;
-                newBullet.transform.position = dir + transform.position;
-                Debug.Log("pewpew");  //rasj: shoot
+                newBullet.transform.position = transform.position;
             }
-            
         }
+    }
+    Vector2 pointTo(Vector2 targetPos)  //rasj: Sets rotation
+    {
+        Vector2 dir = new Vector2(targetPos.x - transform.position.x, targetPos.y - transform.position.y); //rasj: findes the vector to the target
+        //transform.up = dir;
+        return dir;
     }
 }

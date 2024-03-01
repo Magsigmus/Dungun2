@@ -246,9 +246,11 @@ MonoBehaviour:
   target: {fileID: 293656550}
   agent: {fileID: 886923}
   bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
-  cooldownTime: 1
-  minWalkDistance: 2
-  maxShootDistance: 10
+  shootCooldownTime: 1
+  minTargetDistance: 1
+  maxTargetDistance: 10
+  maxWanderDistance: 5
+  maxWanderTime: 15
 --- !u!1 &273523905
 GameObject:
   m_ObjectHideFlags: 0
@@ -395,7 +397,7 @@ Transform:
   m_GameObject: {fileID: 293656549}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.17, y: -3.29, z: 0.056741636}
+  m_LocalPosition: {x: 19.04, y: -0.9, z: 0.056741636}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
