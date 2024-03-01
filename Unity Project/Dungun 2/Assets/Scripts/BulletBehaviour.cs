@@ -10,6 +10,8 @@ public class BulletBehaviour : MonoBehaviour
     private float durAlive = 0f;
     public GameObject ObjectCollide;
 
+    //TODO: make bullets ACTUALLY destroy on impact (with anything)
+
     void Start()
     {
         GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
@@ -27,5 +29,4 @@ public class BulletBehaviour : MonoBehaviour
     {
         Destroy(this.gameObject);
     }
-
 }

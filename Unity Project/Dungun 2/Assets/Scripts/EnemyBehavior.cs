@@ -6,11 +6,12 @@ using UnityEngine.AI;
 public class EnemyBehavior : MonoBehaviour
 {
     [SerializeField] Transform target;
-    public NavMeshAgent agent;
-    public GameObject bulletPrefab;
+    [SerializeField] NavMeshAgent agent;
+    [SerializeField] GameObject bulletPrefab;
 
+    /*Cooldowns and timers*/
     public float shootCooldownTime = 1f;  //1 second
-    private float cooldown = 0f;
+    private float shootCooldown = 0f;
 
     public float minTargetDistance = 1f;
     public float maxTargetDistance = 10f;
@@ -19,25 +20,32 @@ public class EnemyBehavior : MonoBehaviour
     public float maxWanderDistance = 5f;
     public float maxWanderTime = 15f;
     private float wanderTime = 0f;
-    
+    private bool wandering = false;
 
-    void Start() //
+    public int healthPoints = 3;
+
+
+    void Start()
     {
         var agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
 
-    void Update() //
+    void Update()
     {
-        cooldown += Time.deltaTime;
+        shootCooldown += Time.deltaTime;
         wanderTime += Time.deltaTime;
         move(target.position, minTargetDistance, maxTargetDistance);
-        Shoot(target.position, maxTargetDistance);
+        if (!wandering)
+        {
+            Shoot(target.position);
+        }
     }
 
     void move(Vector3 targetPos, float minDist, float maxDist)
     {
+        wandering = false;
         float dist = Vector3.Distance(targetPos, transform.position);  //rasj: Get distance
         if (dist > minDist && dist < maxDist)  //rasj: if enemy is far enough away from target
         {
@@ -45,6 +53,7 @@ public class EnemyBehavior : MonoBehaviour
         }
         else if (dist > maxDist)  //rasj: if enemy is too far away from target
         {
+            wandering = true;
             wander(-maxWanderDistance, maxWanderDistance);
         }
         else  //rasj: if enemy is too close to target
@@ -55,7 +64,6 @@ public class EnemyBehavior : MonoBehaviour
 
     void wander(float min, float max)
     {
-        
         if (wandDesti == transform.position || wanderTime >= maxWanderTime)  //rasj: if wander reached or too much time has passed
         {
             wanderTime = 0;
@@ -65,26 +73,35 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    void Shoot(Vector3 targetPos, float maxDist)
+    void Shoot(Vector3 targetPos)
     {
         Vector3 dir = pointTo(targetPos);
         float dist = Vector3.Distance(targetPos, transform.position);  //rasj: Get distance
 
-        if (cooldown > shootCooldownTime)
+        if (shootCooldown > shootCooldownTime)  //rasj: if shootCooldown ran out
         {
-            cooldown = 0f;
-            if (dist <= maxDist) //rasj: if close enough
-            {
-                GameObject newBullet = Instantiate(bulletPrefab);
-                newBullet.transform.up = dir;
-                newBullet.transform.position = transform.position;
-            }
+            shootCooldown = 0f;  //rasj: reset cooldown
+            GameObject newBullet = Instantiate(bulletPrefab);
+            newBullet.transform.up = dir;
+            newBullet.transform.position = transform.position;  //rasj: set to current position
         }
     }
+
     Vector2 pointTo(Vector2 targetPos)  //rasj: Sets rotation
     {
-        Vector2 dir = new Vector2(targetPos.x - transform.position.x, targetPos.y - transform.position.y); //rasj: findes the vector to the target
+        //rasj: findes the vector to the target
+        Vector2 dir = new Vector2(targetPos.x - transform.position.x, targetPos.y - transform.position.y);
         //transform.up = dir;
         return dir;
+    }
+
+    void TakeDamage(int damage)  //TODO: run this when collide with player bullet
+    {
+        healthPoints -= damage;
+
+        if (healthPoints <= 0)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
