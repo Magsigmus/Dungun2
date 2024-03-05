@@ -22,10 +22,10 @@ public class PlayerBehaviour : MonoBehaviour
     public float dashingDistance;
     public float dashingTime;
     public float dashingCooldown = 1;
+    public float inputBufferingTime = 0.2f;
     public int numberOfGhosts = 5;
     public GameObject ghostPrefab;
-    public bool dashing = false;
-    public float inputBufferingTime = 0.2f;
+    private bool dashing = false;
     private float dashingTimer = 0;
 
     [Header("Combat Settings")]
@@ -60,12 +60,18 @@ public class PlayerBehaviour : MonoBehaviour
 
     void FixedUpdate()
     {
+        //Sig: Dash handling
         if (dashing) { return; }
-        if (dashingTimer > dashingCooldown && playerControls.Default.Dash.phase == InputActionPhase.Performed) { StartCoroutine("Dash"); return; }
+        if (dashingTimer > dashingCooldown && 
+            playerControls.Default.Dash.phase == InputActionPhase.Performed) 
+        { 
+            StartCoroutine("Dash"); return; 
+        }
 
         PointGun();
         Move();
 
+        //Sig: Ensures that the player can shoot.
         if (playerControls.Default.Shoot.phase == InputActionPhase.Performed)
         {
             Shoot();
@@ -161,54 +167,57 @@ public class PlayerBehaviour : MonoBehaviour
 
     IEnumerator Dash()
     {
-        Vector2 dashDir = vel.normalized;
-
         dashing = true;
 
+        //Sig: Gives the player some time to change the direction equal to inputBufferingTime
+        Vector2 dashDir = vel.normalized;
         float t = Time.time;
         while (Time.time - t < inputBufferingTime)
         {
             dashDir = playerControls.Default.Move.ReadValue<Vector2>().normalized;
             yield return new WaitForEndOfFrame();
         }
+        
+        //Sig: Hides the player and stops it from moving.
+        Hide();
+        rb2D.velocity = new Vector2();
 
+        //Sig: Casts a ray which finds out how long the player can dash
         RaycastHit2D hit = Physics2D.Raycast(
             transform.position, dashDir, dashingDistance, LayerMask.GetMask("Obstacles"));
 
-        rb2D.velocity = new Vector2();
-
+        //Sig: Finds the max distance the player can dash
         float maxDist = dashingDistance;
-        float distTravelled = 0;
         if (hit.collider != null)
         {
             maxDist = Vector2.Distance(transform.position, hit.point - dashDir);
         }
 
-        Hide();
-        for(int i = 0; i < numberOfGhosts; i++)
+        //Sig: Makes the dash effect
+        float distTravelled = 0;
+        for (int i = 0; i < numberOfGhosts; i++)
         {
             distTravelled += dashingDistance / (float)numberOfGhosts;
-            Debug.Log(distTravelled);
             distTravelled = Math.Clamp(distTravelled, 0, maxDist);
             GameObject newGhost = Instantiate(ghostPrefab);
             newGhost.transform.position = transform.position + distTravelled * dashDir.ConvertTo<Vector3>();
 
-            
             yield return new WaitForSecondsRealtime(dashingTime / (float)numberOfGhosts);
         }
 
+        //Sig: Moves the player and sets the velocity
         transform.position += maxDist * dashDir.ConvertTo<Vector3>();
-        Show();
-
         rb2D.velocity = vel;
-        
+
+        //Sig: Resets certain values, and shows the player.
+        Show();
         dashing = false;
         dashingTimer = 0;
     }
 
     void Hide()
     {
-        foreach(SpriteRenderer rnd in renderers) { rnd.enabled = false; }
+        foreach (SpriteRenderer rnd in renderers) { rnd.enabled = false; }
         foreach(Collider2D col in colliders) { col.enabled = false; }
     }
 
