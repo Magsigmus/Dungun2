@@ -243,15 +243,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 287db14951367c443a5667367b7447bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1270647177}
-  agent: {fileID: 886923}
-  bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
+  target: {fileID: 0}
+  agent: {fileID: 0}
+  bulletPrefab: {fileID: 0}
   shootCooldownTime: 1
-  minTargetDistance: 3
-  maxTargetDistance: 8
+  minTargetDistance: 1
+  maxTargetDistance: 10
   maxWanderDistance: 5
   maxWanderTime: 15
-  healthPoints: 5
+  healthPoints: 3
 --- !u!1 &273523905
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,11 +806,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85399d47b44c6704ca682a6572a51c5e, type: 3}
---- !u!4 &1270647177 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8972084569001387161, guid: 85399d47b44c6704ca682a6572a51c5e, type: 3}
-  m_PrefabInstance: {fileID: 455534922}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1990400092
 GameObject:
   m_ObjectHideFlags: 0
