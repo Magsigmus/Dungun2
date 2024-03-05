@@ -7,20 +7,18 @@ public class BulletBehaviour : MonoBehaviour
 {
     public float startVelocity = 1f;
     public float desctructionTime = 5f;
-    private float durAlive = 0f;
-    public GameObject ObjectCollide;
-
-    //TODO: make bullets ACTUALLY destroy on impact (with anything)
+    private float bulletLifeDuration = 0f;
 
     void Start()
     {
         GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
+        Destroy(this.gameObject, bulletLifeDuration);
     }
 
     private void Update()
     {
-        durAlive += Time.deltaTime;
-        if (durAlive >= desctructionTime)
+        bulletLifeDuration += Time.deltaTime;
+        if (bulletLifeDuration >= desctructionTime)
         {
             Destroy(this.gameObject);
         }
