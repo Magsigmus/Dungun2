@@ -25,6 +25,7 @@ public class PlayerBehaviour : MonoBehaviour
     public int numberOfGhosts = 5;
     public GameObject ghostPrefab;
     public bool dashing = false;
+    public float inputBufferingTime = 0.2f;
     private float dashingTimer = 0;
 
     [Header("Combat Settings")]
@@ -89,7 +90,9 @@ public class PlayerBehaviour : MonoBehaviour
     //Sig: Find the direction the bullets should point in
     void PointGun() 
     {
-        if (Input.GetJoystickNames()[0] != "")
+        bool joyStickConnected = ((Input.GetJoystickNames().Length > 0) ? (Input.GetJoystickNames()[0] != "") : false);
+
+        if (joyStickConnected)
         {
             //Sig: If a controller is connected, then get input from that
             Vector2 rightStick = playerControls.Default.Pointing.ReadValue<Vector2>();
@@ -159,9 +162,18 @@ public class PlayerBehaviour : MonoBehaviour
     IEnumerator Dash()
     {
         Vector2 dashDir = vel.normalized;
+
+        dashing = true;
+
+        float t = Time.time;
+        while (Time.time - t < inputBufferingTime)
+        {
+            dashDir = playerControls.Default.Move.ReadValue<Vector2>().normalized;
+            yield return new WaitForEndOfFrame();
+        }
+
         RaycastHit2D hit = Physics2D.Raycast(
             transform.position, dashDir, dashingDistance, LayerMask.GetMask("Obstacles"));
-        dashing = true;
 
         rb2D.velocity = new Vector2();
 
@@ -180,6 +192,7 @@ public class PlayerBehaviour : MonoBehaviour
             distTravelled = Math.Clamp(distTravelled, 0, maxDist);
             GameObject newGhost = Instantiate(ghostPrefab);
             newGhost.transform.position = transform.position + distTravelled * dashDir.ConvertTo<Vector3>();
+
             
             yield return new WaitForSecondsRealtime(dashingTime / (float)numberOfGhosts);
         }
