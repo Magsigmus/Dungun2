@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -24,7 +25,6 @@ public class EnemyBehavior : MonoBehaviour
 
     public int healthPoints = 3;
 
-
     void Start()
     {
         var agent = GetComponent<NavMeshAgent>();
@@ -40,6 +40,14 @@ public class EnemyBehavior : MonoBehaviour
         if (!wandering)
         {
             Shoot(target.position);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "PlayerBullet")
+        {
+            TakeDamage(1);
         }
     }
 
@@ -76,7 +84,6 @@ public class EnemyBehavior : MonoBehaviour
     void Shoot(Vector3 targetPos)
     {
         Vector3 dir = pointTo(targetPos);
-        float dist = Vector3.Distance(targetPos, transform.position);  //rasj: Get distance
 
         if (shootCooldown > shootCooldownTime)  //rasj: if shootCooldown ran out
         {
