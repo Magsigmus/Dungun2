@@ -11,5 +11,4 @@ public class BulletBehaviour : MonoBehaviour
     {
         GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
     }
-
 }
