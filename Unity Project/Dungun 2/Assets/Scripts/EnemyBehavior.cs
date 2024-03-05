@@ -89,6 +89,7 @@ public class EnemyBehavior : MonoBehaviour
 
     Vector2 pointTo(Vector2 targetPos)  //rasj: Sets rotation
     {
+        //TODO: make enemy point ahead of player, to actually hit
         //rasj: findes the vector to the target
         Vector2 dir = new Vector2(targetPos.x - transform.position.x, targetPos.y - transform.position.y);
         //transform.up = dir;
