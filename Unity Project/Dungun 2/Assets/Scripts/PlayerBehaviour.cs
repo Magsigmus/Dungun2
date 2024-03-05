@@ -25,6 +25,7 @@ public class PlayerBehaviour : MonoBehaviour
     public int numberOfGhosts = 5;
     public GameObject ghostPrefab;
     public bool dashing = false;
+    public float inputBufferingTime = 0.2f;
     private float dashingTimer = 0;
 
     [Header("Combat Settings")]
@@ -71,46 +72,51 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    void Shoot()
+    //Sig: Makes the player shoot.
+    void Shoot() 
     {
+        //Sig: Check if the player can shoot.
         if (cooldown > cooldownTime)
         {
             cooldown = 0;
+
+            //Sig: Spawn bullet
             GameObject newBullet = Instantiate(bulletPrefab);
             newBullet.transform.up = dir;
             newBullet.transform.position = dir + transform.position.ConvertTo<Vector2>();
         }
     }
 
-    void PointGun()
+    //Sig: Find the direction the bullets should point in
+    void PointGun() 
     {
-        Debug.Log(Input.GetJoystickNames()[0]);
+        bool joyStickConnected = ((Input.GetJoystickNames().Length > 0) ? (Input.GetJoystickNames()[0] != "") : false);
 
-        if (Input.GetJoystickNames()[0] != "")
+        if (joyStickConnected)
         {
+            //Sig: If a controller is connected, then get input from that
             Vector2 rightStick = playerControls.Default.Pointing.ReadValue<Vector2>();
             dir = rightStick.normalized;
         }
         else
         {
+            //Sig: If there isn't a controller connected, then get the relative postion of the mouse in world space.
             dir = PointToMouse().normalized;
         }
 
         gunObject.transform.up = dir;
     }
 
+    //Sig: Gets the vector that points to the mouse.
     Vector2 PointToMouse()
-    { //Sig: Makes the player point to the mouse
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition); // Gets the mouse position in world space
-        Vector2 dir = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y); // findes the vector to the mouse point
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition); //Sig: Gets the mouse position in world space
+        Vector2 dir = new Vector2(mousePos.x - transform.position.x, mousePos.y - transform.position.y); //Sig: findes the vector to the mouse point
         return dir;
     }
 
     void Move()
     { //Sig: Makes the player move dependent on inputs
-
-        Debug.Log("MOVING");
-
         Vector2 input = playerControls.Default.Move.ReadValue<Vector2>(); //Sig: Reads input
 
         vel.x = AccelerateVelocity(input.x, vel.x);
@@ -156,9 +162,18 @@ public class PlayerBehaviour : MonoBehaviour
     IEnumerator Dash()
     {
         Vector2 dashDir = vel.normalized;
+
+        dashing = true;
+
+        float t = Time.time;
+        while (Time.time - t < inputBufferingTime)
+        {
+            dashDir = playerControls.Default.Move.ReadValue<Vector2>().normalized;
+            yield return new WaitForEndOfFrame();
+        }
+
         RaycastHit2D hit = Physics2D.Raycast(
             transform.position, dashDir, dashingDistance, LayerMask.GetMask("Obstacles"));
-        dashing = true;
 
         rb2D.velocity = new Vector2();
 
@@ -169,8 +184,6 @@ public class PlayerBehaviour : MonoBehaviour
             maxDist = Vector2.Distance(transform.position, hit.point - dashDir);
         }
 
-        Debug.Log($"MaxDist: {maxDist}");
-
         Hide();
         for(int i = 0; i < numberOfGhosts; i++)
         {
@@ -179,13 +192,10 @@ public class PlayerBehaviour : MonoBehaviour
             distTravelled = Math.Clamp(distTravelled, 0, maxDist);
             GameObject newGhost = Instantiate(ghostPrefab);
             newGhost.transform.position = transform.position + distTravelled * dashDir.ConvertTo<Vector3>();
+
             
             yield return new WaitForSecondsRealtime(dashingTime / (float)numberOfGhosts);
         }
-
-        Debug.Log($"DashTravelled: {distTravelled}");
-        Debug.Log(dashDir);
-        Debug.Log(dashDir.ConvertTo<Vector3>());
 
         transform.position += maxDist * dashDir.ConvertTo<Vector3>();
         Show();
