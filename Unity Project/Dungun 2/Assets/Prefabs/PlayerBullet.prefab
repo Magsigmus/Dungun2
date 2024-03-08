@@ -111,7 +111,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startVelocity: 10
   desctructionTime: 2
-  ObjectCollide: {fileID: 0}
 --- !u!1 &6156309483954531159
 GameObject:
   m_ObjectHideFlags: 0

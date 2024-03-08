@@ -14,7 +14,7 @@ public class EnemyBehavior : MonoBehaviour
     public float shootCooldownTime = 1f;  //1 second
     private float shootCooldown = 0f;
 
-    public float minTargetDistance = 1f;
+    public float minTargetDistance = 3f;
     public float maxTargetDistance = 10f;
 
     private Vector3 wandDesti = new Vector3 (0f, 0f, 0f);
@@ -36,7 +36,7 @@ public class EnemyBehavior : MonoBehaviour
     {
         shootCooldown += Time.deltaTime;
         wanderTime += Time.deltaTime;
-        move(target.position, minTargetDistance, maxTargetDistance);
+        Move(target.position, minTargetDistance, maxTargetDistance);
         if (!wandering)
         {
             Shoot(target.position);
@@ -51,10 +51,11 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    void move(Vector3 targetPos, float minDist, float maxDist)
+    void Move(Vector3 targetPos, float minDist, float maxDist)
     {
         wandering = false;
         float dist = Vector3.Distance(targetPos, transform.position);  //rasj: Get distance
+
         if (dist > minDist && dist < maxDist)  //rasj: if enemy is far enough away from target
         {
             agent.SetDestination(targetPos);  //rasj: Sets destination to target
@@ -62,7 +63,7 @@ public class EnemyBehavior : MonoBehaviour
         else if (dist > maxDist)  //rasj: if enemy is too far away from target
         {
             wandering = true;
-            wander(-maxWanderDistance, maxWanderDistance);
+            Wander(-maxWanderDistance, maxWanderDistance);
         }
         else  //rasj: if enemy is too close to target
         {
@@ -70,7 +71,7 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    void wander(float min, float max)
+    void Wander(float min, float max)
     {
         if (wandDesti == transform.position || wanderTime >= maxWanderTime)  //rasj: if wander reached or too much time has passed
         {
@@ -83,7 +84,7 @@ public class EnemyBehavior : MonoBehaviour
 
     void Shoot(Vector3 targetPos)
     {
-        Vector3 dir = pointTo(targetPos);
+        Vector3 dir = PointTo(targetPos);
 
         if (shootCooldown > shootCooldownTime)  //rasj: if shootCooldown ran out
         {
@@ -94,7 +95,7 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    Vector2 pointTo(Vector2 targetPos)  //rasj: Sets rotation
+    Vector2 PointTo(Vector2 targetPos)  //rasj: Sets rotation
     {
         //TODO: make enemy point ahead of player, to actually hit
         //rasj: findes the vector to the target
