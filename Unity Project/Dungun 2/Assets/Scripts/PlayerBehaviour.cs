@@ -90,6 +90,9 @@ public class PlayerBehaviour : MonoBehaviour
             GameObject newBullet = Instantiate(bulletPrefab);
             newBullet.transform.up = dir;
             newBullet.transform.position = dir + transform.position.ConvertTo<Vector2>();
+        } else
+        {
+            Debug.Log("Cooldown criteria not met");
         }
     }
 

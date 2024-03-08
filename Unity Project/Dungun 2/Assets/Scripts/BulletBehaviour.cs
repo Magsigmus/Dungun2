@@ -12,7 +12,7 @@ public class BulletBehaviour : MonoBehaviour
     void Start()
     {
         GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
-        Destroy(this.gameObject, bulletLifeDuration);
+        Destroy(this.gameObject, desctructionTime);
     }
 
     private void Update()
