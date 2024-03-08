@@ -16,6 +16,8 @@ public class RoomSpawner : MonoBehaviour
 
     public void LoadRoom(Vector3Int origenPos, ScriptableRoom room)
     {
+        Debug.Log(room.ground.Count);
+
         foreach(SavedTile tile in room.ground)
         {
             groundMap.SetTile(tile.Position + origenPos, tile.tile);

@@ -13,6 +13,7 @@ public class RoomSpawnerEditor : Editor
 
         if (GUILayout.Button("Load Room"))
         {
+            Debug.Log("Triggered");
             script.LoadLocalRoom();
         }
     }

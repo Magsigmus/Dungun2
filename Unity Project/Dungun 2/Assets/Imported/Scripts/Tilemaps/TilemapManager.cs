@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEditor;
+using System;
 
 public class TilemapManager : MonoBehaviour
 {
     public int roomIndex;
     public RoomType roomType;
-    public (Transform, char)[] entrancePoints;
-    public Tilemap groundMap, wallMap, decorMap;
+    public Tilemap groundMap, wallMap, decorMap, metaMap;
+
 #if UNITY_EDITOR
     public void SaveRoom()
     {
@@ -19,12 +20,12 @@ public class TilemapManager : MonoBehaviour
 
         Resources.LoadAll<ScriptableRoom>("");
 
-        // Creates a new scriptable object for the room to be saved in
+        //Sig: Creates a new scriptable object for the room to be saved in
         ScriptableRoom newRoom = ScriptableObject.CreateInstance<ScriptableRoom>();
 
         Vector2Int size = new Vector2Int();
 
-        // Fills that object with information
+        //Sig: Fills that object with information
         newRoom.name = $"New Room {roomIndex}";
         newRoom.ground = GetTilesFromMap(groundMap).ToList();
 
@@ -36,17 +37,9 @@ public class TilemapManager : MonoBehaviour
 
         newRoom.walls = GetTilesFromMap(wallMap).ToList();
         newRoom.decorations = GetTilesFromMap(decorMap).ToList();
+        newRoom.meta = GetTilesFromMap(metaMap).ToList();
         newRoom.type = roomType;
         newRoom.size = size;
-
-        newRoom.entranceIds = new List<char>();
-        newRoom.entrancePos = new List<Vector2>();
-        for (int i = 0; i < entrancePoints.Length; i++)
-        {
-            Vector2 pos = entrancePoints[i].Item1.position;
-            newRoom.entranceIds.Add(entrancePoints[i].Item2);
-            newRoom.entrancePos.Add(pos);
-        }
 
         // Saves the scriptableObject to disk
         ScriptableObjectUtility.SaveRoomFile(newRoom);
@@ -61,13 +54,14 @@ public class TilemapManager : MonoBehaviour
                     yield return new SavedTile()
                     {
                         Position = pos,
-                        tile = map.GetTile<Basetile>(pos)
+                        tile = map.GetTile<Tile>(pos)
                     };
                 }
             }
         }
     }
 #endif
+
     // Clears the map
     public void ClearMap()
     {

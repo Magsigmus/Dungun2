@@ -5,20 +5,18 @@ using UnityEngine.Tilemaps;
 
 public class ScriptableRoom : ScriptableObject
 {
-    public List<SavedTile> ground, walls, decorations;
+    public List<SavedTile> ground, walls, decorations, meta;
     public RoomType type;
-    public List<char> entranceIds;
-    public List<Vector2> entrancePos;
     public Vector2 size;
-    public List<EnemySpawnPoint> enemySpawnPoints;
 }
 
 [Serializable]
 public class SavedTile
 {
     public Vector3Int Position;
-    public Basetile tile;
+    public Tile tile;
 }
+
 [Serializable]
 public class EnemySpawnPoint
 {

@@ -90,11 +90,11 @@ public class LevelManger : MonoBehaviour
 
                 LoadRoom(testGround, testWalls, testDecor, new Vector2Int(), firstRoom); // Loads the room to the test tilemaps
 
-                for (int j = 0; j < firstRoom.entranceIds.Count; j++) // Adds the entrances from the new room 
+                /*for (int j = 0; j < firstRoom.entranceIds.Count; j++) // Adds the entrances from the new room 
                 {
                     KeyValuePair<char, Vector2> temp = new KeyValuePair<char, Vector2>(firstRoom.entranceIds[j], firstRoom.entrancePos[j]);
                     currentComponentTilemap.freeEntrances[i].Add(temp);
-                }
+                }*/
 
                 // Runs dfs for the current node 
                 for (int j = 0; j < compositeAdjecenyList[i].connections.Count; j++)
@@ -176,11 +176,12 @@ public class LevelManger : MonoBehaviour
             sortedRooms.Add(new List<List<List<int>>>());
         }
 
+        /*
         // Goes through all the rooms and makes pointeres for each of them
         for(int i = 0; i < allRooms.Length; i++)
         {
             int roomTypeIndex = (int)allRooms[i].type;
-            int entranceNum = allRooms[i].entranceIds.Count;
+            //int entranceNum = allRooms[i].entranceIds.Count;
 
             // makes sure that all amount of entances is acounted for
             for (int j = sortedRooms[roomTypeIndex].Count; j < entranceNum; j++) 
@@ -191,7 +192,7 @@ public class LevelManger : MonoBehaviour
                     sortedRooms[roomTypeIndex][j].Add(new List<int>());
                 }
             }
-
+            
             // Adds the pointers 
             for(int j = 0; j < entranceNum; j++)
             {
@@ -217,7 +218,7 @@ public class LevelManger : MonoBehaviour
 
                 sortedRooms[roomTypeIndex][entranceNum - 1][temp].Add(i);
             }
-        }
+        }*/
     }
 
     // Gets a random room with the entrance direction, entance amount and room type. 
@@ -813,7 +814,7 @@ public class LevelManger : MonoBehaviour
 
         ScriptableRoom currentRoom = GetRandomRoom(neededEntrenceId, degree, compositeAdjecenyList[nodeIndex].type); // Gets a random new room, with the specified characteritics
 
-        // Gets the other entrance that connects to the parent entence
+        /*// Gets the other entrance that connects to the parent entence
         int currentEntranceIndex = -1;
         for (int i = 0; i < currentRoom.entranceIds.Count; i++)
         {
@@ -822,16 +823,16 @@ public class LevelManger : MonoBehaviour
                 currentEntranceIndex = i;
                 break;
             }
-        }
+        }*/
 
-        if (currentEntranceIndex == -1) { Debug.Log("FUCK"); return; } // If there isn't a entrance that connects to the parent entrance, then return
+        //if (currentEntranceIndex == -1) { Debug.Log("FUCK"); return; } // If there isn't a entrance that connects to the parent entrance, then return
 
         // Notes the info concerning the new entrance, i.e which way it's pointing and its position
-        KeyValuePair<char, Vector2> currentEntrance =
-            new KeyValuePair<char, Vector2>(currentRoom.entranceIds[currentEntranceIndex], currentRoom.entrancePos[currentEntranceIndex]);
+        //KeyValuePair<char, Vector2> currentEntrance =
+        //    new KeyValuePair<char, Vector2>(currentRoom.entranceIds[currentEntranceIndex], currentRoom.entrancePos[currentEntranceIndex]);
 
         // Gets the position of the new room
-        Vector2Int currentRoomOrigen = new Vector2Int();
+        /*Vector2Int currentRoomOrigen = new Vector2Int();
         switch (parentEntrance.Key)
         {
             case 'r':
@@ -886,7 +887,7 @@ public class LevelManger : MonoBehaviour
             currentComponentTilemap.freeEntrances[nodeIndex].Add(temp);
         }
         currentComponentTilemap.freeEntrances[parentNode].RemoveAt(parentEntranceIndex); // Removes the used enteance
-
+        */
     }
 
     // Loads a room onto the test tilemaps
@@ -918,7 +919,7 @@ public class LevelManger : MonoBehaviour
             map.ClearAllTiles();
         }
     }
-
+    /*
     // Called from a entrance trigger, spawn enemies in a room
     public void SpawnEnemies(int nodeIndex)
     {
@@ -932,7 +933,7 @@ public class LevelManger : MonoBehaviour
         }
         
         spawnedEnemies[nodeIndex] = true;
-    }
+    }*/
 }
 
 public class ComponentTilemap
