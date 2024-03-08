@@ -5,20 +5,20 @@ using UnityEngine;
 public class GhostBehaviour : MonoBehaviour
 {
     public float GhostLifeTime = 0.2f;
-    private float startTime = 0;
     private SpriteRenderer sr;
+    private float timeLived = 0;
 
     void Start()
     {
-        Destroy(gameObject, 0.2f);
+        Destroy(gameObject, GhostLifeTime);
         sr = GetComponentInChildren<SpriteRenderer>();
-        startTime = Time.time;
     }
 
     private void Update()
     {
+        timeLived += Time.deltaTime;
         Color t = sr.color;
-        t.a = 1 - ((Time.time - startTime) / GhostLifeTime);
+        t.a = 1f - (float)(timeLived / GhostLifeTime);
         sr.color = t;
     }
 }
