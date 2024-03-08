@@ -40,6 +40,9 @@ public class PlayerBehaviour : MonoBehaviour
     private float cooldown = 0f;
     private SpriteRenderer[] renderers;
     private Collider2D[] colliders;
+    private Animator animator;
+
+    private bool facingRight = true;
 
     private void Awake()
     {
@@ -47,6 +50,8 @@ public class PlayerBehaviour : MonoBehaviour
         rb2D = GetComponent<Rigidbody2D>();
         renderers = GetComponentsInChildren<SpriteRenderer>();
         colliders = GetComponents<Collider2D>();
+        animator = GetComponentInChildren<Animator>();
+        Debug.Log(animator.gameObject.name);
     }
 
     private void OnEnable() { playerControls.Enable(); }
@@ -56,16 +61,18 @@ public class PlayerBehaviour : MonoBehaviour
     {
         cooldown += Time.deltaTime;
         dashingTimer += Time.deltaTime;
+        animator.SetFloat("Speed", vel.magnitude);  //rasj: set animation speed to speed of player
+        Debug.Log(vel.magnitude);
     }
 
     void FixedUpdate()
     {
         //Sig: Dash handling
         if (dashing) { return; }
-        if (dashingTimer > dashingCooldown && 
-            playerControls.Default.Dash.phase == InputActionPhase.Performed) 
-        { 
-            StartCoroutine("Dash"); return; 
+        if (dashingTimer > dashingCooldown &&
+            playerControls.Default.Dash.phase == InputActionPhase.Performed)
+        {
+            StartCoroutine("Dash"); return;
         }
 
         PointGun();
@@ -76,10 +83,24 @@ public class PlayerBehaviour : MonoBehaviour
         {
             Shoot();
         }
+
+        float h = Input.GetAxis("Horizontal");
+        if ((h > 0 && !facingRight) || (h < 0 && facingRight))
+        {
+            Flip();
+        }
+    }
+
+    void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
     }
 
     //Sig: Makes the player shoot.
-    void Shoot() 
+    void Shoot()
     {
         //Sig: Check if the player can shoot.
         if (cooldown > cooldownTime)
@@ -90,14 +111,15 @@ public class PlayerBehaviour : MonoBehaviour
             GameObject newBullet = Instantiate(bulletPrefab);
             newBullet.transform.up = dir;
             newBullet.transform.position = dir + transform.position.ConvertTo<Vector2>();
-        } else
+        }
+        else
         {
             Debug.Log("Cooldown criteria not met");
         }
     }
 
     //Sig: Find the direction the bullets should point in
-    void PointGun() 
+    void PointGun()
     {
         bool joyStickConnected = ((Input.GetJoystickNames().Length > 0) ? (Input.GetJoystickNames()[0] != "") : false);
 
@@ -138,11 +160,11 @@ public class PlayerBehaviour : MonoBehaviour
     {
         //Sig: Takes account for the change in the velocity caused by the caused change
         float result = val;
-        if(Math.Sign(change) == Math.Sign(val) || val == 0)
+        if (Math.Sign(change) == Math.Sign(val) || val == 0)
         {
             //Sig: If the change is in the same direction as the current movement, then use the acceleration value, and clamp to the max velocity.
-            result = Math.Clamp(result + change * acceleration, 
-                -maxSpeed * Math.Abs(change), 
+            result = Math.Clamp(result + change * acceleration,
+                -maxSpeed * Math.Abs(change),
                 maxSpeed * Math.Abs(change));
         }
         else
@@ -162,7 +184,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         healthPoints -= damage;
 
-        if(healthPoints <= 0)
+        if (healthPoints <= 0)
         {
             Debug.Log("PLAYER DEAD!");
         }
@@ -180,7 +202,7 @@ public class PlayerBehaviour : MonoBehaviour
             dashDir = playerControls.Default.Move.ReadValue<Vector2>().normalized;
             yield return new WaitForEndOfFrame();
         }
-        
+
         //Sig: Hides the player and stops it from moving.
         Hide();
         rb2D.velocity = new Vector2();
@@ -221,7 +243,7 @@ public class PlayerBehaviour : MonoBehaviour
     void Hide()
     {
         foreach (SpriteRenderer rnd in renderers) { rnd.enabled = false; }
-        foreach(Collider2D col in colliders) { col.enabled = false; }
+        foreach (Collider2D col in colliders) { col.enabled = false; }
     }
 
     void Show()
