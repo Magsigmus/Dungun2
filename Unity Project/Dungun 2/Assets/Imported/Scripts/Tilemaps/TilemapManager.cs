@@ -5,18 +5,31 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEditor;
 using System;
+using System.Collections.Specialized;
 
 public class TilemapManager : MonoBehaviour
 {
+    [Header("Save Information")]
     public int roomIndex;
     public RoomType roomType;
-    public Tilemap groundMap, wallMap, decorMap, metaMap;
+
+    [Header("Tiles and Tilemaps")]
+    public Tilemap groundMap;
+    public Tilemap wallMap, decorMap, metaMap;
+
+    [Header("Load Information")]
+    public Vector2Int position;
+    public ScriptableRoom room;
 
 #if UNITY_EDITOR
     public void SaveRoom()
     {
-        roomIndex = PlayerPrefs.GetInt("RoomIndex") + 1;
+        if(roomIndex == PlayerPrefs.GetInt("RoomIndex")) 
+        {
+            roomIndex = PlayerPrefs.GetInt("RoomIndex") + 1;
+        }
         PlayerPrefs.SetInt("RoomIndex", roomIndex);
+
 
         Resources.LoadAll<ScriptableRoom>("");
 
@@ -27,7 +40,7 @@ public class TilemapManager : MonoBehaviour
 
         //Sig: Fills that object with information
         newRoom.name = $"New Room {roomIndex}";
-        newRoom.ground = GetTilesFromMap(groundMap).ToList();
+        newRoom.ground = GetTilesFromMap(groundMap).ToArray();
 
         foreach(SavedTile tile in newRoom.ground)
         {
@@ -35,9 +48,9 @@ public class TilemapManager : MonoBehaviour
             size.y = Mathf.Max(size.y, -tile.Position.y);
         }
 
-        newRoom.walls = GetTilesFromMap(wallMap).ToList();
-        newRoom.decorations = GetTilesFromMap(decorMap).ToList();
-        newRoom.meta = GetTilesFromMap(metaMap).ToList();
+        newRoom.walls = GetTilesFromMap(wallMap).ToArray();
+        newRoom.decorations = GetTilesFromMap(decorMap).ToArray();
+        newRoom.meta = GetTilesFromMap(metaMap).ToArray();
         newRoom.type = roomType;
         newRoom.size = size;
 
@@ -54,13 +67,34 @@ public class TilemapManager : MonoBehaviour
                     yield return new SavedTile()
                     {
                         Position = pos,
-                        tile = map.GetTile<Tile>(pos)
+                        tile = map.GetTile<BaseTile>(pos)
                     };
                 }
             }
         }
     }
 #endif
+
+    public void LoadRoom(Vector3Int origenPos, ScriptableRoom room)
+    {
+        foreach (SavedTile tile in room.ground)
+        {
+            groundMap.SetTile(tile.Position + origenPos, tile.tile);
+        }
+        foreach (SavedTile tile in room.walls)
+        {
+            wallMap.SetTile(tile.Position + origenPos, tile.tile);
+        }
+        foreach (SavedTile tile in room.decorations)
+        {
+            decorMap.SetTile(tile.Position + origenPos, tile.tile);
+        }
+    }
+
+    public void LoadRoom(Vector2Int origenPos, ScriptableRoom room)
+    {
+        LoadRoom(new Vector3Int(origenPos.x, origenPos.y, 0), room);
+    }
 
     // Clears the map
     public void ClearMap()

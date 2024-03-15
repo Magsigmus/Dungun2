@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.AI;
 using System.Linq;
 using Priority_Queue;
+using Unity.VisualScripting;
 
 public class LevelManger : MonoBehaviour
 {
@@ -15,46 +16,47 @@ public class LevelManger : MonoBehaviour
     private ComponentTilemap currentComponentTilemap; // The current component that is being assembeld
     private List<ComponentTilemap> allComponents = new List<ComponentTilemap>(); // All the components that have been assembled
 
+    [Header("Tilemaps")]
     public Tilemap testGround, testWalls, testDecor; // The tilemaps used to assemble the components
     public Tilemap AStarTilemap;
     public Tilemap prefabricationTilemap;
     public Sprite pixel;
 
-    public Basetile groundTile, bottomWallTile, topWallTile, rightWallTile, leftWallTile, 
+    [Header("Tiles")]
+    public BaseTile groundTile, bottomWallTile, topWallTile, rightWallTile, leftWallTile, 
         upperRightWallTile, upperLeftWallTile, lowerRightWallTile, lowerLeftWallTile, 
         upperRightInwardsWallTile, upperLeftInwardsWallTile, lowerRightInwardsWallTile, lowerLeftInwardsWallTile; // The tiles used to make connections between rooms
     
-    //public NavMeshSurface2d navMesh; // The navmesh
-
     private bool[] spawnedEnemies; // An array denoting if there has been spawned enemies in a room yet
     public GameObject entranceTrigger; // A prefab containing an entance trigger
 
     bool unavoidableOverlap = false; // A bool denoting if there is a unavoidable overlap while placing the last room
-    List<List<List<List<int>>>> sortedRooms; // An array containing pointers to allrooms, which is sorted in the lists after __
+    //List<List<List<List<int>>>> sortedRooms; // An array containing pointers to allrooms, which is sorted in the lists after __
     ScriptableRoom[] allRooms; // An array containing all the rooms saved 
 
-    private IEnumerator corotine;
+    //Sig: Key is indexed with first byte being 0, second byte being the value of the roomType casted to a byte, third byte being the number of entrances, and the fourth byte being the direction of one of the entances.
+    //Sig: North -> 0, West -> 1, South -> 2, East -> 3
+    Dictionary<uint, List<int>> RoomIndexLoopupMap;
+
+    private IEnumerator aStarCorotine;
 
     public int levelNumber;
 
-    // Generates a level from a level index
+    //Sig: Generates a level from a level index
     public void GenerateLevel(int levelIndex)
     {
-        // Pulls a graph from the saved ones
+        //Sig: Pulls a graph from the saved ones
         int NumOfGraphs = Resources.LoadAll<ScriptableLevelGraph>($"Graphs/Level {levelIndex}").Length;
         int tempindex = UnityEngine.Random.Range(0, NumOfGraphs);
         levelGraph = Resources.Load<ScriptableLevelGraph>($"Graphs/Level {levelIndex}/Graph {tempindex}");
 
-        if(corotine != null)
-        {
-            StopCoroutine(corotine);
-        }
-
+        //Sig: Initializes the corutine and clears the tilemap
+        if(aStarCorotine != null) { StopCoroutine(aStarCorotine); }
         AStarTilemap.ClearAllTiles();
 
         Debug.Log($"Retrived graph from level {levelIndex} num {tempindex}");
 
-        InitalizeRoomLists(); // Makes an array filled with pointers to a room array
+        InitalizeRoomLists(); //Sig: Makes an array filled with pointers to a room array
         ClearMap(); // Removes all tiles
 
         levelGraph.Initalize(); // Makes the composite adjeceny list 
@@ -62,84 +64,77 @@ public class LevelManger : MonoBehaviour
 
         // Initialization
         unavoidableOverlap = false;
-
-        spawnedEnemies = new bool[compositeAdjecenyList.Count];
-        visited = new bool[compositeAdjecenyList.Count];
-        for (int i = 0; i < compositeAdjecenyList.Count; i++)
-        {
-            spawnedEnemies[i] = false;
-            visited[i] = false;
-        }
+        spawnedEnemies = Enumerable.Repeat(false, compositeAdjecenyList.Count).ToArray();
+        visited = Enumerable.Repeat(false, compositeAdjecenyList.Count).ToArray();
 
         // Goes through the first dfs cycle for each of the nodes
         for (int i = 0; i < visited.Length; i++)
         {
-            if (!visited[i]) // If the node hasn't been visited, then we have found a new component 
+            if (visited[i]) continue;
+
+            bool[] lastVisitedAr = visited;
+            startCycleNode = i;
+
+            ClearMap();
+
+            visited[i] = true;
+
+            ScriptableRoom firstRoom = GetRandomRoom(compositeAdjecenyList[i].type, (byte)levelGraph.adjecenyList[i].connections.Count); // Gets a randrom first room
+
+            currentComponentTilemap = new ComponentTilemap(compositeAdjecenyList.Count); // Initalizes the current component tilemap
+            currentComponentTilemap.rooms[i] = (new Vector2Int(), firstRoom); // Adds the origen and room to the component
+
+            LoadRoom(testGround, testWalls, testDecor, new Vector2Int(), firstRoom); // Loads the room to the test tilemaps
+
+            RoomMetaInformation info = firstRoom.metaInformation;
+            currentComponentTilemap.freeEntrances[i].AddRange(info.AllEntrances.Select(e => (e.Item2, e.Item1.Position)));
+
+            // Runs dfs for the current node 
+            foreach (int neighbour in compositeAdjecenyList[i].connections)
             {
-                bool[] lastVisitedAr = visited;
-                startCycleNode = i;
+                if (visited[neighbour]) { continue; }
 
-                ClearMap();
-
-                visited[i] = true;
-
-                ScriptableRoom firstRoom = GetRandomRoom(compositeAdjecenyList[i].type, levelGraph.adjecenyList[i].connections.Count); // Gets a randrom first room
-
-                currentComponentTilemap = new ComponentTilemap(compositeAdjecenyList.Count); // Initalizes the current component tilemap
-                currentComponentTilemap.rooms[i] = (new KeyValuePair<Vector2Int, ScriptableRoom>(new Vector2Int(), firstRoom)); // Adds the origen and room to the component
-
-                LoadRoom(testGround, testWalls, testDecor, new Vector2Int(), firstRoom); // Loads the room to the test tilemaps
-
-                /*for (int j = 0; j < firstRoom.entranceIds.Count; j++) // Adds the entrances from the new room 
+                visited[neighbour] = true;
+                if (compositeAdjecenyList[i].id[0] == 'N')
                 {
-                    KeyValuePair<char, Vector2> temp = new KeyValuePair<char, Vector2>(firstRoom.entranceIds[j], firstRoom.entrancePos[j]);
-                    currentComponentTilemap.freeEntrances[i].Add(temp);
-                }*/
-
-                // Runs dfs for the current node 
-                for (int j = 0; j < compositeAdjecenyList[i].connections.Count; j++)
-                {
-                    if (visited[compositeAdjecenyList[i].connections[j]])
-                    {
-                        continue;
-                    }
-
-                    visited[compositeAdjecenyList[i].connections[j]] = true;
-                    //queue.Add(new KeyValuePair<int, int>(compositeAdjecenyList[0].connections[i],0));
-                    if (compositeAdjecenyList[i].id[0] == 'N')
-                    {
-                        Debug.LogError("FUCK");
-                    }else if(compositeAdjecenyList[i].id[0] == 't')
-                    {
-                        PlaceTree(compositeAdjecenyList[i].connections[j], i);
-                    }else if(compositeAdjecenyList[i].id[0] == 'c')
-                    {
-                        PlaceCycle(compositeAdjecenyList[i].connections[j], i, 0);
-                        corotine = AStarCorridorGeneration(
-                            currentComponentTilemap.freeEntrances[currentCycleNode][0].Value + currentComponentTilemap.rooms[currentCycleNode].Key,
-                            currentComponentTilemap.freeEntrances[startCycleNode][0].Value + currentComponentTilemap.rooms[startCycleNode].Key,
-                            currentComponentTilemap.freeEntrances[currentCycleNode][0].Key,
-                            currentComponentTilemap.freeEntrances[startCycleNode][0].Key
-                        );
-
-                        StartCoroutine(corotine);
-                    }
+                    Debug.LogError("FUCK");
                 }
+                else if (compositeAdjecenyList[i].id[0] == 't')
+                {
+                    PlaceTree(neighbour, i);
+                }
+                else if (compositeAdjecenyList[i].id[0] == 'c')
+                {
+                    List<(int, Vector2Int)> CurrentNodeEntrances = currentComponentTilemap.freeEntrances[currentCycleNode];
+                    List<(int, Vector2Int)> StartNodeEntrances = currentComponentTilemap.freeEntrances[startCycleNode];
+                        
+                    PlaceCycle(neighbour, i, 0);
+                        
+                    aStarCorotine = AStarCorridorGeneration(
+                        CurrentNodeEntrances[0].Item2 + currentComponentTilemap.rooms[currentCycleNode].Item1,
+                        StartNodeEntrances[0].Item2 + currentComponentTilemap.rooms[startCycleNode].Item1,
+                        CurrentNodeEntrances[0].Item1,
+                        StartNodeEntrances[0].Item1
+                    );
 
-                if (unavoidableOverlap) // Checks if the current component is valid
-                {
-                    // If it isn't try to make the level again
-                    i--;
-                    visited = lastVisitedAr;
+                    StartCoroutine(aStarCorotine);
                 }
-                else
-                {
-                    currentComponentTilemap.decoration = GetTilesFromMap(testDecor).ToList();
-                    currentComponentTilemap.walls = GetTilesFromMap(testWalls).ToList();
-                    currentComponentTilemap.ground = GetTilesFromMap(testGround).ToList();
-                    // If the level is vaild build the navmesh, and place the triggeres for enemyspawns
-                    allComponents.Add(currentComponentTilemap);
-                }
+            }
+
+
+            if (unavoidableOverlap) // Checks if the current component is valid
+            {
+                // If it isn't try to make the level again
+                i--;
+                visited = lastVisitedAr;
+            }
+            else
+            {
+                currentComponentTilemap.decoration = GetTilesFromMap(testDecor).ToList();
+                currentComponentTilemap.walls = GetTilesFromMap(testWalls).ToList();
+                currentComponentTilemap.ground = GetTilesFromMap(testGround).ToList();
+                // If the level is vaild build the navmesh, and place the triggeres for enemyspawns
+                allComponents.Add(currentComponentTilemap);
             }
         }
 
@@ -157,175 +152,80 @@ public class LevelManger : MonoBehaviour
                     yield return new SavedTile()
                     {
                         Position = pos,
-                        tile = map.GetTile<Basetile>(pos)
+                        tile = map.GetTile<BaseTile>(pos)
                     };
                 }
             }
         }
     }
 
+    #region RoomManagement
     // Initalizes the sortedrooms and allrooms
     private void InitalizeRoomLists()
     {
         allRooms = Resources.LoadAll<ScriptableRoom>("Rooms");
 
-        sortedRooms = new List<List<List<List<int>>>>();
+        RoomIndexLoopupMap = new Dictionary<uint, List<int>>();
 
-        for(int i = 0; i <= RoomType.Other - RoomType.Hub; i++)
-        {
-            sortedRooms.Add(new List<List<List<int>>>());
-        }
-
-        /*
         // Goes through all the rooms and makes pointeres for each of them
         for(int i = 0; i < allRooms.Length; i++)
         {
-            int roomTypeIndex = (int)allRooms[i].type;
-            //int entranceNum = allRooms[i].entranceIds.Count;
+            RoomMetaInformation roomInfo = allRooms[i].metaInformation;
+            byte roomTypeIndex = (byte)allRooms[i].type;
+            byte entranceNum = (byte)roomInfo.TotalEntances;
 
-            // makes sure that all amount of entances is acounted for
-            for (int j = sortedRooms[roomTypeIndex].Count; j < entranceNum; j++) 
-            { 
-                sortedRooms[roomTypeIndex].Add(new List<List<int>>()); 
-                for(int k = 0; k < 4; k++)
-                {
-                    sortedRooms[roomTypeIndex][j].Add(new List<int>());
-                }
-            }
-            
-            // Adds the pointers 
-            for(int j = 0; j < entranceNum; j++)
-            {
-                int temp = -1;
-                switch (allRooms[i].entranceIds[j])
-                {
-                    case 'l':
-                        temp = 0;
-                        break;
-                    case 'r':
-                        temp = 1;
-                        break;
-                    case 'u':
-                        temp = 2;
-                        break;
-                    case 'd':
-                        temp = 3;
-                        break;
-                    default:
-                        Debug.LogError("Something with the room ids went wrong!");
-                        break;
-                }
+            if(roomInfo.NorthEntrances.Count != 0) { AddToDict(roomTypeIndex, entranceNum, 0, i); }
+            if(roomInfo.WestEntrances.Count != 0) { AddToDict(roomTypeIndex, entranceNum, 1, i); }
+            if(roomInfo.SouthEntrances.Count != 0) { AddToDict(roomTypeIndex, entranceNum, 2, i); }
+            if(roomInfo.EastEntrances.Count != 0) { AddToDict(roomTypeIndex, entranceNum, 3, i); }
+        }
 
-                sortedRooms[roomTypeIndex][entranceNum - 1][temp].Add(i);
-            }
-        }*/
+        void AddToDict(byte roomType, byte entrances, byte entranceDir, int roomIndex)
+        {
+            uint key = ((uint)roomType << (8 * 2)) | ((uint)entrances << 8) | ((uint)entranceDir);
+            RoomIndexLoopupMap[key].Add(roomIndex);
+        }
     }
 
     // Gets a random room with the entrance direction, entance amount and room type. 
-    private ScriptableRoom GetRandomRoom(char entranceDir, int entranceNum, RoomType type)
+    private ScriptableRoom GetRandomRoom(byte entranceDir, int entranceNum, RoomType type)
     {
-        int dir;
-        switch (entranceDir)
-        {
-            case 'l':
-                dir = 0;
-                break;
-            case 'r':
-                dir = 1; 
-                break;
-            case 'u':
-                dir = 2;
-                break;
-            case 'd':
-                dir = 3;
-                break;
-            default:
-                Debug.LogError("FUCK");
-                return null;
-        }
+        uint key = ((uint)type << (8 * 2)) | ((uint)entranceNum << 8) | ((uint)entranceDir);
 
         // Gets a random room with the qualites that are requiered
-        int count = sortedRooms[(int)type][entranceNum - 1][dir].Count; 
-        int roomIndex = sortedRooms[(int)type][entranceNum - 1][dir][UnityEngine.Random.Range(0, count)];
+        int count = RoomIndexLoopupMap[key].Count;
+        int index = UnityEngine.Random.Range(0, count);
+        int roomIndex = RoomIndexLoopupMap[key][index];
+        RoomIndexLoopupMap[key].RemoveAt(index);
 
-        //RemoveIndexFromSortedRooms(roomIndex, new Vector2Int((int)type, entranceNum - 1));
-        
         return allRooms[roomIndex];
     }
 
     // Gets a random room with the entrance amount and room type
-    private ScriptableRoom GetRandomRoom(RoomType type, int entranceNum)
+    private ScriptableRoom GetRandomRoom(RoomType type, byte entranceNum)
     {
-        // Gets a random room with the required qualities
-        int temp1 = UnityEngine.Random.Range(0, sortedRooms[(int)type][entranceNum - 1].Count);
-        int temp2 = UnityEngine.Random.Range(0, sortedRooms[(int)type][entranceNum - 1][temp1].Count);
-        int roomIndex = sortedRooms[(int)type][entranceNum - 1][temp1][temp2];
-
-        //RemoveIndexFromSortedRooms(roomIndex, new Vector2Int((int)type, entranceNum - 1));
-        
-        return allRooms[roomIndex];
+        byte dir = (byte)UnityEngine.Random.Range(0, 3);
+        return GetRandomRoom(dir, entranceNum, type);
     }
+    #endregion
 
-    // Uses a binary search to find and remove a room from the sortedrooms 
-    private void RemoveIndexFromSortedRooms(int roomIndex, Vector2Int listId)
-    {
-        for (int i = 0; i < sortedRooms[listId.x][listId.y].Count; i++)
-        {
-            if (sortedRooms[listId.x][listId.y][i].Count == 0) { continue; }
-            int index = BinarySearch(new Vector3Int(listId.x, listId.y, i), roomIndex, 0, sortedRooms[listId.x][listId.y][i].Count - 1);
-            if (index == -1) { continue; }
-            sortedRooms[listId.x][listId.y][i].RemoveAt(index);
-        }
-    }
-
-    // Searches for a index in a list using a binary search.
-    private int BinarySearch(Vector3Int listId, int searchId, int startPointer, int endPointer)
-    {
-        int midpoint = startPointer + (int)((endPointer - startPointer) / 2);
-        int midpointId = sortedRooms[listId.x][listId.y][listId.z][midpoint];
-        if (midpointId == searchId)
-        {
-            return midpoint;
-        }
-
-        if (endPointer == startPointer)
-        {
-            return -1;
-        }
-
-        if(midpointId > searchId)
-        {
-            return BinarySearch(listId, searchId, startPointer, midpointId);
-        }
-
-        if (midpointId < searchId)
-        {
-            return BinarySearch(listId, searchId, midpoint, endPointer);
-        }
-
-        return -2;
-    }
-
+    #region GraphTraversment
     // Places a graph tree component, using dfs
     private void PlaceTree(int nodeIndex, int parentNode)
     {
-        List<int> neighbours = compositeAdjecenyList[nodeIndex].connections; // Gets the neighbours to the current node
-
-        List<KeyValuePair<char, Vector2>> freeParentEntances = currentComponentTilemap.freeEntrances[parentNode]; // Gets all the free entances that are in the parent room
+        List<(int, Vector2Int)> freeParentEntances = currentComponentTilemap.freeEntrances[parentNode]; // Gets all the free entances that are in the parent room
         int parentEntranceIndex = UnityEngine.Random.Range(0, freeParentEntances.Count); // Finds the index of a random entrance that belongs to the parent room
-        KeyValuePair<char, Vector2> parentEntrance = freeParentEntances[parentEntranceIndex]; // Finds the parent entrance
+        (int, Vector2) parentEntrance = freeParentEntances[parentEntranceIndex]; // Finds the parent entrance
 
         PlaceRoom(nodeIndex, parentNode, levelGraph.adjecenyList[nodeIndex].connections.Count, parentEntrance, parentEntranceIndex);
 
         // Goes through all the neighbours and calls this function on them, DFS style
-        for (int i = 0; i < neighbours.Count; i++)
+        foreach(int neighbour in compositeAdjecenyList[nodeIndex].connections)
         {
-            int currentNeighbour = neighbours[i];
-            if (!visited[currentNeighbour])
+            if (!visited[neighbour])
             {
-                visited[currentNeighbour] = true;
-                //queue.Add(new KeyValuePair<int, int>(currentNeighbour, nodeIndex));
-                PlaceTree(currentNeighbour, nodeIndex);
+                visited[neighbour] = true;
+                PlaceTree(neighbour, nodeIndex);
             }
         }
     }
@@ -374,7 +274,9 @@ public class LevelManger : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region 
     private void PlaceCorridor(Vector2 parentEntrancePos, Vector2 childEntrancePos, char parentEntranceDir, char childEntranceDir)
     {
         Vector3Int[] tiles = GetAdjecentPairTiles(parentEntrancePos, parentEntranceDir, true);
@@ -786,7 +688,7 @@ public class LevelManger : MonoBehaviour
         return result;
     }
 
-    private void PlaceRoom(int nodeIndex, int parentNode, int degree, KeyValuePair<char, Vector2> parentEntrance, int parentEntranceIndex) // RET DENNE KODE, SÅ DEN BRUGER PLACECORRIDOR()
+    private void PlaceRoom(int nodeIndex, int parentNode, int degree, (int, Vector2) parentEntrance, int parentEntranceIndex) // RET DENNE KODE, SÅ DEN BRUGER PLACECORRIDOR()
     {
 
         // Finds the needed entrance id
@@ -934,29 +836,23 @@ public class LevelManger : MonoBehaviour
         
         spawnedEnemies[nodeIndex] = true;
     }*/
+
+    #endregion
 }
 
 public class ComponentTilemap
 {
     public List<SavedTile> ground, walls, decoration;
-    public List<List<KeyValuePair<char,Vector2>>> freeEntrances; // Char: l - leftsided, r - rightsided, u - up, d - down
-    public List<KeyValuePair<Vector2Int, ScriptableRoom>> rooms; // Vector2 to hold the origen of the scripableroom
+    public List<List<(int, Vector2Int)>> freeEntrances; // Char: North = 0, West = 1, South = 2, East = 3
+    public List<(Vector2Int, ScriptableRoom)> rooms; // Vector2 to hold the origen of the scripableroom
 
     public ComponentTilemap(int nodes)
     {
         ground = new List<SavedTile>();
         walls = new List<SavedTile>();
         decoration = new List<SavedTile>();
-        freeEntrances = new List<List<KeyValuePair<char, Vector2>>>();
-        for(int i = 0; i < nodes; i++)
-        {
-            freeEntrances.Add(new List<KeyValuePair<char, Vector2>>());
-        }
-        rooms = new List<KeyValuePair<Vector2Int, ScriptableRoom>>();
-        for (int i = 0; i < nodes; i++)
-        {
-            rooms.Add(new KeyValuePair<Vector2Int, ScriptableRoom>());
-        }
+        freeEntrances = Enumerable.Repeat(new List<(int, Vector2Int)>(), nodes).ToList();
+        rooms = Enumerable.Repeat((new Vector2Int(), new ScriptableRoom()), nodes).ToList();
     }
 }
 

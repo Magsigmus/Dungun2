@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
+  m_Script: {fileID: 11500000, guid: 99a4835edf548ff4e8af03a77c225c82, type: 3}
   m_Name: Dungeon_Tileset_18
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: -1383337287, guid: 26e31adda4822354d8cb7693bb784ccc, type: 3}
@@ -34,3 +34,4 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
+  type: 0
