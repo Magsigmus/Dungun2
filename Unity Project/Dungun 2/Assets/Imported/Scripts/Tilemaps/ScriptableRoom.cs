@@ -7,7 +7,7 @@ public class ScriptableRoom : ScriptableObject
 {
     public SavedTile[] ground, walls, decorations, meta;
     public RoomType type;
-    public Vector2 size;
+    public Vector2Int size;
 
     public RoomMetaInformation metaInformation;
 

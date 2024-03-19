@@ -12,6 +12,7 @@ public class TilemapManager : MonoBehaviour
     [Header("Save Information")]
     public int roomIndex;
     public RoomType roomType;
+    public string roomName = "";
 
     [Header("Tiles and Tilemaps")]
     public Tilemap groundMap;
@@ -36,26 +37,47 @@ public class TilemapManager : MonoBehaviour
         //Sig: Creates a new scriptable object for the room to be saved in
         ScriptableRoom newRoom = ScriptableObject.CreateInstance<ScriptableRoom>();
 
-        Vector2Int size = new Vector2Int();
+        Vector2Int upperRight = new Vector2Int(), lowerLeft = new Vector2Int();
 
         //Sig: Fills that object with information
-        newRoom.name = $"New Room {roomIndex}";
+        newRoom.name = ((roomName == "") ? $"New Room {roomIndex}" : roomName);
         newRoom.ground = GetTilesFromMap(groundMap).ToArray();
-
-        foreach(SavedTile tile in newRoom.ground)
-        {
-            size.x = Mathf.Max(size.x, -tile.Position.x);
-            size.y = Mathf.Max(size.y, -tile.Position.y);
-        }
-
         newRoom.walls = GetTilesFromMap(wallMap).ToArray();
         newRoom.decorations = GetTilesFromMap(decorMap).ToArray();
         newRoom.meta = GetTilesFromMap(metaMap).ToArray();
         newRoom.type = roomType;
-        newRoom.size = size;
+
+        //Sig: Finds the offset of the room, and its size
+        upperRight = (Vector2Int)newRoom.ground[0].Position;
+        lowerLeft = (Vector2Int)newRoom.ground[0].Position;
+        foreach (SavedTile tile in newRoom.ground)
+        {
+            upperRight.x = Math.Max(upperRight.x, tile.Position.x);
+            upperRight.y = Math.Max(upperRight.y, tile.Position.y);
+
+            lowerLeft.x = Math.Min(lowerLeft.x, tile.Position.x);
+            lowerLeft.y = Math.Min(lowerLeft.y, tile.Position.y);
+        }
+        newRoom.size = upperRight - lowerLeft;
+
+        Debug.Log(upperRight);
+
+        newRoom.ground = ApplyOffset((Vector3Int)upperRight, newRoom.ground);
+        newRoom.walls = ApplyOffset((Vector3Int)upperRight, newRoom.walls);
+        newRoom.decorations = ApplyOffset((Vector3Int)upperRight, newRoom.decorations);
+        newRoom.meta = ApplyOffset((Vector3Int)upperRight, newRoom.meta);
 
         // Saves the scriptableObject to disk
         ScriptableObjectUtility.SaveRoomFile(newRoom);
+
+        SavedTile[] ApplyOffset(Vector3Int offset, SavedTile[] array)
+        {
+            for(int i = 0; i < array.Length; i++)
+            {
+                array[i].Position -= offset;
+            }
+            return array;
+        }
 
         // Gets all the tiles in the tilemaps
         IEnumerable<SavedTile> GetTilesFromMap(Tilemap map)
@@ -88,6 +110,10 @@ public class TilemapManager : MonoBehaviour
         foreach (SavedTile tile in room.decorations)
         {
             decorMap.SetTile(tile.Position + origenPos, tile.tile);
+        }
+        foreach (SavedTile tile in room.meta)
+        {
+            metaMap.SetTile(tile.Position + origenPos, tile.tile);
         }
     }
 
