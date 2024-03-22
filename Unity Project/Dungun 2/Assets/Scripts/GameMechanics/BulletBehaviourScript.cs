@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class BulletBehaviour : MonoBehaviour
+public class BulletBehaviourScript : MonoBehaviour
 {
     public float startVelocity = 1f;
     public float desctructionTime = 5f;

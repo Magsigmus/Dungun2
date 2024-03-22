@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 8479068350637697488}
   - component: {fileID: 1371461103333349062}
   - component: {fileID: 5146900579757251866}
-  - component: {fileID: 2175864125786216642}
   - component: {fileID: 5041524878630013827}
   - component: {fileID: 8247122114085829018}
   - component: {fileID: 2374296792674318438}
+  - component: {fileID: 7275487467524632971}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -111,27 +111,6 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
---- !u!114 &2175864125786216642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6538225185145312215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 287db14951367c443a5667367b7447bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  agent: {fileID: 5146900579757251866}
-  bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
-  shootCooldownTime: 1
-  minTargetDistance: 1
-  maxTargetDistance: 10
-  maxWanderDistance: 5
-  maxWanderTime: 15
-  healthPoints: 3
 --- !u!50 &5041524878630013827
 Rigidbody2D:
   serializedVersion: 4
@@ -225,3 +204,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7275487467524632971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6538225185145312215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 287db14951367c443a5667367b7447bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  agent: {fileID: 5146900579757251866}
+  bulletPrefab: {fileID: 0}
+  shootCooldownTime: 1
+  minTargetDistance: 3
+  maxTargetDistance: 10
+  maxWanderDistance: 5
+  maxWanderTime: 15
+  healthPoints: 3
