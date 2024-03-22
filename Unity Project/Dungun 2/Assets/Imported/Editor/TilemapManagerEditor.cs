@@ -19,7 +19,9 @@ public class TilemapManagerEditor : Editor
 
         if (GUILayout.Button("Load Room"))
         {
+            script.ClearMap();
             script.roomName = script.room.name;
+            script.roomType = script.room.type;
             script.LoadRoom(script.position, script.room);
         }
 

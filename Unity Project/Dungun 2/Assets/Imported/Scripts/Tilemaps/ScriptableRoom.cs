@@ -32,8 +32,19 @@ public class ScriptableRoom : ScriptableObject
             {
                 info.EastEntrances.Add(tile);
             }
-            info.AllEntrances.Add((tile, tile.tile.type - TileType.NorthEntrance));
+            if(tile.tile.type == TileType.SpawnPoint)
+            {
+                info.EnemySpawnPoints.Add(tile);
+            }
+
+
+            if(tile.tile.type >= TileType.NorthEntrance && tile.tile.type <= TileType.EastEntrance)
+            {
+                info.AllEntrances.Add((tile, tile.tile.type - TileType.NorthEntrance));
+            }
         }
+
+        metaInformation = info;
     }
 }
 
@@ -43,6 +54,16 @@ public class RoomMetaInformation
     public List<SavedTile> NorthEntrances, WestEntrances, EastEntrances, SouthEntrances;
     public List<(SavedTile, int)> AllEntrances;
     public List<SavedTile> EnemySpawnPoints;
+
+    public RoomMetaInformation()
+    {
+        NorthEntrances = new List<SavedTile>();
+        WestEntrances = new List<SavedTile>();
+        EastEntrances = new List<SavedTile>();
+        SouthEntrances = new List<SavedTile>();
+        EnemySpawnPoints = new List<SavedTile>();
+        AllEntrances = new List<(SavedTile, int)>();
+    }
 
     public int TotalEntances { get 
         { 

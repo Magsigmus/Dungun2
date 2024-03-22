@@ -23,5 +23,12 @@ public class LevelMangerEditor : Editor
         {
             script.ClearMap();
         }
+
+        if (GUILayout.Button("Make A*-corridor") && script.aStarStack.Count != 0)
+        {
+            (Vector2Int, Vector2Int, int, int) val = script.aStarStack.Peek(); script.aStarStack.Pop();
+            script.AStarCorridorGeneration(val.Item1, val.Item2, val.Item3, val.Item4);
+        }
+        
     }
 }

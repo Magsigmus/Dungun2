@@ -67,6 +67,8 @@ public class TilemapManager : MonoBehaviour
         newRoom.decorations = ApplyOffset((Vector3Int)upperRight, newRoom.decorations);
         newRoom.meta = ApplyOffset((Vector3Int)upperRight, newRoom.meta);
 
+        newRoom.InitializeMetaInformation();
+
         // Saves the scriptableObject to disk
         ScriptableObjectUtility.SaveRoomFile(newRoom);
 

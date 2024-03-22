@@ -7,6 +7,7 @@ using UnityEngine.AI;
 using System.Linq;
 using Priority_Queue;
 using Unity.VisualScripting;
+using static UnityEditor.PlayerSettings;
 
 public class LevelManger : MonoBehaviour
 {
@@ -17,18 +18,20 @@ public class LevelManger : MonoBehaviour
     private List<ComponentTilemap> allComponents = new List<ComponentTilemap>(); // All the components that have been assembled
 
     [Header("Tilemaps")]
-    public Tilemap testGround, testWalls, testDecor; // The tilemaps used to assemble the components
+    public Tilemap testGround;
+    public Tilemap testWalls, testDecor; // The tilemaps used to assemble the components
     public Tilemap AStarTilemap;
-    public Tilemap prefabricationTilemap;
+    //public Tilemap prefabricationTilemap;
     public Sprite pixel;
 
     [Header("Tiles")]
-    public BaseTile groundTile, bottomWallTile, topWallTile, rightWallTile, leftWallTile, 
-        upperRightWallTile, upperLeftWallTile, lowerRightWallTile, lowerLeftWallTile, 
-        upperRightInwardsWallTile, upperLeftInwardsWallTile, lowerRightInwardsWallTile, lowerLeftInwardsWallTile; // The tiles used to make connections between rooms
+    public BaseTile temporaryTile;
+    public BaseTile groundTile, northWallTile, southWallTile, westWallTile, eastWallTile;
+    public BaseTile northWestOutwardsCornerWallTile, northEastOutwardsCornerWallTile, southEastOutwardsCornerWallTile, southWestOutwardsCornerWallTile,
+        northEastInwardsCornerWallTile, northWestInwardsCornerWallTile, southEastInwardsCornerWallTile, southWestInwardsCornerWallTile; // The tiles used to make connections between rooms
     
-    private bool[] spawnedEnemies; // An array denoting if there has been spawned enemies in a room yet
-    public GameObject entranceTrigger; // A prefab containing an entance trigger
+    //private bool[] spawnedEnemies; // An array denoting if there has been spawned enemies in a room yet
+    //public GameObject entranceTrigger; // A prefab containing an entance trigger
 
     bool unavoidableOverlap = false; // A bool denoting if there is a unavoidable overlap while placing the last room
     //List<List<List<List<int>>>> sortedRooms; // An array containing pointers to allrooms, which is sorted in the lists after __
@@ -36,11 +39,13 @@ public class LevelManger : MonoBehaviour
 
     //Sig: Key is indexed with first byte being 0, second byte being the value of the roomType casted to a byte, third byte being the number of entrances, and the fourth byte being the direction of one of the entances.
     //Sig: North -> 0, West -> 1, South -> 2, East -> 3
-    Dictionary<uint, List<int>> RoomIndexLoopupMap;
+    Dictionary<uint, List<int>> RoomIndexLookupMap;
 
     private IEnumerator aStarCorotine;
 
     public int levelNumber;
+
+    public Stack<(Vector2Int, Vector2Int, int, int)> aStarStack = new Stack<(Vector2Int, Vector2Int, int, int)>();
 
     //Sig: Generates a level from a level index
     public void GenerateLevel(int levelIndex)
@@ -64,7 +69,7 @@ public class LevelManger : MonoBehaviour
 
         // Initialization
         unavoidableOverlap = false;
-        spawnedEnemies = Enumerable.Repeat(false, compositeAdjecenyList.Count).ToArray();
+        //spawnedEnemies = Enumerable.Repeat(false, compositeAdjecenyList.Count).ToArray();
         visited = Enumerable.Repeat(false, compositeAdjecenyList.Count).ToArray();
 
         // Goes through the first dfs cycle for each of the nodes
@@ -73,13 +78,14 @@ public class LevelManger : MonoBehaviour
             if (visited[i]) continue;
 
             bool[] lastVisitedAr = visited;
-            //startCycleNode = i;
+            startCycleNode = i;
 
             ClearMap();
 
             visited[i] = true;
 
             ScriptableRoom firstRoom = GetRandomRoom(compositeAdjecenyList[i].type, (byte)levelGraph.adjecenyList[i].connections.Count); // Gets a randrom first room
+            firstRoom.InitializeMetaInformation();
 
             currentComponentTilemap = new ComponentTilemap(compositeAdjecenyList.Count); // Initalizes the current component tilemap
             currentComponentTilemap.rooms[i] = (new Vector2Int(), firstRoom); // Adds the origen and room to the component
@@ -87,7 +93,10 @@ public class LevelManger : MonoBehaviour
             LoadRoom(testGround, testWalls, testDecor, new Vector2Int(), firstRoom); // Loads the room to the test tilemaps
 
             RoomMetaInformation info = firstRoom.metaInformation;
-            currentComponentTilemap.freeEntrances[i].AddRange(info.AllEntrances.Select(e => (e.Item2, e.Item1.Position)));
+            foreach((SavedTile, int) entrance in info.AllEntrances)
+            {
+                currentComponentTilemap.freeEntrances[i].Add((entrance.Item2, (Vector2Int)entrance.Item1.Position));
+            }
 
             // Runs dfs for the current node 
             foreach (int neighbour in compositeAdjecenyList[i].connections)
@@ -105,23 +114,21 @@ public class LevelManger : MonoBehaviour
                 }
                 else if (compositeAdjecenyList[i].id[0] == 'c')
                 {
-                    /*
+                    PlaceCycle(neighbour, i, 0);
+
                     List<(int, Vector2Int)> CurrentNodeEntrances = currentComponentTilemap.freeEntrances[currentCycleNode];
                     List<(int, Vector2Int)> StartNodeEntrances = currentComponentTilemap.freeEntrances[startCycleNode];
-                        
-                    PlaceCycle(neighbour, i, 0);
-                        
-                    aStarCorotine = AStarCorridorGeneration(
+
+                    aStarStack.Push((
                         CurrentNodeEntrances[0].Item2 + currentComponentTilemap.rooms[currentCycleNode].Item1,
                         StartNodeEntrances[0].Item2 + currentComponentTilemap.rooms[startCycleNode].Item1,
                         CurrentNodeEntrances[0].Item1,
                         StartNodeEntrances[0].Item1
-                    );
+                    ));
 
-                    StartCoroutine(aStarCorotine);*/
+                    //StartCoroutine(aStarCorotine);
                 }
             }
-
 
             if (unavoidableOverlap) // Checks if the current component is valid
             {
@@ -141,7 +148,7 @@ public class LevelManger : MonoBehaviour
 
         // PLACE TRIGGERS 
 
-        Debug.Log("Triggered");
+        //Debug.Log("Triggered");
         //navMesh.BuildNavMesh();
         // Gets all the tiles in the tilemaps
         IEnumerable<SavedTile> GetTilesFromMap(Tilemap map)
@@ -166,11 +173,13 @@ public class LevelManger : MonoBehaviour
     {
         allRooms = Resources.LoadAll<ScriptableRoom>("Rooms");
 
-        RoomIndexLoopupMap = new Dictionary<uint, List<int>>();
+        RoomIndexLookupMap = new Dictionary<uint, List<int>>();
 
         // Goes through all the rooms and makes pointeres for each of them
         for(int i = 0; i < allRooms.Length; i++)
         {
+            allRooms[i].InitializeMetaInformation();
+
             RoomMetaInformation roomInfo = allRooms[i].metaInformation;
             byte roomTypeIndex = (byte)allRooms[i].type;
             byte entranceNum = (byte)roomInfo.TotalEntances;
@@ -184,7 +193,8 @@ public class LevelManger : MonoBehaviour
         void AddToDict(byte roomType, byte entrances, byte entranceDir, int roomIndex)
         {
             uint key = ((uint)roomType << (8 * 2)) | ((uint)entrances << 8) | ((uint)entranceDir);
-            RoomIndexLoopupMap[key].Add(roomIndex);
+            if (!RoomIndexLookupMap.ContainsKey(key)) { RoomIndexLookupMap[key] = new List<int>(); }
+            RoomIndexLookupMap[key].Add(roomIndex);
         }
     }
 
@@ -193,13 +203,18 @@ public class LevelManger : MonoBehaviour
     {
         uint key = ((uint)type << (8 * 2)) | ((uint)entranceNum << 8) | ((uint)entranceDir);
 
+        if (!RoomIndexLookupMap.ContainsKey(key)) { 
+            Debug.LogError($"Missing a room of type {type}, entrance direction {entranceDir} and {entranceNum} entrances."); 
+        }
+        
         // Gets a random room with the qualites that are requiered
-        int count = RoomIndexLoopupMap[key].Count;
+        int count = RoomIndexLookupMap[key].Count;
         int index = UnityEngine.Random.Range(0, count);
-        int roomIndex = RoomIndexLoopupMap[key][index];
-        RoomIndexLoopupMap[key].RemoveAt(index);
+        int roomIndex = RoomIndexLookupMap[key][index];
+        ScriptableRoom room = allRooms[roomIndex];
+        //RoomIndexLookupMap[key].RemoveAt(index);
 
-        return allRooms[roomIndex];
+        return room;
     }
 
     // Gets a random room with the entrance amount and room type
@@ -230,42 +245,37 @@ public class LevelManger : MonoBehaviour
             }
         }
     }
-    /*
+    
     int startCycleNode;
     int currentCycleNode;
-    private void PlaceCycle(int nodeIndex, int parentNode, int depth)
+
+    public void PlaceCycle(int nodeIndex, int parentNode, int depth)
     {
         currentCycleNode = nodeIndex;
         List<int> neighbours = compositeAdjecenyList[nodeIndex].connections;
 
         int length = int.Parse(compositeAdjecenyList[nodeIndex].id.Substring(1));
-        List<KeyValuePair<char, Vector2>> freeParentEntances = currentComponentTilemap.freeEntrances[parentNode]; // Gets all the free entances that are in the parent room
+        // Gets all the free entances that are in the parent room
+        List<(int, Vector2Int)> freeParentEntances = currentComponentTilemap.freeEntrances[parentNode]; 
         int parentEntranceIndex = 0;
 
-        if (Mathf.Floor(((float)length)/2) <= depth)
+        //Sig: If more than half of the cycle is has been looked at, then try and connect the start and current rooms together, by picking an exit that is closest to the start room.
+        if (length/2 <= depth)
         {
-            Vector2 goal = currentComponentTilemap.rooms[startCycleNode].Key + currentComponentTilemap.rooms[startCycleNode].Value.size / 2;
-
-            float bestDist = Vector2.Distance(freeParentEntances[0].Value + (Vector2)currentComponentTilemap.rooms[parentNode].Key, goal);
-            for(int i = 0; i < freeParentEntances.Count; i++)
-            {
-                float currentDist = Vector2.Distance(freeParentEntances[i].Value + (Vector2)currentComponentTilemap.rooms[parentNode].Key, goal);
-                if(currentDist < bestDist)
-                {
-                    parentEntranceIndex = i;
-                }
-            }
+            (Vector2Int, ScriptableRoom) startRoom = currentComponentTilemap.rooms[startCycleNode];
+            Vector2Int goal = startRoom.Item1 + startRoom.Item2.size / 2;
+            parentEntranceIndex = FindClosestEntrance(goal, parentNode);
         }
         else
         {
-            
-            parentEntranceIndex = UnityEngine.Random.Range(0, freeParentEntances.Count); // Finds the index of a random entrance that belongs to the parent room
+            // Finds the index of a random entrance that belongs to the parent room
+            parentEntranceIndex = UnityEngine.Random.Range(0, freeParentEntances.Count); 
         }
         
-        KeyValuePair<char, Vector2> parentEntrance = freeParentEntances[parentEntranceIndex]; // Finds the parent entrance
+        (int, Vector2Int) parentEntrance = freeParentEntances[parentEntranceIndex]; // Finds the parent entrance
 
         PlaceRoom(nodeIndex, parentNode, levelGraph.adjecenyList[nodeIndex].connections.Count, parentEntrance, parentEntranceIndex);
-
+                
         for(int i = 0; i < neighbours.Count; i++)
         {
             if (!visited[neighbours[i]])
@@ -274,12 +284,29 @@ public class LevelManger : MonoBehaviour
                 PlaceCycle(neighbours[i], nodeIndex, depth + 1);
             }
         }
-    }*/
-    
+    }
+
+    //Sig: Finds the closest free entrance to a point
+    int FindClosestEntrance(Vector2Int goal, int roomIndex)
+    {
+        List<(int, Vector2Int)> freeParentEntances = currentComponentTilemap.freeEntrances[roomIndex];
+        (Vector2Int, ScriptableRoom) parentRoom = currentComponentTilemap.rooms[roomIndex];
+        int result = 0;
+
+        float bestDist = Vector2.Distance(freeParentEntances[0].Item2 + parentRoom.Item1, goal);
+        for (int i = 0; i < freeParentEntances.Count; i++)
+        {
+            float currentDist = Vector2.Distance(freeParentEntances[i].Item2 + parentRoom.Item1, goal);
+            if (currentDist < bestDist) { result = i; }
+        }
+
+        return result;
+    }
+
     #endregion
 
-    #region TilePlacement
-    
+    #region CorridorGeneration
+
     private void PlaceCorridor(Vector2Int parentEntrancePos, Vector2Int childEntrancePos, byte parentEntranceDir, byte childEntranceDir)
     {
         Vector3Int[] tiles = GetAdjecentPairTiles(parentEntrancePos, parentEntranceDir, true).Select(e=>(Vector3Int)e).ToArray();
@@ -293,29 +320,32 @@ public class LevelManger : MonoBehaviour
                 unavoidableOverlap = testGround.HasTile(tiles[1]) || unavoidableOverlap;
                 unavoidableOverlap = testGround.HasTile(tiles[2]) || unavoidableOverlap;
                 unavoidableOverlap = testGround.HasTile(tiles[3]) || unavoidableOverlap;
+                unavoidableOverlap = testGround.HasTile(tiles[4]) || unavoidableOverlap;
 
                 // Places the ground
                 testGround.SetTile(tiles[0], groundTile);
                 testGround.SetTile(tiles[1], groundTile);
                 testGround.SetTile(tiles[2], groundTile);
                 testGround.SetTile(tiles[3], groundTile);
+                testGround.SetTile(tiles[4], groundTile);
 
                 // Places the walls
                 if (parentEntranceDir == 0 || parentEntranceDir == 2) // North and South
                 {
-                    testWalls.SetTile(tiles[2], leftWallTile);
-                    testWalls.SetTile(tiles[3], rightWallTile);
+                    testWalls.SetTile(tiles[3], eastWallTile);
+                    testWalls.SetTile(tiles[4], westWallTile);
                 }
                 else if (parentEntranceDir == 1 || parentEntranceDir == 3) // West and East
                 {
-                    testWalls.SetTile(tiles[2], bottomWallTile);
-                    testWalls.SetTile(tiles[3], topWallTile);
+                    testWalls.SetTile(tiles[3], northWallTile);
+                    testWalls.SetTile(tiles[4], southWallTile);
                 }
 
                 tiles[0] += neighbourDirs[parentEntranceDir];
                 tiles[1] += neighbourDirs[parentEntranceDir];
                 tiles[2] += neighbourDirs[parentEntranceDir];
                 tiles[3] += neighbourDirs[parentEntranceDir];
+                tiles[4] += neighbourDirs[parentEntranceDir];
             }
         }
         else
@@ -332,50 +362,31 @@ public class LevelManger : MonoBehaviour
         new Vector3Int(1, 0) // East
     };
 
-    private IEnumerator AStarCorridorGeneration(Vector2Int parentEntrancePos, Vector2Int childEntrancePos, int parentEntranceDir, int childEntranceDir)
+    public IEnumerator AStarCorridorGeneration(Vector2Int parentEntrancePos, Vector2Int childEntrancePos, int parentEntranceDir, int childEntranceDir)
     {
-        Vector3Int startPos = (Vector3Int)parentEntrancePos + neighbourDirs[parentEntranceDir];
-        Vector3Int endPos = (Vector3Int)childEntrancePos + neighbourDirs[childEntranceDir];
+        Vector3Int startPos = (Vector3Int)parentEntrancePos + neighbourDirs[parentEntranceDir] * 3;
+        Vector3Int endPos = (Vector3Int)childEntrancePos + neighbourDirs[childEntranceDir] * 3;
 
-        AStarPathFinding(startPos, endPos);
-
-        yield return new WaitForEndOfFrame();
-        /*
-        Vector3Int currentBacktrackTile = AStarTilemap.GetTile<AStarSearchTile>(endPos).parent; // Gets the parent of the goal node
-
-        List<Vector3Int> allTilePos = new List<Vector3Int>();
-
-        Vector3Int[] parentCorridor = GetAdjecentPairTiles(parentEntrancePos, parentEntranceDir, true);
-        Vector3Int[] childCorridor = GetAdjecentPairTiles(childEntrancePos, childEntranceDir, true);
-
-        PlaceFirstEntranceTiles(childEntranceDir, childCorridor);
-        PlaceFirstEntranceTiles(parentEntranceDir, parentCorridor);
-
-        while (true)
-        {
-            Vector3Int[] corridorTiles = GetAdjecentTiles(currentBacktrackTile); // Gets all the tiles around the current backtrack
-
-            // Places the tiles around the current backtrack
-            for (int i = 0; i < corridorTiles.Length; i++)
-            {
-                if (!prefabricationTilemap.HasTile(corridorTiles[i]))
-                {
-                    prefabricationTilemap.SetTile(corridorTiles[i], groundTile);
-                    allTilePos.Add(corridorTiles[i]);
-                }
-            }
-
-            currentBacktrackTile = AStarTilemap.GetTile<AStarSearchTile>(currentBacktrackTile).parent; // Gets the next backtrack node
-
-            if (currentBacktrackTile == startPos) { break; } // If we have reached the end, then stop
-            yield return new WaitForEndOfFrame();
-        }
-
+        List<Vector3Int> path1 = AStarPathFinding(startPos, endPos);
+        float path1Cost = AStarTilemap.GetTile<AStarSearchTile>(endPos).fCost;
         AStarTilemap.ClearAllTiles();
 
-        PlaceLastEntranceTiles(AddToArray(parentCorridor, ConvertDirCharToVector(parentEntranceDir) * 5));
-        PlaceLastEntranceTiles(AddToArray(childCorridor, ConvertDirCharToVector(childEntranceDir) * 5));
+        List<Vector3Int> path2 = AStarPathFinding(endPos, startPos);
+        float path2Cost = AStarTilemap.GetTile<AStarSearchTile>(startPos).fCost;
+        AStarTilemap.ClearAllTiles();
 
+        List<Vector3Int> chosenPath = (path1Cost < path2Cost) ? path1 : path2;
+
+        chosenPath.Insert(0, (Vector3Int)parentEntrancePos + neighbourDirs[parentEntranceDir] * 2);
+        chosenPath.Insert(0, (Vector3Int)parentEntrancePos + neighbourDirs[parentEntranceDir]);
+        chosenPath.Add((Vector3Int)childEntrancePos + neighbourDirs[parentEntranceDir] * 2);
+        chosenPath.Add((Vector3Int)childEntrancePos + neighbourDirs[parentEntranceDir]);
+
+        //prefabricationTilemap.ClearAllTiles();
+
+        MakeCorridor(chosenPath.ToArray());
+
+        /*
         foreach(Vector3Int tile in allTilePos)
         {
             bool up = prefabricationTilemap.HasTile(tile + Vector3Int.up),
@@ -448,8 +459,8 @@ public class LevelManger : MonoBehaviour
 
         prefabricationTilemap.ClearAllTiles();
         
-
-        void PlaceLastEntranceTiles(Vector3Int[] tiles)
+        */
+        /*void PlaceLastEntranceTiles(Vector3Int[] tiles)
         {
             if ((prefabricationTilemap.HasTile(tiles[0]) || prefabricationTilemap.HasTile(tiles[1])) &&
                 ((!prefabricationTilemap.HasTile(tiles[2])) || (!prefabricationTilemap.HasTile(tiles[3]))))
@@ -463,9 +474,9 @@ public class LevelManger : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
 
-        Vector3Int[] AddToArray(Vector3Int[] A, Vector3Int item)
+        /*Vector3Int[] AddToArray(Vector3Int[] A, Vector3Int item)
         {
             for (int i = 0; i < A.Length; i++)
             {
@@ -518,7 +529,7 @@ public class LevelManger : MonoBehaviour
                 offset += ConvertDirCharToVector(dir);
             }
         }
-        */
+        
         IEnumerable<Vector3Int> GetTilesFromMap(Tilemap map)
         {
             foreach (Vector3Int pos in map.cellBounds.allPositionsWithin)
@@ -528,10 +539,126 @@ public class LevelManger : MonoBehaviour
                     yield return pos;
                 }
             }
+        }*/
+    }
+
+    private IEnumerator MakeCorridor(Vector3Int[] corridorPoints)
+    {
+        //Tilemap prefabicationTilemap = new Tilemap();
+
+        List<Vector3Int> groundTiles = new List<Vector3Int>();
+        List<Vector3Int> wallTiles = new List<Vector3Int>();
+
+        for(int i = 1; i <  corridorPoints.Length; i++)
+        {
+            Vector3Int[] newGroundTiles = GetAdjecentTiles(corridorPoints[i], 1);
+            
+            foreach(Vector3Int newGroundTile in newGroundTiles)
+            {
+                if (testGround.HasTile(newGroundTile)) { continue; }
+                groundTiles.Add(newGroundTile);
+                testGround.SetTile(newGroundTile, groundTile);
+            }
+        }
+
+        for (int i = 0; i < corridorPoints.Length; i++)
+        {
+            Vector3Int[] newTiles = GetAdjecentTiles(corridorPoints[i], 2);
+
+            foreach (Vector3Int newWallTile in newTiles)
+            {
+                if (testGround.HasTile(newWallTile)) { continue; }
+                wallTiles.Add(newWallTile);
+                testWalls.SetTile(newWallTile, temporaryTile);
+
+                groundTiles.Add(newWallTile);
+                testGround.SetTile(newWallTile, groundTile);
+            }
+        }
+
+        foreach(Vector3Int newWallTile in wallTiles)
+        {
+            testWalls.SetTile(newWallTile, PickCorrectTile(newWallTile));
+        }
+        
+        BaseTile PickCorrectTile(Vector3Int pos)
+        {
+            bool[,] isThereAGroundTilePlacedAt = CheckIfTilesArePresent(testGround, 1, pos);
+            bool[,] isThereAWallTilePlacedAt = CheckIfTilesArePresent(testWalls, 1, pos);
+
+            //Sig: Check inwards corners
+            if (isThereAGroundTilePlacedAt[2,2] && isThereAWallTilePlacedAt[1, 2] && isThereAWallTilePlacedAt[2, 1])
+            {
+                return northWestInwardsCornerWallTile;
+            }
+            if (isThereAGroundTilePlacedAt[0, 2] && isThereAWallTilePlacedAt[1, 2] && isThereAWallTilePlacedAt[0, 1])
+            {
+                return northEastInwardsCornerWallTile;
+            }
+            if (isThereAGroundTilePlacedAt[2, 0] && isThereAWallTilePlacedAt[1, 0] && isThereAWallTilePlacedAt[2, 1])
+            {
+                return southWestInwardsCornerWallTile;
+            }
+            if(isThereAGroundTilePlacedAt[0, 0] && isThereAWallTilePlacedAt[1, 0] && isThereAWallTilePlacedAt[0, 1])
+            {
+                return southEastInwardsCornerWallTile;
+            }
+            //Sig: Check outwards corners
+            if (isThereAGroundTilePlacedAt[0,1] && isThereAGroundTilePlacedAt[1,0] && isThereAWallTilePlacedAt[1,2] && isThereAWallTilePlacedAt[2, 1])
+            {
+                return southEastOutwardsCornerWallTile;
+            }
+            if (isThereAGroundTilePlacedAt[2, 1] && isThereAGroundTilePlacedAt[1,0] && isThereAWallTilePlacedAt[1, 2] && isThereAWallTilePlacedAt[0, 1])
+            {
+                return southWestOutwardsCornerWallTile;
+            }
+            if (isThereAGroundTilePlacedAt[2, 1] && isThereAGroundTilePlacedAt[1, 2] && isThereAWallTilePlacedAt[1, 0] && isThereAWallTilePlacedAt[0, 1])
+            {
+                return northWestOutwardsCornerWallTile;
+            }
+            if (isThereAGroundTilePlacedAt[0, 1] && isThereAGroundTilePlacedAt[1, 2] && isThereAWallTilePlacedAt[1, 0] && isThereAWallTilePlacedAt[2, 1])
+            {
+                return northEastOutwardsCornerWallTile;
+            }
+            //Sig: Check for normal walls
+            if (isThereAWallTilePlacedAt[0,1] && isThereAWallTilePlacedAt[2,1] && isThereAGroundTilePlacedAt[1, 0])
+            {
+                return northWallTile;
+            }
+            if (isThereAWallTilePlacedAt[0, 1] && isThereAWallTilePlacedAt[2, 1] && isThereAGroundTilePlacedAt[1, 2])
+            {
+                return southWallTile;
+            }
+            if (isThereAWallTilePlacedAt[1, 0] && isThereAWallTilePlacedAt[1, 2] && isThereAGroundTilePlacedAt[0, 1])
+            {
+                return eastWallTile;
+            }
+            if (isThereAWallTilePlacedAt[1, 0] && isThereAWallTilePlacedAt[1, 2] && isThereAGroundTilePlacedAt[2, 1])
+            {
+                return westWallTile; 
+            }
+
+            Debug.LogError("CANT FIND THE FITTING TILE FOR THE REQUESTED AREA!");
+            return temporaryTile;
+        }
+
+        bool[,] CheckIfTilesArePresent(Tilemap map, int distToEdgeOfBox, Vector3Int pos)
+        {
+            bool[,] result = new bool[distToEdgeOfBox * 2 + 1, distToEdgeOfBox * 2 + 1];
+
+            for (int i = -distToEdgeOfBox; i <= distToEdgeOfBox; i++)
+            {
+                for (int j = -distToEdgeOfBox; j <= distToEdgeOfBox; j++)
+                {
+                    result[i + distToEdgeOfBox, j + distToEdgeOfBox] = map.HasTile(pos + new Vector3Int(i, j, 0));
+                }
+            }
+
+            return result;
         }
     }
 
-    private IEnumerator AStarPathFinding(Vector3Int start, Vector3Int end)
+    private IEnumerator AStarPathFinding(Vector3Int start, Vector3Int end, out List<Vector3Int> path)
     {
         // Implementation of the A* algorithm
         SimplePriorityQueue<Vector3Int, float> queue = new SimplePriorityQueue<Vector3Int, float>(); // Init of the priority queue (a prioritsed binery heap)
@@ -548,20 +675,25 @@ public class LevelManger : MonoBehaviour
 
         while (queue.Count > 0)
         {
+            yield return new WaitForEndOfFrame();
+
             // Gets and removes the first element of the queue
             Vector3Int currentNode = queue.Dequeue();
 
             // Goes Through all the neighbours to the current node
             foreach (Vector3Int neighbourDir in neighbourDirs)
             {
-
                 Vector3Int neighborPos = currentNode + neighbourDir; // Gets the pos of the neighbour
 
                 if (CheckForOverlap(neighborPos)) { continue; }
 
                 // Marks the neighbour as visited, and with a G-, H-, Fcost and parent.
                 AStarSearchTile currentTile = new AStarSearchTile();
-                currentTile.gCost = AStarTilemap.GetTile<AStarSearchTile>(currentNode).gCost + GetDeltaGCost(neighbourDir, neighborPos);
+
+                float newGCost = AStarTilemap.GetTile<AStarSearchTile>(currentNode).gCost;
+                newGCost += GetDeltaGCost(neighbourDir, currentNode);
+
+                currentTile.gCost = newGCost;
                 currentTile.hCost = GetHCost(neighborPos);
                 currentTile.parent = currentNode;
                 currentTile.color = Color.green;
@@ -571,20 +703,32 @@ public class LevelManger : MonoBehaviour
                 queue.Enqueue(neighborPos, currentTile.fCost); // Adds that neighbour to the queue 
             }
 
-
             if (currentNode == end) { break; } // If we have reached the goal, then stop
 
             // If we have looked at more than 10000 nodes, then stop
             if (count > 10000)
             {
+                Debug.Log("Could not find any path using A*!");
                 AStarTilemap.ClearAllTiles();
-                yield break;
+                break;
             }
             count++;
-
-            yield return new WaitForEndOfFrame();
         }
-                
+
+        //Sig: Does the traceback to find the positions for tiles
+
+        List<Vector3Int> tracebackTiles = new List<Vector3Int>();
+        Vector3Int currentTracebackTile = end;
+
+        do
+        {
+            tracebackTiles.Add(currentTracebackTile);
+            currentTracebackTile = AStarTilemap.GetTile<AStarSearchTile>(currentTracebackTile).parent;
+        }
+        while (currentTracebackTile != start);
+
+        return tracebackTiles;
+
         float GetHCost(Vector3Int pos)
         {
             return Mathf.Abs(pos.x - end.x) + Mathf.Abs(pos.y - end.y);
@@ -593,7 +737,9 @@ public class LevelManger : MonoBehaviour
         float GetDeltaGCost(Vector3Int dir, Vector3Int node)
         {
             // Tests if the current neighbour node is in line with the parent of the current node.
-            Vector3Int parentToCurrentNode = AStarTilemap.GetTile<AStarSearchTile>(node).parent;
+            AStarSearchTile tile = AStarTilemap.GetTile<AStarSearchTile>(node);
+            if (tile == null) { Debug.LogError($"No A*-tile found at {node}"); }
+            Vector3Int parentToCurrentNode = tile.parent;
             Vector3Int diff = new Vector3Int();
             if (node == start)
             {
@@ -607,7 +753,7 @@ public class LevelManger : MonoBehaviour
         bool CheckForOverlap(Vector3Int pos)
         {
             // Gets all the tiles that has to be clear of ground, to make sure that the corridor is not going through an established room
-            Vector3Int[] adjecentTiles = GetAdjecentTiles(pos);
+            Vector3Int[] adjecentTiles = GetAdjecentTiles(pos, 2);
 
             bool overlapping = AStarTilemap.HasTile(pos);
             for (int j = 0; j < adjecentTiles.Length; j++)
@@ -623,6 +769,7 @@ public class LevelManger : MonoBehaviour
     private Vector2Int[] GetAdjecentPairTiles(Vector2Int pos, byte dir, bool fullCorridor)
     {
         Vector2Int rotatedDir = RotateVector90Degrees((Vector2Int)neighbourDirs[dir]);
+        if(rotatedDir.x + rotatedDir.y > 0) { rotatedDir = -rotatedDir; }
 
         List<Vector2Int> result = new List<Vector2Int>();
         result.Add(pos);
@@ -642,31 +789,26 @@ public class LevelManger : MonoBehaviour
         }
     }
 
-    private Vector3Int[] GetAdjecentTiles(Vector3Int pos)
+    private Vector3Int[] GetAdjecentTiles(Vector3Int pos, int distToBoxEdge)
     {
-        Vector3Int[] result = new Vector3Int[16];
-        result[0] = pos;
-        result[1] = new Vector3Int(-1,0,0) + pos;
-        result[2] = new Vector3Int(0,-1,0) + pos;
-        result[3] = new Vector3Int(-1,-1,0) + pos;
+        Vector3Int[] result = new Vector3Int[25];
 
-        result[4] = new Vector3Int(-2,1,0) + pos;
-        result[5] = new Vector3Int(-1,1,0) + pos;
-        result[6] = new Vector3Int(0,1,0) + pos;
-        result[7] = new Vector3Int(1,1,0) + pos;
+        int i = 0;
+        for(int x = -distToBoxEdge; x <= distToBoxEdge; x++)
+        {
+            for(int y = -distToBoxEdge; y <= distToBoxEdge; y++)
+            {
+                result[i] = new Vector3Int(x, y, 0) + pos;
+                i++;
+            }
+        }
 
-        result[8] = new Vector3Int(-2,0,0) + pos;
-        result[9] = new Vector3Int(1,0,0) + pos;
-
-        result[10] = new Vector3Int(-2,-1,0) + pos;
-        result[11] = new Vector3Int(1,-1,0) + pos;
-
-        result[12] = new Vector3Int(-2,-2,0) + pos;
-        result[13] = new Vector3Int(-1,-2,0) + pos;
-        result[14] = new Vector3Int(0,-2,0) + pos;
-        result[15] = new Vector3Int(1,-2,0) + pos;
         return result;
     }
+
+    #endregion
+
+    #region RoomTilemapPlacement
 
     private void PlaceRoom(int nodeIndex, int parentNode, int degree, (int, Vector2Int) parentEntrance, int parentEntranceIndex) // RET DENNE KODE, SÅ DEN BRUGER PLACECORRIDOR()
     {
@@ -823,8 +965,10 @@ public class ComponentTilemap
         ground = new List<SavedTile>();
         walls = new List<SavedTile>();
         decoration = new List<SavedTile>();
-        freeEntrances = Enumerable.Repeat(new List<(int, Vector2Int)>(), nodes).ToList();
-        rooms = Enumerable.Repeat((new Vector2Int(), new ScriptableRoom()), nodes).ToList();
+        freeEntrances = new List<List<(int, Vector2Int)>>();
+        while (freeEntrances.Count < nodes) { freeEntrances.Add(new List<(int, Vector2Int)>()); }
+        rooms = new List<(Vector2Int, ScriptableRoom)>();
+        while (rooms.Count < nodes) { rooms.Add((new Vector2Int(), new ScriptableRoom())); }
     }
 }
 
