@@ -62,7 +62,6 @@ public class PlayerBehaviour : MonoBehaviour
         cooldown += Time.deltaTime;
         dashingTimer += Time.deltaTime;
         animator.SetFloat("Speed", vel.magnitude);  //rasj: set animation speed to speed of player
-        Debug.Log(vel.magnitude);
     }
 
     void FixedUpdate()
@@ -77,6 +76,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         PointGun();
         Move();
+        Flip(); //rasj: flip the sprite
 
         //Sig: Ensures that the player can shoot.
         if (playerControls.Default.Shoot.phase == InputActionPhase.Performed)
@@ -84,19 +84,20 @@ public class PlayerBehaviour : MonoBehaviour
             Shoot();
         }
 
-        float h = Input.GetAxis("Horizontal");
-        if ((h > 0 && !facingRight) || (h < 0 && facingRight))
-        {
-            Flip();
-        }
+        
     }
 
     void Flip()
     {
-        facingRight = !facingRight;
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
-        transform.localScale = theScale;
+        float dirX = playerControls.Default.Move.ReadValue<Vector2>().x;
+        if (dirX < 0 )  //rasj: left
+        {
+            gameObject.transform.rotation = Quaternion.Euler(0, 180f, 0);
+        }
+        else if (dirX > 0) //rasj: right
+        {
+            gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
     }
 
     //Sig: Makes the player shoot.
@@ -112,22 +113,19 @@ public class PlayerBehaviour : MonoBehaviour
             newBullet.transform.up = dir;
             newBullet.transform.position = dir + transform.position.ConvertTo<Vector2>();
         }
-        else
-        {
-            Debug.Log("Cooldown criteria not met");
-        }
     }
 
     //Sig: Find the direction the bullets should point in
     void PointGun()
     {
         bool joyStickConnected = ((Input.GetJoystickNames().Length > 0) ? (Input.GetJoystickNames()[0] != "") : false);
+        Vector2 zeroV = Vector2.zero;
 
         if (joyStickConnected)
         {
             //Sig: If a controller is connected, then get input from that
             Vector2 rightStick = playerControls.Default.Pointing.ReadValue<Vector2>();
-            dir = rightStick.normalized;
+            if (rightStick != zeroV) { dir = rightStick.normalized; }  //rasj: fixes gun pointing up when not aiming
         }
         else
         {
