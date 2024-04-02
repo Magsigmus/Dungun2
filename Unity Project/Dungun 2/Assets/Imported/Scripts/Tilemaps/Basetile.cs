@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(fileName = "New Tile Name", menuName = "2D/Tiles/Level Tile")]
 public class BaseTile : Tile
 {
-    public TileType type;
+    public MetaTileType type;
 
     public BaseTile() { }
 
@@ -24,7 +24,7 @@ public class BaseTile : Tile
     }
 }
 
-public enum TileType
+public enum MetaTileType
 {
     // Ground
     Ground = 0,

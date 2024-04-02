@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -16,31 +18,31 @@ public class ScriptableRoom : ScriptableObject
         RoomMetaInformation info = new RoomMetaInformation();
         foreach(SavedTile tile in meta)
         {
-            if (tile.tile.type == TileType.NorthEntrance)
+            if (tile.tile.type == MetaTileType.NorthEntrance)
             {
-                info.NorthEntrances.Add(tile);
+                info.NorthEntrances.Add((Vector2Int)tile.Position);
             }
-            if (tile.tile.type == TileType.WestEntrance)
+            if (tile.tile.type == MetaTileType.WestEntrance)
             {
-                info.WestEntrances.Add(tile);
+                info.WestEntrances.Add((Vector2Int)tile.Position);
             }
-            if (tile.tile.type == TileType.SouthEntrance)
+            if (tile.tile.type == MetaTileType.SouthEntrance)
             {
-                info.SouthEntrances.Add(tile);
+                info.SouthEntrances.Add((Vector2Int)tile.Position);
             }
-            if (tile.tile.type == TileType.EastEntrance)
+            if (tile.tile.type == MetaTileType.EastEntrance)
             {
-                info.EastEntrances.Add(tile);
+                info.EastEntrances.Add((Vector2Int)tile.Position);
             }
-            if(tile.tile.type == TileType.SpawnPoint)
+            if(tile.tile.type == MetaTileType.SpawnPoint)
             {
-                info.EnemySpawnPoints.Add(tile);
+                info.EnemySpawnPoints.Add((Vector2Int)tile.Position);
             }
 
 
-            if(tile.tile.type >= TileType.NorthEntrance && tile.tile.type <= TileType.EastEntrance)
+            if(tile.tile.type >= MetaTileType.NorthEntrance && tile.tile.type <= MetaTileType.EastEntrance)
             {
-                info.AllEntrances.Add((tile, tile.tile.type - TileType.NorthEntrance));
+                info.AllEntrances.Add((tile.tile.type - MetaTileType.NorthEntrance, (Vector2Int)tile.Position));
             }
         }
 
@@ -51,18 +53,18 @@ public class ScriptableRoom : ScriptableObject
 [Serializable]
 public class RoomMetaInformation
 {
-    public List<SavedTile> NorthEntrances, WestEntrances, EastEntrances, SouthEntrances;
-    public List<(SavedTile, int)> AllEntrances;
-    public List<SavedTile> EnemySpawnPoints;
+    public List<Vector2Int> NorthEntrances, WestEntrances, EastEntrances, SouthEntrances;
+    public List<(int, Vector2Int)> AllEntrances;
+    public List<Vector2Int> EnemySpawnPoints;
 
     public RoomMetaInformation()
     {
-        NorthEntrances = new List<SavedTile>();
-        WestEntrances = new List<SavedTile>();
-        EastEntrances = new List<SavedTile>();
-        SouthEntrances = new List<SavedTile>();
-        EnemySpawnPoints = new List<SavedTile>();
-        AllEntrances = new List<(SavedTile, int)>();
+        NorthEntrances = new List<Vector2Int>();
+        WestEntrances = new List<Vector2Int>();
+        EastEntrances = new List<Vector2Int>();
+        SouthEntrances = new List<Vector2Int>();
+        EnemySpawnPoints = new List<Vector2Int>();
+        AllEntrances = new List<(int, Vector2Int)>();
     }
 
     public int TotalEntances { get 
@@ -72,6 +74,19 @@ public class RoomMetaInformation
                 EastEntrances.Count + 
                 SouthEntrances.Count;  
         } 
+    }
+
+    public int GetRandomEntrance(int direction)
+    {
+        int[] entranceIndices = new int[AllEntrances.Count];
+        for(int i = 0; i < AllEntrances.Count; i++)
+        {
+            entranceIndices[i] = i;   
+        }
+
+        int[] selectedEntrances = entranceIndices.Where(e => AllEntrances[e].Item1 == direction).ToArray();
+        System.Random r = new System.Random();
+        return selectedEntrances[r.Next(0, selectedEntrances.Length)];
     }
 }
 
