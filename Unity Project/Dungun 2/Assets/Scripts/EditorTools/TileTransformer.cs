@@ -7,9 +7,9 @@ using UnityEngine.Tilemaps;
 public class TileTransformer : MonoBehaviour
 {
     public Tile[] template;
-    public TileType type;
+    public MetaTileType type;
 
-    public void TranformTileToBaseTile(Tile template, TileType type)
+    public void TranformTileToBaseTile(Tile template, MetaTileType type)
     {
         BaseTile result = new BaseTile(template);
         result.type = type;
