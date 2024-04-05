@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8247122114085829018}
   - component: {fileID: 2374296792674318438}
   - component: {fileID: 7275487467524632971}
+  - component: {fileID: 4971303150314290897}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -225,3 +226,19 @@ MonoBehaviour:
   maxWanderDistance: 5
   maxWanderTime: 15
   healthPoints: 3
+  sstate: 0
+--- !u!114 &4971303150314290897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6538225185145312215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 601835c6f0bc4c442bd2aa8293c8bf79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnStartInstructionTypeList: 
+  MainInstructionTypeList: 02000000
+  OnDeathInstructionTypeList: 

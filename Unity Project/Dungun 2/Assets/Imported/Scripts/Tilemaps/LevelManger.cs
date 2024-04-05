@@ -8,7 +8,7 @@ using System.Linq;
 using Priority_Queue;
 using Unity.VisualScripting;
 using static UnityEditor.PlayerSettings;
-
+/*
 public class LevelManger : MonoBehaviour
 {
     ScriptableLevelGraph levelGraph; // The uncomposited graph used to make the level
@@ -539,7 +539,7 @@ public class LevelManger : MonoBehaviour
                     yield return pos;
                 }
             }
-        }*/
+        }
     }
 
     private IEnumerator MakeCorridor(Vector3Int[] corridorPoints)
@@ -657,7 +657,7 @@ public class LevelManger : MonoBehaviour
             return result;
         }
     }
-
+    
     private IEnumerator AStarPathFinding(Vector3Int start, Vector3Int end, out List<Vector3Int> path)
     {
         // Implementation of the A* algorithm
@@ -675,7 +675,7 @@ public class LevelManger : MonoBehaviour
 
         while (queue.Count > 0)
         {
-            yield return new WaitForEndOfFrame();
+            //yield return new WaitForEndOfFrame();
 
             // Gets and removes the first element of the queue
             Vector3Int currentNode = queue.Dequeue();
@@ -727,7 +727,7 @@ public class LevelManger : MonoBehaviour
         }
         while (currentTracebackTile != start);
 
-        return tracebackTiles;
+        //return tracebackTiles;
 
         float GetHCost(Vector3Int pos)
         {
@@ -949,7 +949,7 @@ public class LevelManger : MonoBehaviour
         }
         
         spawnedEnemies[nodeIndex] = true;
-    }*/
+    }
 
     #endregion
 }
@@ -984,3 +984,5 @@ public class AStarSearchTile : Tile
         }
     }
 }
+
+*/

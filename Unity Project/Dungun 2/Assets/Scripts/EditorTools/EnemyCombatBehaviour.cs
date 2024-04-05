@@ -4,38 +4,58 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEditor;
 
 public class EnemyCombatBehaviour : MonoBehaviour
 {
-    public List<Instruction> Main = new List<Instruction>();
-    public List<Instruction> OnStart = new List<Instruction>();
-    public List<Instruction> OnDeath = new List<Instruction>();
-    public List<InstructionType> test = new List<InstructionType>();
+    public List<GeneralizedInstruction> OnStart = new List<GeneralizedInstruction>();
+    public List<GeneralizedInstruction> Main = new List<GeneralizedInstruction>();
+    public List<GeneralizedInstruction> OnDeath = new List<GeneralizedInstruction>();
+
+    List<InstructionType> OnStartInstructionTypeList = new List<InstructionType>();
+    List<InstructionType> MainInstructionTypeList = new List<InstructionType>();
+    List<InstructionType> OnDeathInstructionTypeList = new List<InstructionType>();
+
 
     // Start is called before the first frame update
     void Start()
     {
-        runInstructions(OnStart);
+        //runInstructions(OnStart);
     }
 
     // Update is called once per frame
     void Update()
     {
-        runInstructions(Main);
+        
+        //runInstructions(Main);
     }
-
-    void runInstructions(List<Instruction> instructions)
+    /*
+    void runInstructions(List<GeneralizedInstruction.InstructionType> instructions)
     {
-        foreach (Instruction instruction in instructions)  //rasj: loop over each instruction
+        foreach (GeneralizedInstruction.InstructionType instruction in instructions)  //rasj: loop over each instruction
         {
-            if (instruction.type == InstructionType.Die && instructions.Find(i => i.type == InstructionType.Die) == null) //rasj: if gonna die, and OnDeath does not contain die (avoid infinite loop), run
-            { 
-                runInstructions(OnDeath);
-                return;
+            switch (instruction)
+            {
+                case GeneralizedInstruction.InstructionType.Rotate:
+                    GeneralizedInstruction.Rotate();
+                    break;
+                case GeneralizedInstruction.InstructionType.Point:
+                    GeneralizedInstruction.Point();
+                    break;
+                case GeneralizedInstruction.InstructionType.Shoot:
+                    GeneralizedInstruction.Shoot();
+                    break;
+                case GeneralizedInstruction.InstructionType.ChangeBehaviour:
+                    GeneralizedInstruction.ChangeBehaviour();
+                    break;
+                case GeneralizedInstruction.InstructionType.Die:
+                    if (OnDeath.Any(i => i == GeneralizedInstruction.InstructionType.Die)) {
+                        runInstructions(OnDeath);
+                    }
+                    break;
             }
-            instruction.ExecuteInstruction();
         }
-    }
+    }*/
 
     public enum InstructionLists
     {
