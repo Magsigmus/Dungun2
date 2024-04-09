@@ -123,24 +123,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &80377389 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+--- !u!4 &80377397 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8479068350637697488, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
   m_PrefabInstance: {fileID: 2651749085007266940}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &80377397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 80377389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 601835c6f0bc4c442bd2aa8293c8bf79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  test: 0000000003000000030000000300000003000000
 --- !u!114 &251742275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3893,6 +3880,98 @@ PrefabInstance:
       propertyPath: minTargetDistance
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnDeath.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnStart.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[1].enemy
+      value: 
+      objectReference: {fileID: 80377397}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[0].target
+      value: 
+      objectReference: {fileID: 1270647177}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[1].target
+      value: 
+      objectReference: {fileID: 1270647177}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnDeath.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[0].instructionType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[1].instructionType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[1].newMovementMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: MainInstructionTypeList.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[0].distanceToTarget
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[1].distanceToTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnDeath.Array.data[0].comparisonMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: MainInstructionTypeList.Array.data[0]
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: MainInstructionTypeList.Array.data[1]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: MainInstructionTypeList.Array.data[2]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnDeathInstructionTypeList.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnStart.Array.data[0].instructionType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnStart.Array.data[0].newMovementMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[0].realDistanceToTarget
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[1].realDistanceToTarget
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnDeathInstructionTypeList.Array.data[0]
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: m_Name
       value: Enemy
@@ -3948,10 +4027,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 80377397}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

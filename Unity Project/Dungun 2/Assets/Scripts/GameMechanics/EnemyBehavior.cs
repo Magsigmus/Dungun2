@@ -71,16 +71,19 @@ public class EnemyBehavior : MonoBehaviour
 
         if (MMode == MovementMode.Chasing)  //rasj: if enemy is far enough away from target  dist > minDist && dist < maxDist
         {
+            Debug.Log("Chasing");
             agent.SetDestination(targetPos);  //rasj: Sets destination to target
             Flip(targetPos);
         }
         else if (MMode == MovementMode.Idle || MMode == MovementMode.Wandering)  //rasj: if enemy is too far away from target  dist > maxDist
         {
+            Debug.Log("Idle/Wandering");
             wandering = true;
             Wander(-maxWanderDistance, maxWanderDistance);
         }
         else if (MMode == MovementMode.Waiting)  //rasj: if enemy is too close to target
         {
+            Debug.Log("Waiting");
             agent.SetDestination(transform.position);  //rasj: Stops enemy from going further
         }
 
