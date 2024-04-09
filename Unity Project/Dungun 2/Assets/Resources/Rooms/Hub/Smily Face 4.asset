@@ -1938,23 +1938,19 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: 4640593b34f41194ab3f8c9daf2adfe4, type: 2}
   type: 0
   size: {x: 30, y: 24}
+  enemies:
+  - enemyCount: 1
+    prefab: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
   metaInformation:
     NorthEntrances:
-    - Position: {x: -15, y: 0, z: 0}
-      tile: {fileID: 11400000, guid: 4640593b34f41194ab3f8c9daf2adfe4, type: 2}
+    - {x: -15, y: 0}
     WestEntrances:
-    - Position: {x: -30, y: -12, z: 0}
-      tile: {fileID: 11400000, guid: 9b17a414f7ca81c41ab8fb020504108f, type: 2}
+    - {x: -30, y: -12}
     EastEntrances:
-    - Position: {x: 0, y: -12, z: 0}
-      tile: {fileID: 11400000, guid: b327d3a5af10bd843abd310dff29e742, type: 2}
+    - {x: 0, y: -12}
     SouthEntrances:
-    - Position: {x: -15, y: -24, z: 0}
-      tile: {fileID: 11400000, guid: 8cfda93316898584b85f80543797036a, type: 2}
+    - {x: -15, y: -24}
     EnemySpawnPoints:
-    - Position: {x: -15, y: -17, z: 0}
-      tile: {fileID: 11400000, guid: 40bf9c038f54f404b9720c08e4b8be99, type: 2}
-    - Position: {x: -22, y: -8, z: 0}
-      tile: {fileID: 11400000, guid: 40bf9c038f54f404b9720c08e4b8be99, type: 2}
-    - Position: {x: -8, y: -8, z: 0}
-      tile: {fileID: 11400000, guid: 40bf9c038f54f404b9720c08e4b8be99, type: 2}
+    - {x: -15, y: -17}
+    - {x: -22, y: -8}
+    - {x: -8, y: -8}

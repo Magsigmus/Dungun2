@@ -408,9 +408,12 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: 40bf9c038f54f404b9720c08e4b8be99, type: 2}
   type: 1
   size: {x: 12, y: 10}
+  enemies: []
   metaInformation:
     NorthEntrances: []
-    WestEntrances: []
+    WestEntrances:
+    - {x: -12, y: -5}
     EastEntrances: []
     SouthEntrances: []
-    EnemySpawnPoints: []
+    EnemySpawnPoints:
+    - {x: -2, y: -5}

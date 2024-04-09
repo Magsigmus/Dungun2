@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EntranceTriggerBehaviour : MonoBehaviour
 {
+    public int componentIndex, roomIndex;
     LevelManger manager;
 
     // Start is called before the first frame update
@@ -14,7 +15,8 @@ public class EntranceTriggerBehaviour : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if(collision.tag != "Player") { return; }
+        Debug.Log($"Detected player in room {roomIndex}");
+        manager.SpawnEnemies(roomIndex);
     }
-
 }
