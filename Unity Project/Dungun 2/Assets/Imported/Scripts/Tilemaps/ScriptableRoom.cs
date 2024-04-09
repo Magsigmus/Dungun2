@@ -10,6 +10,7 @@ public class ScriptableRoom : ScriptableObject
     public SavedTile[] ground, walls, decorations, meta;
     public RoomType type;
     public Vector2Int size;
+    public IntGameobjectPair[] enemies;
 
     public RoomMetaInformation metaInformation;
 

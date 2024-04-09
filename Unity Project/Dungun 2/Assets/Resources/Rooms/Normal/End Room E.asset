@@ -337,7 +337,7 @@ MonoBehaviour:
   - Position: {x: -12, y: -7, z: 0}
     tile: {fileID: 11400000, guid: cbd351a4943165c4686fb78c5d32b9f1, type: 2}
   - Position: {x: 0, y: -7, z: 0}
-    tile: {fileID: 11400000, guid: 796f404e3216f424d91e65196a49b028, type: 2}
+    tile: {fileID: 11400000, guid: 5552cfabe0e6081419d164f9eb7e06bc, type: 2}
   - Position: {x: -12, y: -6, z: 0}
     tile: {fileID: 11400000, guid: 25d3478db8e7d9d48918a822d2a16445, type: 2}
   - Position: {x: -7, y: -6, z: 0}
@@ -365,7 +365,7 @@ MonoBehaviour:
   - Position: {x: -12, y: -3, z: 0}
     tile: {fileID: 11400000, guid: cbd351a4943165c4686fb78c5d32b9f1, type: 2}
   - Position: {x: 0, y: -3, z: 0}
-    tile: {fileID: 11400000, guid: 796f404e3216f424d91e65196a49b028, type: 2}
+    tile: {fileID: 11400000, guid: c1b9129d23565e649bd33b5b15b7b5ba, type: 2}
   - Position: {x: -12, y: -2, z: 0}
     tile: {fileID: 11400000, guid: 25d3478db8e7d9d48918a822d2a16445, type: 2}
   - Position: {x: 0, y: -2, z: 0}
@@ -408,9 +408,12 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: b327d3a5af10bd843abd310dff29e742, type: 2}
   type: 1
   size: {x: 12, y: 10}
+  enemies: []
   metaInformation:
     NorthEntrances: []
     WestEntrances: []
-    EastEntrances: []
+    EastEntrances:
+    - {x: 0, y: -5}
     SouthEntrances: []
-    EnemySpawnPoints: []
+    EnemySpawnPoints:
+    - {x: -10, y: -5}
