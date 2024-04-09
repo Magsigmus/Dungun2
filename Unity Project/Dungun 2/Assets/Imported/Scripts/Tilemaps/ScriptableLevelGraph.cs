@@ -150,7 +150,7 @@ public class ScriptableLevelGraph : ScriptableObject
             {
                 sum += cycleAdjecenyLists[i][j].Count;
             }
-            totalConnections.Add(new KeyValuePair<int, int>(i,sum));
+            totalConnections.Add(new KeyValuePair<int, int>(i,sum/2));
         }
         // Sorts the refrences to the cycles after length of the cycles 
         totalConnections.Sort((x, y) => (y.Value.CompareTo(x.Value)));

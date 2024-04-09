@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 [CustomEditor(typeof(TilemapManager))]
 public class TilemapManagerEditor : Editor
@@ -22,6 +23,7 @@ public class TilemapManagerEditor : Editor
             script.ClearMap();
             script.roomName = script.room.name;
             script.roomType = script.room.type;
+            script.enemyPrefabs = script.room.enemies;
             script.LoadRoom(script.position, script.room);
         }
 

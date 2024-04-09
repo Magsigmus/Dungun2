@@ -16,5 +16,4 @@ public class TileTransformer : MonoBehaviour
         AssetDatabase.CreateAsset(result, "Assets/Tiles/Tiles/" + template.name + ".asset");
         AssetDatabase.SaveAssets();
     }
-
 }

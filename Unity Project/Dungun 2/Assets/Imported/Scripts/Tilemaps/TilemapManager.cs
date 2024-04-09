@@ -13,6 +13,7 @@ public class TilemapManager : MonoBehaviour
     public int roomIndex;
     public RoomType roomType;
     public string roomName = "";
+    public IntGameobjectPair[] enemyPrefabs;
 
     [Header("Tiles and Tilemaps")]
     public Tilemap groundMap;
@@ -31,7 +32,6 @@ public class TilemapManager : MonoBehaviour
         }
         PlayerPrefs.SetInt("RoomIndex", roomIndex);
 
-
         Resources.LoadAll<ScriptableRoom>("");
 
         //Sig: Creates a new scriptable object for the room to be saved in
@@ -46,6 +46,7 @@ public class TilemapManager : MonoBehaviour
         newRoom.decorations = GetTilesFromMap(decorMap).ToArray();
         newRoom.meta = GetTilesFromMap(metaMap).ToArray();
         newRoom.type = roomType;
+        newRoom.enemies = enemyPrefabs;
 
         //Sig: Finds the offset of the room, and its size
         upperRight = (Vector2Int)newRoom.ground[0].Position;
@@ -158,3 +159,16 @@ public static class ScriptableObjectUtility
 }
 
 #endif
+
+[Serializable]
+public class IntGameobjectPair
+{
+    public int enemyCount = 0;
+    public GameObject prefab = null;
+
+    public IntGameobjectPair(int number, GameObject gameObject)
+    {
+        enemyCount = number;
+        prefab = gameObject;
+    }
+}

@@ -19,17 +19,20 @@ public class LevelMangerEditor : Editor
             script.GenerateLevel(script.levelNumber);
         }
 
-        if(GUILayout.Button("Clear map"))
+        if(GUILayout.Button("Place Next Room (TREE)"))
         {
-            //script.ClearMap();
+            (int, int) vals = script.roomGenerationStack.Peek();
+            script.roomGenerationStack.Pop();
+            script.PlaceTree(vals.Item1, vals.Item2);
         }
 
-        if (GUILayout.Button("Make A*-corridor") && script.aStarStack.Count != 0)
+        if (GUILayout.Button("Place Next Room (CYCLE)"))
         {
-            (Vector2Int, Vector2Int, int, int) val = script.aStarStack.Peek(); script.aStarStack.Pop();
-            script.AStarCorridorGeneration(val.Item1, val.Item2, val.Item3, val.Item4);
+            (int, int, int) vals = script.cycleRoomGenerationStack.Peek();
+            script.cycleRoomGenerationStack.Pop();
+            script.PlaceCycle(vals.Item1, vals.Item2, vals.Item3);
         }
-        
+
     }
 }
 */

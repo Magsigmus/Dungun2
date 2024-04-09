@@ -20,7 +20,7 @@ MonoBehaviour:
   - type: 1
     connections: 0000000002000000
   - type: 0
-    connections: 030000000400000005000000
+    connections: 03000000040000000500000001000000
   - type: 1
     connections: 02000000
   - type: 1
