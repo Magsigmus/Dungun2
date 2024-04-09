@@ -34,6 +34,7 @@ public class PlayerBehaviour : MonoBehaviour
     public float cooldownTime = 1f;
     public int healthPoints = 5;
 
+    private Transform spriteTransform;
     private Vector2 vel, dir;
     private Rigidbody2D rb2D;
     private PlayerControls playerControls;
@@ -51,7 +52,8 @@ public class PlayerBehaviour : MonoBehaviour
         renderers = GetComponentsInChildren<SpriteRenderer>();
         colliders = GetComponents<Collider2D>();
         animator = GetComponentInChildren<Animator>();
-        Debug.Log(animator.gameObject.name);
+        spriteTransform = gameObject.transform.Find("Sprite");
+        //Debug.Log(animator.gameObject.name);
     }
 
     private void OnEnable() { playerControls.Enable(); }
@@ -92,11 +94,11 @@ public class PlayerBehaviour : MonoBehaviour
         float dirX = playerControls.Default.Move.ReadValue<Vector2>().x;
         if (dirX < 0 )  //rasj: left
         {
-            gameObject.transform.rotation = Quaternion.Euler(0, 180f, 0);
+            spriteTransform.rotation = Quaternion.Euler(0, 180f, 0);
         }
         else if (dirX > 0) //rasj: right
         {
-            gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+            spriteTransform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }
 

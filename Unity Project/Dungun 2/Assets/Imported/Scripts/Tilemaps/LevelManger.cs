@@ -8,6 +8,7 @@ using System.Linq;
 using Priority_Queue;
 using Unity.VisualScripting;
 using static UnityEditor.PlayerSettings;
+using NavMeshPlus.Components;
 
 public class LevelManger : MonoBehaviour
 {
@@ -30,8 +31,9 @@ public class LevelManger : MonoBehaviour
     public float lengthCutoff;
     public BaseTileTypePair[] tileLookup;
     public GameObject enemySpawnTriggerPrefab;
+    public NavMeshSurface navMesh;
 
-    private bool[] spawnedEnemies; // An array denoting if there has been spawned enemies in a room yet
+    private bool[] spawnedEnemies = null; // An array denoting if there has been spawned enemies in a room yet
     //public GameObject entranceTrigger; // A prefab containing an entance trigger
 
     //Sig: Key is indexed with first byte being 0, second byte being the value of the roomType casted to a byte, third byte being the number of entrances, and the fourth byte being the direction of one of the entances.
@@ -134,7 +136,9 @@ public class LevelManger : MonoBehaviour
         {
             component.SpawnEntranceTriggers(enemySpawnTriggerPrefab);
         }
-        
+
+        navMesh.BuildNavMesh();
+
         //Debug.Log("Triggered");
         //navMesh.BuildNavMesh();
         // Gets all the tiles in the tilemaps
@@ -378,7 +382,8 @@ public class LevelManger : MonoBehaviour
     public void SpawnEnemies(int nodeIndex)
     {
         //Sig:  Checks if the enemies in a room has been spawned
-        if (!spawnedEnemies[nodeIndex]) { return; }
+        if (spawnedEnemies == null) { return; }
+        if (spawnedEnemies[nodeIndex]) { return; }
 
         //Sig: Gets the required enemies from the saved room object
         (Vector2Int, ScriptableRoom) room = componentTilemaps[0].rooms[nodeIndex];
@@ -388,20 +393,27 @@ public class LevelManger : MonoBehaviour
         Vector2Int[] spawnPoints = room.Item2.metaInformation.EnemySpawnPoints.
             Select(e => e + room.Item1).ToArray();
 
+        if(numberOfEnemies == 0 || spawnPoints.Length == 0) { return; }
+
         //Sig: Randomises the spawn points
         System.Random r = new System.Random();
         Vector2Int[] randomisedSpawnPoints = 
             Enumerable.Repeat(spawnPoints, (numberOfEnemies / spawnPoints.Length) + 1).
             SelectMany(e => e).OrderBy(e => r.Next()).ToArray();
 
+        Debug.Log($"Spawning Enemies in room {nodeIndex}");
+
         //Sig: Spawns all the enemies
         int c = 0;
         for(int i = 0; i < enemies.Length; i++)
         {
-            for(int j = 0; j < enemies[i].enemyCount; j++)
+            enemies[i].prefab.GetComponent<NavMeshAgent>().enabled = false;
+            for (int j = 0; j < enemies[i].enemyCount; j++)
             {
                 GameObject newEnemy = Instantiate(enemies[i].prefab);
-                newEnemy.transform.position = (Vector2)randomisedSpawnPoints[c];
+                newEnemy.transform.position = (Vector2)randomisedSpawnPoints[c] + new Vector2(0.5f, 0.5f);
+                Debug.Log($"Spawned an enemy at {newEnemy.transform.position}");
+                newEnemy.GetComponent<NavMeshAgent>().enabled = true;
                 c++;
             }
             c++;
@@ -847,14 +859,16 @@ public class ComponentTilemap
 
     public void SpawnEntranceTriggers(GameObject entranceTriggerPrefab)
     {
-        foreach ((Vector2Int, ScriptableRoom) room in rooms)
+        for (int i = 0; i < rooms.Count; i++)
         {
+            (Vector2Int, ScriptableRoom) room = rooms[i];
             RoomMetaInformation info = room.Item2.metaInformation;
             foreach((int, Vector2) entrance in info.AllEntrances)
             {
                 GameObject newTrigger = GameObject.Instantiate(entranceTriggerPrefab);
                 newTrigger.transform.position = (Vector2)(origin + room.Item1 + entrance.Item2) + new Vector2(0.5f,0.5f);
                 newTrigger.transform.up = neighbourDirs[GetCorrespondingEntranceDirection(entrance.Item1)];
+                newTrigger.GetComponent<EntranceTriggerBehaviour>().roomIndex = i;
             }
         }
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
-/*
+
 [CustomEditor(typeof(LevelManger))]
 public class LevelMangerEditor : Editor
 {
@@ -35,4 +35,3 @@ public class LevelMangerEditor : Editor
 
     }
 }
-*/
