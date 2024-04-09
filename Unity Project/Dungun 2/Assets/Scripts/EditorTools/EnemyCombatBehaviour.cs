@@ -20,7 +20,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        RunInstructions(OnStart, "start");
+        RunInstructions(OnStart);
     }
 
     
@@ -28,11 +28,13 @@ public class EnemyCombatBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RunInstructions(Main, "main");
+        RunInstructions(Main);
     }
 
-    public void RunInstructions(List<GeneralizedInstruction> instructions, string type)    //rasj: type is needed to make sure that death is not run infinitly
+    public void RunInstructions(List<GeneralizedInstruction> instructions)
     {
+        //rasj: both cannot be OnDeath, so if both are true, instructions is different from ondeath, and thereby ok to stop running
+        if (instructions.Count < 1 && OnDeath.Count > 1)  { return; }  //rasj: if instruction list is shorter than 1, don't run the foreach (LIKE YOU'RE FUCKING DESIGNED TO)
         foreach (GeneralizedInstruction instruction in instructions)
         {
             switch (instruction.instructionType)
@@ -53,13 +55,23 @@ public class EnemyCombatBehaviour : MonoBehaviour
                     instruction.Shoot();
                     break;
                 case GeneralizedInstruction.InstructionType.Die:
-                    if (type != "death") { RunInstructions(OnDeath, "death"); }     //rasj: actually makes sure that death is not run infinitly
-                    else {
-                        Debug.Log("ded");
-                        GetComponent<EnemyBehavior>().Death();
-                        //instruction.Die();  //rasj: if not already wanna die, 
-                    }     
+                    //rasj: if die not in ondeath
+                    if (!OnDeath.Any(x => x.instructionType == GeneralizedInstruction.InstructionType.Die)) { //rasj: prevents infinte loop by not running ondeath if ondeath has die
+                        if (OnDeath.Count < 1 || OnDeath[^1].instructionType != GeneralizedInstruction.InstructionType.Die)  //if last instruction not death
+                        {
+                            /*rasj: adds a die instruction, as it is the easiest way
+                                    to make sure it dies, as it'll just run that instruction*/
+                            GeneralizedInstruction dieInstruction = new GeneralizedInstruction();
+                            dieInstruction.instructionType = GeneralizedInstruction.InstructionType.Die;
 
+                            OnDeath.Add(dieInstruction);
+                        }
+                        RunInstructions(OnDeath); 
+                    }     
+                    else if (OnDeath[^1].instructionType == GeneralizedInstruction.InstructionType.Die)
+                    {
+                        GetComponent<EnemyBehavior>().Death(); //rasj: kill john lennon >:)
+                    }
                     break;
             }
         }

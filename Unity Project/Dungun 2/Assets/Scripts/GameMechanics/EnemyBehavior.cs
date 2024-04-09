@@ -167,7 +167,7 @@ public class EnemyBehavior : MonoBehaviour
 
         if (healthPoints <= 0)
         {
-            GetComponent<EnemyCombatBehaviour>().RunInstructions(GetComponent<EnemyCombatBehaviour>().OnDeath, "death");
+            Death();
         }
     }
 
