@@ -29,11 +29,11 @@ public class GeneralizedInstruction
 
     public InstructionType instructionType = InstructionType.None;
 
-    public float waitTime = 1f;
-    private float timer = 0.0f;
+    public float waitTime = 0f;
+    private float timer = 0.0f;  //rasj: for time management; ignore
 
     /*Rotate, Die, Shoot*/
-    public Transform enemy;
+    public GameObject enemy;
     public float rotationAngle = 0;
 
     /*Point*/
@@ -49,35 +49,9 @@ public class GeneralizedInstruction
 
     public EnemyBehavior.MovementMode newMovementMode = EnemyBehavior.MovementMode.Idle;
 
-
-    void Main()
-    {
-        switch (instructionType)
-        {
-            case InstructionType.Wait:
-                Wait();
-                break;
-            case InstructionType.Rotate:
-                Rotate(); 
-                break;
-            case InstructionType.Point:
-                Point(); 
-                break;
-            case InstructionType.Shoot:
-                Shoot(); 
-                break;
-            case InstructionType.ChangeBehaviour:
-                ChangeBehaviour(); 
-                break;
-            case InstructionType.Die: 
-                Die(); 
-                break;
-        }
-    }
-
     public void Wait()
     {
-        while (timer < waitTime)  //rasj: wait until time has passes
+        while (timer < waitTime)  //rasj: wait until time has passed
         {
             timer += Time.deltaTime;
         }
@@ -90,19 +64,20 @@ public class GeneralizedInstruction
 
     public void Point()
     {
-        enemy.transform.up = target.position - enemy.position;
+        enemy.transform.up = target.position - enemy.transform.position;
     }
 
     public void Die()
     {
-        GameObject.Destroy(enemy.gameObject);
+        //EnemyBehavior.Death();
+        //rasj: y u no run?
     }
 
     public void Shoot()
     {
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
         newBullet.transform.up = enemy.transform.up;
-        newBullet.transform.position = enemy.transform.position + newBullet.transform.up;
+        newBullet.transform.position = enemy.transform.position;
     }
 
     public void ChangeBehaviour()
@@ -112,15 +87,16 @@ public class GeneralizedInstruction
 
         switch (realDistanceToTarget)
         {
-            case ComparisonMode.Less:
-                condition = distanceToTarget < dist;
-                break;
-            case ComparisonMode.Greater:
+            case ComparisonMode.Less:       //rasj: expected distance to target > real distance to target 
                 condition = distanceToTarget > dist;
+                break;
+            case ComparisonMode.Greater:    //rasj: expected distance to target < real distance to target
+                condition = distanceToTarget < dist;
                 break;
         }
         if (condition)
         {
+            script = enemy.GetComponent<EnemyBehavior>();
             script.ChangeBehaviour(newMovementMode);
         }
     }

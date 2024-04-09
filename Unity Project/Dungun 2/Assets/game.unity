@@ -123,11 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!4 &80377397 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8479068350637697488, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
-  m_PrefabInstance: {fileID: 2651749085007266940}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &251742275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2407,6 +2402,11 @@ Sprite:
   m_PhysicsShape: []
   m_Bones: []
   m_SpriteID: 
+--- !u!1 &858131511 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+  m_PrefabInstance: {fileID: 2651749085007266940}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1022144345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3882,7 +3882,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: Main.Array.size
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: OnDeath.Array.size
@@ -3893,9 +3893,21 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[0].enemy
+      value: 
+      objectReference: {fileID: 858131511}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: Main.Array.data[1].enemy
       value: 
-      objectReference: {fileID: 80377397}
+      objectReference: {fileID: 858131511}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[2].enemy
+      value: 
+      objectReference: {fileID: 858131511}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[3].enemy
+      value: 
+      objectReference: {fileID: 858131511}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: Main.Array.data[0].target
       value: 
@@ -3905,11 +3917,35 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1270647177}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[2].target
+      value: 
+      objectReference: {fileID: 1270647177}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[3].target
+      value: 
+      objectReference: {fileID: 1270647177}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: OnDeath.Array.data[0].time
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnStart.Array.data[0].enemy
+      value: 
+      objectReference: {fileID: 858131511}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnStart.Array.data[0].target
+      value: 
+      objectReference: {fileID: 1270647177}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnDeath.Array.data[0].waitTime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: Main.Array.data[0].instructionType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[0].newMovementMode
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
@@ -3918,7 +3954,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: Main.Array.data[1].newMovementMode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[2].instructionType
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[2].newMovementMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[3].instructionType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[3].newMovementMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: MainInstructionTypeList.Array.size
@@ -3926,11 +3978,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: Main.Array.data[0].distanceToTarget
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: Main.Array.data[1].distanceToTarget
-      value: 0
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[2].distanceToTarget
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[3].distanceToTarget
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: OnDeath.Array.data[0].comparisonMode
@@ -3949,6 +4009,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnDeath.Array.data[0].instructionType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: OnDeathInstructionTypeList.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -3961,6 +4025,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnStart.Array.data[0].distanceToTarget
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: Main.Array.data[0].realDistanceToTarget
       value: 2
       objectReference: {fileID: 0}
@@ -3969,8 +4037,20 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[2].realDistanceToTarget
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: Main.Array.data[3].realDistanceToTarget
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: OnDeathInstructionTypeList.Array.data[0]
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971303150314290897, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+      propertyPath: OnStart.Array.data[0].realDistanceToTarget
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
       propertyPath: m_Name

@@ -31,7 +31,7 @@ public class EnemyBehavior : MonoBehaviour
     private float wanderTime = 0f;
     private bool wandering = false;
 
-    private MovementMode MMode = MovementMode.Idle;
+    private MovementMode MMode;
 
     //Gameobject enemy = gameobj.GetComponent<Enemy>();
 
@@ -44,6 +44,12 @@ public class EnemyBehavior : MonoBehaviour
         var agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+        agent.speed = 2f;
+
+        if (GameObject.FindGameObjectWithTag("Player"))
+        {
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+        }
     }
 
     void Update()
@@ -71,19 +77,16 @@ public class EnemyBehavior : MonoBehaviour
 
         if (MMode == MovementMode.Chasing)  //rasj: if enemy is far enough away from target  dist > minDist && dist < maxDist
         {
-            Debug.Log("Chasing");
             agent.SetDestination(targetPos);  //rasj: Sets destination to target
             Flip(targetPos);
         }
         else if (MMode == MovementMode.Idle || MMode == MovementMode.Wandering)  //rasj: if enemy is too far away from target  dist > maxDist
         {
-            Debug.Log("Idle/Wandering");
             wandering = true;
             Wander(-maxWanderDistance, maxWanderDistance);
         }
-        else if (MMode == MovementMode.Waiting)  //rasj: if enemy is too close to target
+        else  //rasj: if (MMode == MovementMode.Waiting) if enemy is too close to target
         {
-            Debug.Log("Waiting");
             agent.SetDestination(transform.position);  //rasj: Stops enemy from going further
         }
 
@@ -164,12 +167,14 @@ public class EnemyBehavior : MonoBehaviour
 
         if (healthPoints <= 0)
         {
-            Death();
+            GetComponent<EnemyCombatBehaviour>().RunInstructions(GetComponent<EnemyCombatBehaviour>().OnDeath, "death");
         }
     }
 
-    void Death()
+    public void Death()
     {
-        Destroy(this.gameObject);
+        GameObject.Destroy(gameObject);
+        //GetComponent<EnemyCombatBehaviour>().RunInstructions(GetComponent<EnemyCombatBehaviour>().OnDeath, "death");  //rasj: basically die
+        //Destroy(this.gameObject);
     }
 }
