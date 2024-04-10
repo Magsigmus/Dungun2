@@ -61,7 +61,7 @@ public class TilemapManager : MonoBehaviour
         }
         newRoom.size = upperRight - lowerLeft;
 
-        Debug.Log(upperRight);
+        //Debug.Log(upperRight);
 
         newRoom.ground = ApplyOffset((Vector3Int)upperRight, newRoom.ground);
         newRoom.walls = ApplyOffset((Vector3Int)upperRight, newRoom.walls);

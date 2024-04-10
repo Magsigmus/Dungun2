@@ -9,6 +9,8 @@ using Priority_Queue;
 using Unity.VisualScripting;
 using static UnityEditor.PlayerSettings;
 using NavMeshPlus.Components;
+using System.Drawing;
+using Color = UnityEngine.Color;
 
 public class LevelManger : MonoBehaviour
 {
@@ -32,6 +34,7 @@ public class LevelManger : MonoBehaviour
     public BaseTileTypePair[] tileLookup;
     public GameObject enemySpawnTriggerPrefab;
     public NavMeshSurface navMesh;
+    public bool buildCompletely = true;
 
     private bool[] spawnedEnemies = null; // An array denoting if there has been spawned enemies in a room yet
     //public GameObject entranceTrigger; // A prefab containing an entance trigger
@@ -81,8 +84,9 @@ public class LevelManger : MonoBehaviour
         // Goes through the first dfs cycle for each of the nodes
         for (int i = 0; i < visited.Length; i++)
         {
-            if (roomGenerationStack.TryPeek(out (int, int) trash1)) { continue; }
-            if (cycleRoomGenerationStack.TryPeek(out (int, int,int) trash11)) { continue; }
+            bool[] previousVisited = (bool[])visited.Clone();
+            //if (roomGenerationStack.TryPeek(out (int, int) trash1)) { continue; }
+            //if (cycleRoomGenerationStack.TryPeek(out (int, int,int) trash11)) { continue; }
             if (visited[i]) continue;
 
             startCycleNode = i;
@@ -96,6 +100,8 @@ public class LevelManger : MonoBehaviour
             currentComponentTilemap.rooms[i] = (new Vector2Int(), firstRoom); // Adds the origen and room to the component
             currentComponentTilemap.LoadRoom(new Vector2Int(), firstRoom); // Loads the room to the test tilemaps
             currentComponentTilemap.freeEntrances[i].AddRange(firstRoom.metaInformation.AllEntrances);
+
+            bool sucess = true;
 
             // Runs dfs for the current node 
             foreach (int neighbour in compositeAdjecenyList[i].connections)
@@ -111,7 +117,7 @@ public class LevelManger : MonoBehaviour
                 }
                 else if (compositeAdjecenyList[i].id[0] == 't')
                 {
-                    PlaceTree(neighbour, i);
+                    sucess = PlaceTree(neighbour, i);
                     //roomGenerationStack.Push((neighbour, i));
                 }
                 else if (compositeAdjecenyList[i].id[0] == 'c')
@@ -127,10 +133,19 @@ public class LevelManger : MonoBehaviour
                 }
             }
 
+            if(!sucess) { 
+                i--;
+                visited = previousVisited;
+                currentComponentTilemap.ClearMap();
+                Debug.Log("Detected overlapping level. Retrying");  
+                continue; 
+            }
             componentTilemaps.Add(currentComponentTilemap);
         }
 
         // PLACE TRIGGERS 
+
+        if(!buildCompletely) { return; }
 
         foreach(ComponentTilemap component in componentTilemaps)
         {
@@ -179,9 +194,12 @@ public class LevelManger : MonoBehaviour
 
         void AddToDict(byte roomType, byte entrances, byte entranceDir, int roomIndex)
         {
-            uint key = ((uint)roomType << (8 * 2)) | ((uint)entrances << 8) | ((uint)entranceDir);
-            if (!roomIndexLookupMap.ContainsKey(key)) { roomIndexLookupMap[key] = new List<int>(); }
-            roomIndexLookupMap[key].Add(roomIndex);
+            for(uint i = 1; i <= entrances; i++)
+            {
+                uint key = ((uint)roomType << (8 * 2)) | ((uint)i << 8) | ((uint)entranceDir);
+                if (!roomIndexLookupMap.ContainsKey(key)) { roomIndexLookupMap[key] = new List<int>(); }
+                roomIndexLookupMap[key].Add(roomIndex);
+            }
         }
     }
 
@@ -194,7 +212,8 @@ public class LevelManger : MonoBehaviour
             Debug.LogError($"Missing a room of type {type}, entrance direction {entranceDir} and {entranceNum} entrances.");
         }
 
-        return roomIndexLookupMap[key].Select(e => allRooms[e]).ToArray();
+        ScriptableRoom[] result = roomIndexLookupMap[key].Select(e => allRooms[e]).ToArray();
+        return result;
     }
 
     private ScriptableRoom[] GetRandomRoomList(int parentEntranceIndex, int parentIndex, int childIndex, int length, out byte childEntranceId)
@@ -208,7 +227,7 @@ public class LevelManger : MonoBehaviour
     private ScriptableRoom GetRandomRoom(int parentEntranceIndex, int parentIndex, int childIndex, out int childEntranceIndex)
     {
         ScriptableRoom[] roomList = GetRoomList(parentEntranceIndex, parentIndex, childIndex, out byte childEntranceId);
-        ScriptableRoom room = roomList[UnityEngine.Random.Range(0, roomList.Length - 1)];
+        ScriptableRoom room = roomList[UnityEngine.Random.Range(0, roomList.Length)];
         childEntranceIndex = room.metaInformation.GetRandomEntrance(childEntranceId);
 
         return room;
@@ -242,13 +261,14 @@ public class LevelManger : MonoBehaviour
 
     #region GraphTraversment
     // Places a graph tree component, using dfs
-    public void PlaceTree(int nodeIndex, int parentNode)
+    public bool PlaceTree(int nodeIndex, int parentNode)
     {
         List<(int, Vector2Int)> freeParentEntances = currentComponentTilemap.freeEntrances[parentNode]; // Gets all the free entances that are in the parent room
         int parentEntranceIndex = UnityEngine.Random.Range(0, freeParentEntances.Count); // Finds the index of a random entrance that belongs to the parent room
 
         ScriptableRoom room = GetRandomRoom(parentEntranceIndex, parentNode, nodeIndex, out int childEntranceIndex);
-        currentComponentTilemap.PlaceRoom(nodeIndex, parentNode, parentEntranceIndex, childEntranceIndex, room);
+        bool sucess = currentComponentTilemap.
+            PlaceRoom(nodeIndex, parentNode, parentEntranceIndex, childEntranceIndex, room);
 
         // Goes through all the neighbours and calls this function on them, DFS style
         foreach (int neighbour in compositeAdjecenyList[nodeIndex].connections)
@@ -256,10 +276,12 @@ public class LevelManger : MonoBehaviour
             if (!visited[neighbour])
             {
                 visited[neighbour] = true;
-                PlaceTree(neighbour, nodeIndex);
+                sucess = sucess && PlaceTree(neighbour, nodeIndex);
                 //roomGenerationStack.Push((neighbour, nodeIndex));
             }
         }
+
+        return sucess;
     }
     
     int startCycleNode;
@@ -525,18 +547,18 @@ public class ComponentTilemap
         // Saves the room and the origen of it (local in the component)
         rooms[childIndex] = (childRoomOrigen, childRoom);
 
-        //PlaceCorridor(childEntrancePos, parentEntrancePos, (byte)childEntrance.Item1, (byte)parentEntrance.Item1);
         Vector3Int[] path = GetStraightPath((Vector3Int)childEntrancePos, (Vector3Int)parentEntrancePos);
-        PlaceCorridor(path);
-        
+
         List<Vector3Int> overlapPath = path.ToList();
-        if(overlapPath.Count > 6)
+        if (overlapPath.Count > 6)
         {
             overlapPath.RemoveRange(0, 3);
-            overlapPath.RemoveRange(overlapPath.Count - 4, 3);
+            overlapPath.RemoveRange(overlapPath.Count - 3, 3);
 
             if (CheckOverlap(overlapPath.ToArray(), 2)) { return false; }
         }
+
+        PlaceTilemapEntranceAndCorridor((parentEntrance.Item1, parentEntrancePos), (childEntrance.Item1, childEntrancePos), path);
 
         // Corrects the amout of free entrances
         List<(int, Vector2Int)> newEntrances = childRoom.metaInformation.AllEntrances;
@@ -554,18 +576,34 @@ public class ComponentTilemap
     {
         foreach(Vector3Int point in points)
         {
-            Vector3Int[] adjencentTiles = GetAdjecentTiles(point, width);
-
-            foreach(Vector3Int tilePosition in adjencentTiles)
-            {
-                if (groundTilemap.HasTile(tilePosition) || groundTilemap.HasTile(tilePosition))
-                {
-                    return true;
-                }
-            }
+            if (GetAdjecentTiles(point, width).
+                Select(e => groundTilemap.HasTile(e) || groundTilemap.HasTile(e)).
+                Contains(true)) { return true; }
         }
 
         return false;
+    }
+
+    private void PlaceTilemapEntranceAndCorridor((int, Vector2Int) startEntrance, (int, Vector2Int) endEntrance, Vector3Int[] points)
+    {
+        OpenEntrance(startEntrance);
+        OpenEntrance(endEntrance);
+        PlaceCorridor(points);
+    }
+    
+    private void OpenEntrance((int, Vector2Int) entrance)
+    {
+        Vector3Int dir = neighbourDirs[entrance.Item1];
+        dir = new Vector3Int(-dir.y, dir.x, 0);
+
+        groundTilemap.SetTile((Vector3Int)entrance.Item2 + dir * 2, null); 
+        groundTilemap.SetTile((Vector3Int)entrance.Item2 - dir * 2, null); 
+        wallTilemap.SetTile((Vector3Int)entrance.Item2 + dir * 2, null); 
+        wallTilemap.SetTile((Vector3Int)entrance.Item2 - dir * 2, null);
+
+        wallTilemap.SetTile((Vector3Int)entrance.Item2 + dir, null);
+        wallTilemap.SetTile((Vector3Int)entrance.Item2, null);
+        wallTilemap.SetTile((Vector3Int)entrance.Item2 - dir, null);
     }
 
     private void PlaceCorridor(Vector3Int[] corridorPoints)
@@ -701,7 +739,6 @@ public class ComponentTilemap
     {
         List<Vector3Int> path = new List<Vector3Int>();
         Vector3Int difference = endPosition - startPosition;
-
 
         for(; difference.x != 0; difference.x += -Math.Sign(difference.x))
         {
@@ -863,10 +900,13 @@ public class ComponentTilemap
         {
             (Vector2Int, ScriptableRoom) room = rooms[i];
             RoomMetaInformation info = room.Item2.metaInformation;
-            foreach((int, Vector2) entrance in info.AllEntrances)
+            foreach((int, Vector2Int) entrance in info.AllEntrances)
             {
+                Vector2Int position = origin + room.Item1 + entrance.Item2;
+                if(wallTilemap.HasTile((Vector3Int)position)) { continue; }
+
                 GameObject newTrigger = GameObject.Instantiate(entranceTriggerPrefab);
-                newTrigger.transform.position = (Vector2)(origin + room.Item1 + entrance.Item2) + new Vector2(0.5f,0.5f);
+                newTrigger.transform.position = (Vector2)position + new Vector2(0.5f,0.5f);
                 newTrigger.transform.up = neighbourDirs[GetCorrespondingEntranceDirection(entrance.Item1)];
                 newTrigger.GetComponent<EntranceTriggerBehaviour>().roomIndex = i;
             }
