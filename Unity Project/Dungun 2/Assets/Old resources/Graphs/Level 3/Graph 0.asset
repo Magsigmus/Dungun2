@@ -15,20 +15,20 @@ MonoBehaviour:
   graphIndex: 0
   levelIndex: 3
   adjecenyList:
+  - type: 2
+    connections: 01000000
   - type: 1
-    connections: 0700000001000000
+    connections: 0300000002000000
   - type: 1
-    connections: 0000000002000000
+    connections: 03000000
   - type: 1
-    connections: 0100000003000000
+    connections: 0100000004000000
+  - type: 0
+    connections: 030000000500000006000000
   - type: 1
-    connections: 0200000004000000
+    connections: 04000000
   - type: 1
-    connections: 0300000005000000
-  - type: 1
-    connections: 0400000006000000
-  - type: 1
-    connections: 0500000007000000
-  - type: 1
-    connections: 0600000000000000
+    connections: 0400000007000000
+  - type: 3
+    connections: 06000000
   compositeAdjecenyList: []
