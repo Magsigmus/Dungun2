@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - PlayerBullet
   - GameManager
+  - EnemyBullet
   layers:
   - Default
   - TransparentFX

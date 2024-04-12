@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -60,6 +57,12 @@ public class EnemyBehavior : MonoBehaviour
         if (!wandering)
         {
             Shoot(target.position);
+            /*
+            GeneralizedInstruction instruction = new GeneralizedInstruction();
+            instruction.gunObject = GetComponent<EnemyCombatBehaviour>().gunObject;
+            instruction.defaultTarget = GameObject.FindGameObjectWithTag("Player").transform;
+            instruction.Shoot();
+            */
         }
     }
 
@@ -148,8 +151,15 @@ public class EnemyBehavior : MonoBehaviour
             shootCooldown = 0f;  //rasj: reset cooldown
             GameObject newBullet = Instantiate(bulletPrefab);
             newBullet.transform.up = dir;
-            newBullet.transform.position = transform.position + dir;  //rasj: set to current position
+            newBullet.transform.position = transform.position;  //rasj: set to current position
         }
+        /*
+        if (bulletPrefab.name == "ChargerEnemyBullet")
+        {
+            //todo: set bullet health to currect health
+            Death();
+        }
+        */
     }
 
     Vector2 PointTo(Vector2 targetPos)  //rasj: Sets rotation

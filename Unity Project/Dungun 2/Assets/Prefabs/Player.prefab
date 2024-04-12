@@ -271,8 +271,8 @@ MonoBehaviour:
   drag: 0.5
   dashingDistance: 5
   dashingTime: 0.2
-  dashingCooldown: 1
-  inputBufferingTime: 0.2
+  dashingCooldown: 0.6
+  inputBufferingTime: 0.1
   numberOfGhosts: 5
   ghostPrefab: {fileID: 7810706657315903010, guid: ee499a647274c6840bbce8b93ddb62f9, type: 3}
   gunObject: {fileID: 8079159849693857926}
