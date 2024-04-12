@@ -49,15 +49,15 @@ public class TilemapManager : MonoBehaviour
         newRoom.enemies = enemyPrefabs;
 
         //Sig: Finds the offset of the room, and its size
-        upperRight = (Vector2Int)newRoom.ground[0].Position;
-        lowerLeft = (Vector2Int)newRoom.ground[0].Position;
+        upperRight = (Vector2Int)newRoom.ground[0].position;
+        lowerLeft = (Vector2Int)newRoom.ground[0].position;
         foreach (SavedTile tile in newRoom.ground)
         {
-            upperRight.x = Math.Max(upperRight.x, tile.Position.x);
-            upperRight.y = Math.Max(upperRight.y, tile.Position.y);
+            upperRight.x = Math.Max(upperRight.x, tile.position.x);
+            upperRight.y = Math.Max(upperRight.y, tile.position.y);
 
-            lowerLeft.x = Math.Min(lowerLeft.x, tile.Position.x);
-            lowerLeft.y = Math.Min(lowerLeft.y, tile.Position.y);
+            lowerLeft.x = Math.Min(lowerLeft.x, tile.position.x);
+            lowerLeft.y = Math.Min(lowerLeft.y, tile.position.y);
         }
         newRoom.size = upperRight - lowerLeft;
 
@@ -77,7 +77,7 @@ public class TilemapManager : MonoBehaviour
         {
             for(int i = 0; i < array.Length; i++)
             {
-                array[i].Position -= offset;
+                array[i].position -= offset;
             }
             return array;
         }
@@ -91,7 +91,7 @@ public class TilemapManager : MonoBehaviour
                 {
                     yield return new SavedTile()
                     {
-                        Position = pos,
+                        position = pos,
                         tile = map.GetTile<BaseTile>(pos)
                     };
                 }
@@ -104,19 +104,19 @@ public class TilemapManager : MonoBehaviour
     {
         foreach (SavedTile tile in room.ground)
         {
-            groundMap.SetTile(tile.Position + origenPos, tile.tile);
+            groundMap.SetTile(tile.position + origenPos, tile.tile);
         }
         foreach (SavedTile tile in room.walls)
         {
-            wallMap.SetTile(tile.Position + origenPos, tile.tile);
+            wallMap.SetTile(tile.position + origenPos, tile.tile);
         }
         foreach (SavedTile tile in room.decorations)
         {
-            decorMap.SetTile(tile.Position + origenPos, tile.tile);
+            decorMap.SetTile(tile.position + origenPos, tile.tile);
         }
         foreach (SavedTile tile in room.meta)
         {
-            metaMap.SetTile(tile.Position + origenPos, tile.tile);
+            metaMap.SetTile(tile.position + origenPos, tile.tile);
         }
     }
 

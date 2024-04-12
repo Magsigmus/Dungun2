@@ -21,29 +21,29 @@ public class ScriptableRoom : ScriptableObject
         {
             if (tile.tile.type == MetaTileType.NorthEntrance)
             {
-                info.NorthEntrances.Add((Vector2Int)tile.Position);
+                info.NorthEntrances.Add((Vector2Int)tile.position);
             }
             if (tile.tile.type == MetaTileType.WestEntrance)
             {
-                info.WestEntrances.Add((Vector2Int)tile.Position);
+                info.WestEntrances.Add((Vector2Int)tile.position);
             }
             if (tile.tile.type == MetaTileType.SouthEntrance)
             {
-                info.SouthEntrances.Add((Vector2Int)tile.Position);
+                info.SouthEntrances.Add((Vector2Int)tile.position);
             }
             if (tile.tile.type == MetaTileType.EastEntrance)
             {
-                info.EastEntrances.Add((Vector2Int)tile.Position);
+                info.EastEntrances.Add((Vector2Int)tile.position);
             }
             if(tile.tile.type == MetaTileType.SpawnPoint)
             {
-                info.EnemySpawnPoints.Add((Vector2Int)tile.Position);
+                info.EnemySpawnPoints.Add((Vector2Int)tile.position);
             }
 
 
             if(tile.tile.type >= MetaTileType.NorthEntrance && tile.tile.type <= MetaTileType.EastEntrance)
             {
-                info.AllEntrances.Add((tile.tile.type - MetaTileType.NorthEntrance, (Vector2Int)tile.Position));
+                info.AllEntrances.Add((tile.tile.type - MetaTileType.NorthEntrance, (Vector2Int)tile.position));
             }
         }
 
@@ -94,8 +94,20 @@ public class RoomMetaInformation
 [Serializable]
 public class SavedTile
 {
-    public Vector3Int Position;
+    public Vector3Int position;
     public BaseTile tile;
+
+    public SavedTile()
+    {
+        //position = new Vector3Int();
+        //tile = new BaseTile();
+    }
+
+    public SavedTile(Vector3Int position, BaseTile tile)
+    {
+        this.position = position;
+        this.tile = tile;
+    }
 }
 
 [Serializable]
