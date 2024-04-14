@@ -30,7 +30,6 @@ public class GeneralizedInstruction
     public InstructionType instructionType = InstructionType.None;
 
     public float waitTime = 0f;
-    private float timer = 0.0f;  //rasj: for time management; ignore
 
     /*Rotate, Die, Shoot*/
     public GameObject enemy;
@@ -49,12 +48,13 @@ public class GeneralizedInstruction
 
     public EnemyBehavior.MovementMode newMovementMode = EnemyBehavior.MovementMode.Idle;
 
-    public void Wait()
+    [HideInInspector, NonSerialized]
+    public GameObject gunObject;
+    public Transform defaultTarget;
+
+    public IEnumerator Wait()  //rasj: run as ienumerator (to make to a coroutine)
     {
-        while (timer < waitTime)  //rasj: wait until time has passed
-        {
-            timer += Time.deltaTime;
-        }
+        yield return new WaitForSeconds(waitTime);  //rasj: wait the correct amount of time
     }
 
     public void Rotate()
@@ -64,20 +64,27 @@ public class GeneralizedInstruction
 
     public void Point()
     {
-        enemy.transform.up = target.position - enemy.transform.position;
+        if (!target) { target = defaultTarget; }
+        Vector2 dir = new Vector2(target.position.x - gunObject.transform.position.x, target.position.y - gunObject.transform.position.y);
+        gunObject.transform.up = dir;
     }
 
+    /*
     public void Die()
     {
         //EnemyBehavior.Death();
         //rasj: y u no run?
     }
+    */
 
     public void Shoot()
     {
+        if (!target) { target = defaultTarget; }
+        Vector2 dir = new Vector2(target.position.x - gunObject.transform.position.x, target.position.y - gunObject.transform.position.y);
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
-        newBullet.transform.up = enemy.transform.up;
-        newBullet.transform.position = enemy.transform.position;
+        newBullet.transform.up = dir;
+        newBullet.transform.position = gunObject.transform.position.ConvertTo<Vector2>();
+        newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);
     }
 
     public void ChangeBehaviour()
@@ -87,10 +94,10 @@ public class GeneralizedInstruction
 
         switch (realDistanceToTarget)
         {
-            case ComparisonMode.Less:       //rasj: expected distance to target > real distance to target 
+            case ComparisonMode.Less:       //rasj: expected distance to target is more than real distance to target 
                 condition = distanceToTarget > dist;
                 break;
-            case ComparisonMode.Greater:    //rasj: expected distance to target < real distance to target
+            case ComparisonMode.Greater:    //rasj: expected distance to target is less than real distance to target
                 condition = distanceToTarget < dist;
                 break;
         }

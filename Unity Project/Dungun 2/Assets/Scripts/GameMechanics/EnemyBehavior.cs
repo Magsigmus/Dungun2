@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -25,7 +22,7 @@ public class EnemyBehavior : MonoBehaviour
     public float minTargetDistance = 3f;
     public float maxTargetDistance = 10f;
 
-    private Vector3 wandDesti = new Vector3(0f, 0f, 0f);
+    private Vector3 wanderDestination = new Vector3(0f, 0f, 0f);
     public float maxWanderDistance = 5f;
     public float maxWanderTime = 15f;
     private float wanderTime = 0f;
@@ -60,6 +57,12 @@ public class EnemyBehavior : MonoBehaviour
         if (!wandering)
         {
             Shoot(target.position);
+            /*
+            GeneralizedInstruction instruction = new GeneralizedInstruction();
+            instruction.gunObject = GetComponent<EnemyCombatBehaviour>().gunObject;
+            instruction.defaultTarget = GameObject.FindGameObjectWithTag("Player").transform;
+            instruction.Shoot();
+            */
         }
     }
 
@@ -94,14 +97,14 @@ public class EnemyBehavior : MonoBehaviour
 
     void Wander(float min, float max)
     {
-        if (wandDesti == transform.position || wanderTime >= maxWanderTime)  //rasj: if wander reached or too much time has passed
+        if (wanderDestination == transform.position || wanderTime >= maxWanderTime)  //rasj: if wander reached or too much time has passed
         {
             wanderTime = 0;  //rasj: Reset the time used while wandering
             Vector3 randVect = new Vector2(Random.Range(min, max), Random.Range(min, max));  //rasj: get a random vector
-            wandDesti = randVect + transform.position;  //rasj: Add that vector to the currect position
-            agent.SetDestination(wandDesti);  //rasj: Set that to the new desination
+            wanderDestination = randVect + transform.position;  //rasj: Add that vector to the currect position
+            agent.SetDestination(wanderDestination);  //rasj: Set that to the new desination
 
-            Flip(wandDesti); //rasj: flip the sprite accordingly
+            Flip(wanderDestination); //rasj: flip the sprite accordingly
         }
     }
 
@@ -148,13 +151,19 @@ public class EnemyBehavior : MonoBehaviour
             shootCooldown = 0f;  //rasj: reset cooldown
             GameObject newBullet = Instantiate(bulletPrefab);
             newBullet.transform.up = dir;
-            newBullet.transform.position = transform.position + dir;  //rasj: set to current position
+            newBullet.transform.position = transform.position;  //rasj: set to current position
         }
+        /*
+        if (bulletPrefab.name == "ChargerEnemyBullet")
+        {
+            //todo: set bullet health to currect health
+            Death();
+        }
+        */
     }
 
-    Vector2 PointTo(Vector2 targetPos)  //rasj: Sets rotation
+    Vector2 PointTo(Vector2 targetPos)  //rasj: Gets rotation
     {
-        //TODO: make enemy point ahead of player's direction, to compensate for time and actually hit
         //rasj: findes the vector to the target
         Vector2 dir = new Vector2(targetPos.x - transform.position.x, targetPos.y - transform.position.y);
         //transform.up = dir;
@@ -167,7 +176,7 @@ public class EnemyBehavior : MonoBehaviour
 
         if (healthPoints <= 0)
         {
-            GetComponent<EnemyCombatBehaviour>().RunInstructions(GetComponent<EnemyCombatBehaviour>().OnDeath, "death");
+            Death();
         }
     }
 

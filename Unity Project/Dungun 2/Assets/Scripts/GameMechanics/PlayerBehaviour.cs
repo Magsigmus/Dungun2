@@ -43,8 +43,6 @@ public class PlayerBehaviour : MonoBehaviour
     private Collider2D[] colliders;
     private Animator animator;
 
-    private bool facingRight = true;
-
     private void Awake()
     {
         playerControls = new PlayerControls();
@@ -121,13 +119,15 @@ public class PlayerBehaviour : MonoBehaviour
     void PointGun()
     {
         bool joyStickConnected = ((Input.GetJoystickNames().Length > 0) ? (Input.GetJoystickNames()[0] != "") : false);
+        //TODO: potentially add dualshock 4 compatability
+
         Vector2 zeroV = Vector2.zero;
 
         if (joyStickConnected)
         {
             //Sig: If a controller is connected, then get input from that
             Vector2 rightStick = playerControls.Default.Pointing.ReadValue<Vector2>();
-            if (rightStick != zeroV) { dir = rightStick.normalized; }  //rasj: fixes gun pointing up when not aiming
+            if (rightStick != zeroV) { dir = rightStick.normalized; }  //rasj: makes gun point towards last pointed direction instead of up
         }
         else
         {
@@ -180,7 +180,7 @@ public class PlayerBehaviour : MonoBehaviour
         return result;
     }
 
-    void TakeDamage(int damage)
+    void TakeDamage(int damage)  //rasj: check for enemybullet tag, when colliding with something
     {
         healthPoints -= damage;
 
