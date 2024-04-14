@@ -196,7 +196,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: cff0d1d8a6c5f8c4188d15718c079ede, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 303c8948271a2df40a8eed04067dd2da, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -288,18 +288,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.45}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 2, y: 2}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
 --- !u!95 &2374296792674318438
 Animator:
@@ -356,34 +356,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 601835c6f0bc4c442bd2aa8293c8bf79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnStart: []
-  Main:
-  - instructionType: 3
-    waitTime: 0
-    enemy: {fileID: 6538225185145312215}
-    rotationAngle: 0
-    target: {fileID: 0}
-    bulletPrefab: {fileID: 0}
-    realDistanceToTarget: 2
-    distanceToTarget: 50
-    newMovementMode: 3
-    defaultTarget: {fileID: 0}
-  - instructionType: 3
-    waitTime: 0
-    enemy: {fileID: 6538225185145312215}
-    rotationAngle: 0
-    target: {fileID: 0}
-    bulletPrefab: {fileID: 0}
-    realDistanceToTarget: 1
-    distanceToTarget: 50
-    newMovementMode: 2
-    defaultTarget: {fileID: 0}
+  OnStart:
   - instructionType: 3
     waitTime: 0
     enemy: {fileID: 6538225185145312215}
     rotationAngle: 0
     target: {fileID: 0}
     bulletPrefab: {fileID: 4107235708702390523, guid: 4a8e82508736390498ca0b9b371615b3, type: 3}
+    realDistanceToTarget: 0
+    distanceToTarget: 0
+    newMovementMode: 2
+    defaultTarget: {fileID: 0}
+  Main:
+  - instructionType: 4
+    waitTime: 0
+    enemy: {fileID: 6538225185145312215}
+    rotationAngle: 0
+    target: {fileID: 0}
+    bulletPrefab: {fileID: 4107235708702390523, guid: 4a8e82508736390498ca0b9b371615b3, type: 3}
+    realDistanceToTarget: 2
+    distanceToTarget: 2.5
+    newMovementMode: 1
+    defaultTarget: {fileID: 0}
+  - instructionType: 5
+    waitTime: 0
+    enemy: {fileID: 6538225185145312215}
+    rotationAngle: 0
+    target: {fileID: 0}
+    bulletPrefab: {fileID: 4107235708702390523, guid: 4a8e82508736390498ca0b9b371615b3, type: 3}
+    realDistanceToTarget: 2
+    distanceToTarget: 2.5
+    newMovementMode: 1
+    defaultTarget: {fileID: 0}
+  - instructionType: 1
+    waitTime: 0.2
+    enemy: {fileID: 6538225185145312215}
+    rotationAngle: 0
+    target: {fileID: 0}
+    bulletPrefab: {fileID: 6538225185145312215}
     realDistanceToTarget: 2
     distanceToTarget: 2.5
     newMovementMode: 1

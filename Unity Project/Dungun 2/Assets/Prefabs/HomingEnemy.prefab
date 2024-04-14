@@ -109,7 +109,7 @@ Transform:
   m_GameObject: {fileID: 5703316592086489693}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.7, z: 0}
   m_LocalScale: {x: 0.95, y: 0.95, z: 0.95}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 7275487467524632971}
   - component: {fileID: 4971303150314290897}
   m_Layer: 8
-  m_Name: Enemy
+  m_Name: HomingEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +196,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 303c8948271a2df40a8eed04067dd2da, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0cd12e0d43ee29947aaa5ddda8bd663e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -288,11 +288,11 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.45}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 2}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -311,7 +311,7 @@ Animator:
   m_GameObject: {fileID: 6538225185145312215}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 110f313f449fc1e41944a1551a3ed3b5, type: 2}
+  m_Controller: {fileID: 9100000, guid: c7119ab1f6746194fa886598a3b284d2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -336,7 +336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   agent: {fileID: 5146900579757251866}
-  bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
+  bulletPrefab: {fileID: 4107235708702390523, guid: c1951f059987ef940a2f7e41179e0d57, type: 3}
   shootCooldownTime: 1
   minTargetDistance: 3
   maxTargetDistance: 10

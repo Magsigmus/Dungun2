@@ -19,7 +19,10 @@ public class ChargerBulletBehaviour : MonoBehaviour, BulletInterface
     void Start()
     {
         GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
-        Destroy(this.gameObject, desctructionTime);
+        if (desctructionTime >= 0)  //rasj: if i.e. -1, then don't destroy after some time
+        {
+            Destroy(this.gameObject, desctructionTime);
+        }
     }
 
     public void OnSpawn(GameObject shooter)
