@@ -137,6 +137,7 @@ public class AStarTilemapSearch
 
         void LogFailedPath()
         { 
+            /*
             AStarSearchTile errorTile = new AStarSearchTile();
 
             errorTile.sprite = lookup[TileType.DebugEast].sprite;
@@ -149,7 +150,7 @@ public class AStarTilemapSearch
             failedPath.name = $"Failed path between {start} and {end}";
             failedPath.transform.parent = tilemap.gameObject.transform.parent;
             failedPath.SetActive(false);
-
+            */
             Debug.Log($"Could not find any path between the points {start} and {end} using A*!");
             tilemap.ClearAllTiles();
         }

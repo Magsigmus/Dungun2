@@ -10,16 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 519f374d142c3b143876cc7b13f24545, type: 3}
-  m_Name: Graph 0
+  m_Name: Graph 1
   m_EditorClassIdentifier: 
-  graphIndex: 0
+  graphIndex: 1
   levelIndex: 3
   adjecenyList:
   - type: 1
-    connections: 0200000001000000
+    connections: 0700000001000000
   - type: 1
     connections: 0000000002000000
   - type: 1
-    connections: 0100000000000000
+    connections: 0100000003000000
+  - type: 1
+    connections: 0200000004000000
+  - type: 1
+    connections: 0300000005000000
+  - type: 1
+    connections: 0400000006000000
+  - type: 1
+    connections: 0500000007000000
+  - type: 1
+    connections: 0600000000000000
   compositeAdjecenyList: []
   nodeComponents: 

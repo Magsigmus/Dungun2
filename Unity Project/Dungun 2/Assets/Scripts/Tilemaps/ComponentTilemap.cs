@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static UnityEditor.Progress;
@@ -26,7 +27,9 @@ public class ComponentTilemap
         new Vector3Int(0, -1), // South
         new Vector3Int(1, 0) // East
     };
-    /*
+    
+    public ComponentTilemap() { }
+
     public ComponentTilemap(int nodes, Dictionary<TileType, BaseTile> tileLookupTable)
     {
         this.tileLookupTable = tileLookupTable;
@@ -40,7 +43,7 @@ public class ComponentTilemap
         while (rooms.Count < nodes) { rooms.Add((new Vector2Int(), new ScriptableRoom())); }
         origin = new Vector2Int();
     }
-    */
+    
     public ComponentTilemap(int nodes, Dictionary<TileType, BaseTile> tileLookupTable, Tilemap ground, Tilemap walls, Tilemap decor)
     {
         this.tileLookupTable = tileLookupTable;
@@ -53,6 +56,23 @@ public class ComponentTilemap
         rooms = new List<(Vector2Int, ScriptableRoom)>();
         while (rooms.Count < nodes) { rooms.Add((new Vector2Int(), new ScriptableRoom())); }
         origin = new Vector2Int();
+    }
+
+    public ComponentTilemap(ComponentTilemap prefabMap)
+    {
+        tileLookupTable = prefabMap.tileLookupTable;
+        origin = prefabMap.origin;
+        groundTilemap = CloneTilemap(prefabMap.groundTilemap);
+        wallTilemap = CloneTilemap(prefabMap.wallTilemap);
+        decorationTilemap = CloneTilemap(prefabMap.decorationTilemap);
+        freeEntrances = prefabMap.freeEntrances.Select(e => e.Select(e => (e.Item1, e.Item2)).ToList()).ToList();
+        rooms = prefabMap.rooms.Select(e => (e.Item1, e.Item2)).ToList();
+
+        Tilemap CloneTilemap(Tilemap map){
+            GameObject newMap = GameObject.Instantiate(map.gameObject);
+            newMap.transform.parent = map.gameObject.transform.parent;
+            return newMap.GetComponent<Tilemap>();
+        }
     }
 
     Tilemap CloneTilemap(Tilemap map, string name)
@@ -427,9 +447,9 @@ public class ComponentTilemap
         Tilemap aStarTilemap, int maxTilesConsidered = 200)
     {
         List<Vector3Int> startToEnd = GetShortestRoomToRoomPath(parentIndex, childIndex, out float startToEndCost, 
-            out (int, Vector2Int) startToEndParentEntrance, out (int, Vector2Int) startToEndChildEntrance), 
+            out (int, Vector2Int) startToEndChildEntrance, out (int, Vector2Int) startToEndParentEntrance), 
             endToStart = GetShortestRoomToRoomPath(childIndex, parentIndex, out float endToStartCost,
-            out (int, Vector2Int) endToStartParentEntrance, out (int, Vector2Int) endToStartChildEntrance);
+            out (int, Vector2Int) endToStartChildEntrance, out (int, Vector2Int) endToStartParentEntrance);
        
         if(startToEndCost == -1 && endToStartCost == -1) { return false; }
 
@@ -450,8 +470,8 @@ public class ComponentTilemap
         //groundTilemap.SetTile((Vector3Int)childEntrance.Item2, tileLookupTable[TileType.Error]);
         //groundTilemap.SetTile((Vector3Int)parentEntrance.Item2, tileLookupTable[TileType.Error]);
 
-        OpenEntrance(childEntrance);
-        OpenEntrance(parentEntrance);
+        OpenEntrance((childEntrance.Item1, childEntrance.Item2 + rooms[childIndex].Item1));
+        OpenEntrance((parentEntrance.Item1, parentEntrance.Item2 + rooms[parentIndex].Item1));
         PlaceCorridor(chosenPath.ToArray());
 
         freeEntrances[parentIndex].Remove(parentEntrance);
@@ -507,8 +527,8 @@ public class ComponentTilemap
                         bestCost = newCost;
                         bestDistance = path.Count + 1;
 
-                        bestStartEntrance = (freeEntrances[startRoom][j].Item1, freeEntrances[startRoom][j].Item2 + rooms[startRoom].Item1);
-                        bestEndEntrance = (freeEntrances[endRoom][i].Item1, freeEntrances[endRoom][i].Item2 + rooms[endRoom].Item1);
+                        bestStartEntrance = (freeEntrances[startRoom][j].Item1, freeEntrances[startRoom][j].Item2);
+                        bestEndEntrance = (freeEntrances[endRoom][i].Item1, freeEntrances[endRoom][i].Item2);
 
                         path.Insert(0, GetShiftedEntrancePosition(startRoom, j, 2));
                         path.Insert(0, GetShiftedEntrancePosition(startRoom, j, 1));
@@ -573,8 +593,9 @@ public class ComponentTilemap
         Vector3Int otherEntrancePos = (Vector3Int)(otherEntrance.Item2 + newOrigen);
 
         Vector3Int[] path = GetStraightPath(thisEntrancePos, otherEntrancePos);
-        if (CheckPathingOverlap(path)) { return false; }
-        PlaceTilemapEntranceAndCorridor(thisEntrance, otherEntrance, path);
+        if (CheckPathingOverlap(path)) { RemoveComponentTilemap(otherComponent, newOrigen); return false; }
+        PlaceTilemapEntranceAndCorridor((thisEntrance.Item1, (Vector2Int)thisEntrancePos), 
+            (otherEntrance.Item1, (Vector2Int)otherEntrancePos), path);
 
         otherComponent.freeEntrances[otherRoomIndex].RemoveAt(otherEntranceIndex);
         freeEntrances[thisRoomIndex].RemoveAt(thisEntranceIndex);
@@ -587,16 +608,15 @@ public class ComponentTilemap
 
         for (int i = 0; i < rooms.Count; i++)
         {
-            if (rooms[i].Item2 != null && otherComponent.rooms[i].Item2 != null)
+            if (rooms[i].Item2.size != new Vector2Int() && otherComponent.rooms[i].Item2.size != new Vector2Int())
             {
                 Debug.LogError("Doubly assigned rooms!");
-                return false;
+                //return false;
             }
 
-            if(otherComponent.rooms[i].Item2 != null)
-            {
-                rooms[i] = (otherComponent.rooms[i].Item1 + localisingVector + newOrigen, otherComponent.rooms[i].Item2);
-            }
+            if(otherComponent.rooms[i].Item2.size == new Vector2Int()) { continue; }
+
+            rooms[i] = (otherComponent.rooms[i].Item1 + localisingVector + newOrigen, otherComponent.rooms[i].Item2);
         }
 
         return true;
@@ -615,9 +635,9 @@ public class ComponentTilemap
         return false;
     }
 
-    public bool LoadComponentTilemap(ComponentTilemap map, Vector2Int origen)
+    public bool LoadComponentTilemap(ComponentTilemap map, Vector2Int newRoomOrigen)
     {
-        Vector3Int localisingVector = (Vector3Int)this.origin - (Vector3Int)map.origin; 
+        Vector3Int localisingVector = ((Vector3Int)this.origin - (Vector3Int)map.origin) + (Vector3Int)newRoomOrigen; 
 
         SavedTile[] groundTiles = GetTilesFromMap(map.groundTilemap).ToArray();
         SavedTile[] wallTiles = GetTilesFromMap(map.wallTilemap).ToArray();
@@ -635,20 +655,35 @@ public class ComponentTilemap
 
         foreach(SavedTile tile in groundTiles)
         {
-            groundTilemap.SetTile((Vector3Int)origen + tile.position, tile.tile);
+            groundTilemap.SetTile(tile.position, tile.tile);
         }
         foreach (SavedTile tile in wallTiles)
         {
-            wallTilemap.SetTile((Vector3Int)origen + tile.position, tile.tile);
+            wallTilemap.SetTile(tile.position, tile.tile);
         }
         foreach (SavedTile tile in decorationTiles)
         {
-            decorationTilemap.SetTile((Vector3Int)origen + tile.position, tile.tile);
+            decorationTilemap.SetTile(tile.position, tile.tile);
         }
 
         return true;
     }
 
+    public void RemoveComponentTilemap(ComponentTilemap map, Vector2Int origen)
+    {
+        Vector3Int localisingVector = (Vector3Int)this.origin - (Vector3Int)map.origin;
+
+        RemoveTilemap(groundTilemap, map.groundTilemap);
+        RemoveTilemap(wallTilemap, map.wallTilemap);
+        RemoveTilemap(decorationTilemap, map.decorationTilemap);
+
+        void RemoveTilemap(Tilemap thisMap, Tilemap otherMap)
+        {
+            GetTilesFromMap(otherMap).
+                Select(e => e.position + localisingVector + (Vector3Int)origen).
+                ToList().ForEach(e => thisMap.SetTile(e, null));
+        }
+    }
 
     IEnumerable<SavedTile> GetTilesFromMap(Tilemap map)
     {
@@ -682,10 +717,15 @@ public class ComponentTilemap
         return maxPosition - minPosition;
     }
 
-    void DeleteMap()
+    public void DeleteMap()
     {
         GameObject.Destroy(groundTilemap.gameObject);
         GameObject.Destroy(wallTilemap.gameObject);
         GameObject.Destroy(decorationTilemap.gameObject);
+    }
+
+    public ComponentTilemap Clone()
+    {
+        return new ComponentTilemap(this);
     }
 }

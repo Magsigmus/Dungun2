@@ -2,6 +2,9 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using JetBrains.Annotations;
+using UnityEditor.Experimental.GraphView;
 
 public class ScriptableLevelGraph : ScriptableObject
 {
@@ -12,6 +15,10 @@ public class ScriptableLevelGraph : ScriptableObject
     private int[] parents; // -1 = no parent
     private int[] state; // 0 = not processed, 1= being processed, 2 = processed
     private List<List<List<int>>> cycleAdjecenyLists;
+
+    public int[] nodeComponents;
+    public List<List<ComponentGraphEdge>> componentAdjecenyList;
+
     public void Initalize()
     {
         // Initalizes all the values that is used for finding the cycles
@@ -24,7 +31,79 @@ public class ScriptableLevelGraph : ScriptableObject
         RecursevlyFindLoops(0); // Finds all the "simple" cycles, starting in node 0s
         MakeCompositeCycles(); // Makes the "composite" cycles, by applying an XOR gate to each connection
         compositeAdjecenyList = MakeComposite(); // Makes the final composite graph
+
+        MakeComponentGraph();
     }
+
+    private void MakeComponentGraph()
+    {
+        nodeComponents = Enumerable.Repeat(-1, adjecenyList.Count).ToArray();
+
+        int currentComponentNumber = 0;
+        for (int i = 0; i < compositeAdjecenyList.Count; i++)
+        {
+            if (nodeComponents[i] != -1) { continue; }
+            AssignComponentNumber(i, currentComponentNumber);
+            currentComponentNumber++;
+        }
+
+        componentAdjecenyList = new List<List<ComponentGraphEdge>>();
+        for(int i = 0; i < currentComponentNumber; i++) { componentAdjecenyList.Add(new List<ComponentGraphEdge>()); }
+        ConstructComponentGraph(0);
+    }
+    
+    private void ConstructComponentGraph(int startNode)
+    {
+        bool[] visited = Enumerable.Repeat(false, adjecenyList.Count).ToArray();
+
+        Queue<int> nodes = new Queue<int>();
+        nodes.Enqueue(startNode);
+
+        while (nodes.Count > 0)
+        {
+            int currentNode = nodes.Dequeue();
+            List<int> neighbours = adjecenyList[currentNode].connections;
+
+            foreach (int neighbour in neighbours)
+            {
+                if (visited[neighbour]) { continue; }
+                visited[neighbour] = true;
+
+                int neighbourComponent = nodeComponents[neighbour];
+                int currentNodeComponent = nodeComponents[currentNode];
+
+                if (neighbourComponent != currentNodeComponent) 
+                {
+                    componentAdjecenyList[neighbourComponent].Add(new ComponentGraphEdge(currentNodeComponent, neighbour, currentNode));
+                    componentAdjecenyList[currentNodeComponent].Add(new ComponentGraphEdge(neighbourComponent, currentNode, neighbour));
+                }
+
+                nodes.Enqueue(neighbour);
+            }
+        }
+    }
+
+    private void AssignComponentNumber(int startNode, int componentNumber)
+    {
+        Queue<int> nodes = new Queue<int>();
+        nodes.Enqueue(startNode);
+        nodeComponents[startNode] = componentNumber;
+
+        while (nodes.Count > 0) 
+        {
+            int currentNode = nodes.Dequeue();
+            List<int> neighbours = compositeAdjecenyList[currentNode].connections;
+
+            foreach(int neighbour in neighbours)
+            {
+                if (nodeComponents[neighbour] != -1) { continue; }
+
+                nodeComponents[neighbour] = componentNumber;
+                nodes.Enqueue(neighbour);
+            } 
+        }
+    }
+
 
     private void RecursevlyFindLoops(int currentNode) // Using color meathod, find cycles
     {
@@ -251,5 +330,17 @@ public class CompositeNode : Node
         type = RoomType.Normal;
         connections = new List<int>();
         id = "N";
+    }
+}
+
+[Serializable]
+public class ComponentGraphEdge{
+    public int componentIndex, startRoomIndex, endRoomIndex;
+
+    public ComponentGraphEdge(int nodeIndex, int startRoomIndex, int endRoomIndex)
+    {
+        this.componentIndex = nodeIndex;
+        this.startRoomIndex = startRoomIndex;
+        this.endRoomIndex = endRoomIndex;
     }
 }

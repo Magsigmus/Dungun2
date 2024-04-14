@@ -19,7 +19,12 @@ public class LevelMangerEditor : Editor
             script.GenerateLevel(script.levelNumber);
         }
 
-        if(GUILayout.Button("Place Next Room (TREE)"))
+        /*if (GUILayout.Button("Assemble Level"))
+        {
+            script.AssembleComponentTilemaps(script.levelNumber);
+        }*/
+
+        /*if(GUILayout.Button("Place Next Room (TREE)"))
         {
             (int, int) vals = script.roomGenerationStack.Peek();
             script.roomGenerationStack.Pop();
@@ -31,7 +36,7 @@ public class LevelMangerEditor : Editor
             (int, int, int) vals = script.cycleRoomGenerationStack.Peek();
             script.cycleRoomGenerationStack.Pop();
             script.PlaceCycle(vals.Item1, vals.Item2, vals.Item3);
-        }
+        }*/
 
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.AI;
 using System.Linq;
 using NavMeshPlus.Components;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class LevelManger : MonoBehaviour
 {
@@ -40,12 +41,12 @@ public class LevelManger : MonoBehaviour
     Dictionary<uint, List<int>> roomIndexLookupMap;
     Dictionary<TileType, BaseTile> tileLookupMap;
     ScriptableRoom[] allRooms; // An array containing all the rooms saved 
-    List<ComponentTilemap> componentTilemaps = new List<ComponentTilemap>();
+    ComponentTilemap[] componentTilemaps;
 
-    private IEnumerator aStarCorotine;
+    //private IEnumerator aStarCorotine;
 
-    public Stack<(int, int)> roomGenerationStack = new Stack<(int, int)>();
-    public Stack<(int, int,int)> cycleRoomGenerationStack = new Stack<(int, int,int)>();
+    //public Stack<(int, int)> roomGenerationStack = new Stack<(int, int)>();
+    //public Stack<(int, int,int)> cycleRoomGenerationStack = new Stack<(int, int,int)>();
 
     //Sig: Generates a level from a level index
     public void GenerateLevel(int levelIndex)
@@ -53,7 +54,6 @@ public class LevelManger : MonoBehaviour
         testGround.ClearAllTiles();
         testWalls.ClearAllTiles();
         testDecor.ClearAllTiles();
-        componentTilemaps.Clear();
 
         //Sig: Pulls a graph from the saved ones
         int NumOfGraphs = Resources.LoadAll<ScriptableLevelGraph>($"Graphs/Level {levelIndex}").Length;
@@ -61,7 +61,7 @@ public class LevelManger : MonoBehaviour
         levelGraph = Resources.Load<ScriptableLevelGraph>($"Graphs/Level {levelIndex}/Graph {tempindex}");
 
         //Sig: Initializes the corutine and clears the tilemap
-        if(aStarCorotine != null) { StopCoroutine(aStarCorotine); }
+        //if (aStarCorotine != null) { StopCoroutine(aStarCorotine); }
 
         Debug.Log($"Retrived graph from level {levelIndex} num {tempindex}");
 
@@ -74,10 +74,10 @@ public class LevelManger : MonoBehaviour
         spawnedEnemies = Enumerable.Repeat(false, compositeAdjecenyList.Count).ToArray();
         visited = Enumerable.Repeat(false, compositeAdjecenyList.Count).ToArray();
 
-        roomGenerationStack = new Stack<(int, int)>();
-        cycleRoomGenerationStack = new Stack<(int, int, int)>();
+        //roomGenerationStack = new Stack<(int, int)>();
+        //cycleRoomGenerationStack = new Stack<(int, int, int)>();
 
-        ComponentTilemap completeComponentTilemap;
+        componentTilemaps = new ComponentTilemap[levelGraph.componentAdjecenyList.Count];
 
         // Goes through the first dfs cycle for each of the nodes
         for (int i = 0; i < visited.Length; i++)
@@ -87,82 +87,217 @@ public class LevelManger : MonoBehaviour
             //if (cycleRoomGenerationStack.TryPeek(out (int, int,int) trash11)) { continue; }
             if (visited[i]) continue;
 
-            startCycleNode = i;
-            visited[i] = true;
+            ComponentTilemap newComponentTilemap = BuildComponentTilemap(i, out bool sucess);
 
-            // Gets a randrom first room
-            ScriptableRoom firstRoom = GetRandomRoom(compositeAdjecenyList[i].type, 
-                (byte)levelGraph.adjecenyList[i].connections.Count); 
-
-            //Sig: Initializes the componentTilemap-object
-            currentComponentTilemap = new ComponentTilemap(compositeAdjecenyList.Count, tileLookupMap, testGround, testWalls, testDecor); // Initalizes the current component tilemap
-            currentComponentTilemap.rooms[i] = (new Vector2Int(), firstRoom); // Adds the origen and room to the component
-            currentComponentTilemap.LoadRoom(new Vector2Int(), firstRoom); // Loads the room to the test tilemaps
-            currentComponentTilemap.freeEntrances[i].AddRange(firstRoom.metaInformation.AllEntrances);
-            
-            bool sucess = true;
-
-            // Runs dfs for the current node 
-            foreach (int neighbour in compositeAdjecenyList[i].connections)
+            if (!sucess)
             {
-                if (!sucess) { break; }
-                //if (roomGenerationStack.TryPeek(out (int,int) trash2)) { continue; }
-                //if (cycleRoomGenerationStack.TryPeek(out (int,int,int) trash22)) { continue; }
-                if (visited[neighbour]) { continue; }
-
-                visited[neighbour] = true;
-                if (compositeAdjecenyList[i].id[0] == 'N')
-                {
-                    Debug.LogError("FUCK");
-                }
-                else if (compositeAdjecenyList[i].id[0] == 't')
-                {
-                    sucess = PlaceTree(neighbour, i);
-                    //roomGenerationStack.Push((neighbour, i));
-                }
-                else if (compositeAdjecenyList[i].id[0] == 'c')
-                {
-                    sucess = PlaceCycle(neighbour, i, 0);
-
-                    if(!sucess) { continue; }
-
-                    /*(int, Vector2Int) endNodeEntrance = currentComponentTilemap.freeEntrances[currentCycleNode][0];
-                    (int, Vector2Int) startNodeEntrance = currentComponentTilemap.freeEntrances[startCycleNode][0];
-                    endNodeEntrance.Item2 += currentComponentTilemap.rooms[currentCycleNode].Item1;
-                    startNodeEntrance.Item2 += currentComponentTilemap.rooms[startCycleNode].Item1;*/
-
-                    sucess = sucess && currentComponentTilemap.
-                        AStarCorridorGeneration(currentCycleNode, startCycleNode, tileLookupMap, 
-                        AStarTilemap, maxTilesConsideredInAStar);
-                }
-            }
-
-            if(!sucess) { 
                 i--;
                 visited = previousVisited;
-                currentComponentTilemap.ClearMap();
-                Debug.Log("Detected overlapping level. Retrying");  
-                continue; 
+                continue;
             }
 
-            //if(i == 0) { }
-
-            componentTilemaps.Add(currentComponentTilemap);
+            int componentIndex = levelGraph.nodeComponents[i];
+            componentTilemaps[componentIndex] = newComponentTilemap;
+            newComponentTilemap.groundTilemap.gameObject.name = $"ground of component {componentIndex}";
+            newComponentTilemap.wallTilemap.gameObject.name = $"walls of component {componentIndex}";
         }
 
-        if(!buildCompletely) { return; }
+        //Instantiate(componentTilemaps[0].wallTilemap.gameObject);
+        //Instantiate(componentTilemaps[0].groundTilemap.gameObject);
+        //Instantiate(componentTilemaps[0].decorationTilemap.gameObject);
 
-        foreach(ComponentTilemap component in componentTilemaps)
-        {
-            component.SpawnEntranceTriggers(enemySpawnTriggerPrefab);
-        }
+        bool assemblingSucess = 
+            AssembleComponentTilemaps(levelIndex, out ComponentTilemap completeComponentTilemap);
+
+        if(!assemblingSucess) { GenerateLevel(levelIndex);  return; }
+
+        if (!buildCompletely) { return; }
+
+        completeComponentTilemap.SpawnEntranceTriggers(enemySpawnTriggerPrefab);
 
         navMesh.BuildNavMesh();
-
-        //Debug.Log("Triggered");
-        //navMesh.BuildNavMesh();
-        // Gets all the tiles in the tilemaps
     }
+
+    public bool AssembleComponentTilemaps(int levelIndex, out ComponentTilemap completeComponentTilemap)
+    {
+        completeComponentTilemap = componentTilemaps[0].Clone();
+
+        Queue<int> componentsToGo = new Queue<int>();
+        componentsToGo.Enqueue(0);
+
+        bool[] componentVisited = Enumerable.Repeat(false, levelGraph.componentAdjecenyList.Count).ToArray();
+        componentVisited[0] = true;
+        bool sucess = true;
+        while (componentsToGo.Count > 0)
+        {
+            int currentNode = componentsToGo.Dequeue();
+
+            List<ComponentGraphEdge> neighbours = levelGraph.componentAdjecenyList[currentNode];
+            if (neighbours == null) { continue; }
+
+            foreach (ComponentGraphEdge neighbour in neighbours)
+            {
+                if (componentVisited[neighbour.componentIndex]) { continue; }
+                componentVisited[neighbour.componentIndex] = true;
+
+                sucess = PlaceComponent(completeComponentTilemap, neighbour);
+
+                componentsToGo.Enqueue(neighbour.componentIndex);
+
+                if(!sucess) { break; }
+            }
+
+            if (!sucess) { break; }
+        }
+
+        for (int i = 0; i < componentTilemaps.Length; i++)
+        {
+            componentTilemaps[i].DeleteMap();
+        }
+
+        if (!sucess) 
+        { 
+            Debug.Log("Gave up assembling components. Retrying level generation");
+            completeComponentTilemap.DeleteMap(); 
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+    private List<(int,int)> GetComponentConnections(bool[] previousVisited)
+    {
+        List<(int, int)> missingConnections = new List<(int, int)>();
+
+        for (int j = 0; j < levelGraph.adjecenyList.Count; j++)
+        {
+            if (!(!previousVisited[j] && visited[j])) { continue; }
+
+            List<int> neighbours = levelGraph.adjecenyList[j].connections;
+            foreach (int neighbour in neighbours)
+            {
+                if (levelGraph.nodeComponents[j] == -1) { Debug.LogError("Wrongly assigned node components."); }
+
+                if (levelGraph.nodeComponents[j] != levelGraph.nodeComponents[neighbour])
+                {
+                    missingConnections.Add((j, neighbour));
+                }
+            }
+        }
+
+        return missingConnections;
+    }*/
+
+    bool PlaceComponent(ComponentTilemap completeComponentTilemap, ComponentGraphEdge neighbour)
+    {
+        int startNodeIndex = neighbour.startRoomIndex;
+        int endNodeIndex = neighbour.endRoomIndex;
+        ComponentTilemap neighbourMap = componentTilemaps[neighbour.componentIndex];
+
+        List<(int, Vector2Int)> startRoomEntrances = completeComponentTilemap.freeEntrances[startNodeIndex];
+        List<(int, Vector2Int)> endRoomEntrances = neighbourMap.freeEntrances[endNodeIndex];
+
+        int startEntranceIndex = 0;
+        int requiredEntranceDirection = (startRoomEntrances[startEntranceIndex].Item1 + 2) % 4;
+        int endEntranceIndex = 0;
+
+        bool sucess = false;
+
+        int c = 0;
+        while (!sucess)
+        {
+            while (true)
+            {
+                for (; endEntranceIndex < endRoomEntrances.Count; endEntranceIndex++)
+                {
+                    if (requiredEntranceDirection == endRoomEntrances[endEntranceIndex].Item1) { break; }
+                }
+
+                if (endEntranceIndex != endRoomEntrances.Count) { break; }
+                else
+                {
+                    startEntranceIndex++;
+                    endEntranceIndex = 0;
+                    if (startEntranceIndex == startRoomEntrances.Count)
+                    { Debug.LogError("Could not find any suitable connection between components!"); return false; }
+                    requiredEntranceDirection = (startRoomEntrances[startEntranceIndex].Item1 + 2) % 4;
+                }
+            }
+
+
+            sucess = completeComponentTilemap.MergeComponents(neighbourMap, startNodeIndex, startEntranceIndex, endNodeIndex, endEntranceIndex);
+            c++;
+
+            if(!sucess) { endEntranceIndex++; }
+            if(c > 200) { Debug.LogError("Given up trying to combine components"); break; }
+        }
+
+        return sucess;
+    }
+
+    ComponentTilemap BuildComponentTilemap(int startingNode, out bool sucess)
+    {
+        startCycleNode = startingNode;
+        visited[startingNode] = true;
+
+        // Gets a random first room
+        ScriptableRoom firstRoom = GetRandomRoom(compositeAdjecenyList[startingNode].type,
+            (byte)levelGraph.adjecenyList[startingNode].connections.Count);
+
+        //Sig: Initializes the componentTilemap-object
+        currentComponentTilemap = new ComponentTilemap(compositeAdjecenyList.Count, tileLookupMap, testGround, testWalls, testDecor); // Initalizes the current component tilemap
+        currentComponentTilemap.rooms[startingNode] = (new Vector2Int(), firstRoom); // Adds the origen and room to the component
+        currentComponentTilemap.LoadRoom(new Vector2Int(), firstRoom); // Loads the room to the test tilemaps
+        currentComponentTilemap.freeEntrances[startingNode].AddRange(firstRoom.metaInformation.AllEntrances);
+
+        sucess = true;
+
+        // Runs dfs for the current node 
+        foreach (int neighbour in compositeAdjecenyList[startingNode].connections)
+        {
+            //if (roomGenerationStack.TryPeek(out (int,int) trash2)) { continue; }
+            //if (cycleRoomGenerationStack.TryPeek(out (int,int,int) trash22)) { continue; }
+            if (visited[neighbour]) { continue; }
+
+            visited[neighbour] = true;
+            if (compositeAdjecenyList[startingNode].id[0] == 'N')
+            {
+                Debug.LogError("FUCK");
+            }
+            else if (compositeAdjecenyList[startingNode].id[0] == 't')
+            {
+                sucess = PlaceTree(neighbour, startingNode);
+                //roomGenerationStack.Push((neighbour, i));
+            }
+            else if (compositeAdjecenyList[startingNode].id[0] == 'c')
+            {
+                sucess = PlaceCycle(neighbour, startingNode, 0);
+
+                if (!sucess) { LogFailure(); break; }
+
+                /*(int, Vector2Int) endNodeEntrance = currentComponentTilemap.freeEntrances[currentCycleNode][0];
+                (int, Vector2Int) startNodeEntrance = currentComponentTilemap.freeEntrances[startCycleNode][0];
+                endNodeEntrance.Item2 += currentComponentTilemap.rooms[currentCycleNode].Item1;
+                startNodeEntrance.Item2 += currentComponentTilemap.rooms[startCycleNode].Item1;*/
+
+                sucess = sucess && currentComponentTilemap.
+                    AStarCorridorGeneration(currentCycleNode, startCycleNode, tileLookupMap,
+                    AStarTilemap, maxTilesConsideredInAStar);
+            }
+
+            if (!sucess) { LogFailure(); break; }
+        }
+
+        return currentComponentTilemap;
+    }
+
+    void LogFailure()
+    {
+        currentComponentTilemap.DeleteMap();
+        Debug.Log("Detected overlapping level. Retrying");
+    }
+
 
     #region RoomManagement
     private void InitializeTileTable()
