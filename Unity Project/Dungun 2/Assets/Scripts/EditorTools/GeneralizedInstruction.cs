@@ -80,10 +80,10 @@ public class GeneralizedInstruction
     public void Shoot()
     {
         if (!target) { target = defaultTarget; }
-        Vector2 dir = new Vector2(target.position.x - gunObject.transform.position.x, target.position.y - gunObject.transform.position.y);
+        Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
         newBullet.transform.up = dir;
-        newBullet.transform.position = gunObject.transform.position.ConvertTo<Vector2>();
+        newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>();
         newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);
     }
 

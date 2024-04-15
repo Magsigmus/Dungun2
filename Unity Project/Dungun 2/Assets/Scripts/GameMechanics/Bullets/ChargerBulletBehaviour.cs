@@ -37,6 +37,6 @@ public class ChargerBulletBehaviour : MonoBehaviour, BulletInterface
         newCharger.transform.position = transform.position;  //rasj: spawn charger at current location
         newCharger.GetComponent<EnemyBehavior>().healthPoints = chargerHealth;  //rasj: update health to be correct
 
-        Destroy(this.gameObject);   
+        Destroy(this.gameObject);
     }
 }
