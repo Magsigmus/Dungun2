@@ -34,6 +34,11 @@ public class PlayerBehaviour : MonoBehaviour
     public float cooldownTime = 1f;
     public int healthPoints = 5;
 
+    [Header("Audio Settings")]
+    public AudioSource source;
+    public AudioClip shootSound;
+    public AudioClip hurtSound;
+
     private Transform spriteTransform;
     private Vector2 vel, dir;
     private Rigidbody2D rb2D;
@@ -42,6 +47,7 @@ public class PlayerBehaviour : MonoBehaviour
     private SpriteRenderer[] renderers;
     private Collider2D[] colliders;
     private Animator animator;
+
 
     private void Awake()
     {
@@ -69,7 +75,8 @@ public class PlayerBehaviour : MonoBehaviour
         //Sig: Dash handling
         if (dashing) { return; }
         if (dashingTimer > dashingCooldown &&
-            playerControls.Default.Dash.phase == InputActionPhase.Performed)
+            playerControls.Default.Dash.phase == InputActionPhase.Performed &&
+            rb2D.velocity.magnitude > 0) //rasj: also if actually moving, so no dashing in place
         {
             StartCoroutine("Dash"); return;
         }
@@ -107,6 +114,8 @@ public class PlayerBehaviour : MonoBehaviour
         if (cooldown > cooldownTime)
         {
             cooldown = 0;
+
+            source.PlayOneShot(shootSound);
 
             //Sig: Spawn bullet
             GameObject newBullet = Instantiate(bulletPrefab);
@@ -187,7 +196,10 @@ public class PlayerBehaviour : MonoBehaviour
         if (healthPoints <= 0)
         {
             Debug.Log("PLAYER DEAD!");
+
+            return;
         }
+        source.PlayOneShot(shootSound);
     }
 
     IEnumerator Dash()

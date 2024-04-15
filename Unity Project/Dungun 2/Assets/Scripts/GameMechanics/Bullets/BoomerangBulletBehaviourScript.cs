@@ -20,15 +20,20 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
             Destroy(this.gameObject, desctructionTime);
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject == orgShooter)  //rasj: if hits original shooter
+        if (collision.gameObject == orgShooter || collision.gameObject.tag == "Player")  //rasj: if hits original shooter
         {
             Destroy(this.gameObject);
-            return;
+        } else if (orgShooter)  //rasj: gotta make sure that the original shooter hasn't been killed by the player
+        {
+            Vector2 dir = new Vector2(orgShooter.transform.position.x - transform.position.x, orgShooter.transform.position.y - transform.position.y);
+            transform.up = dir;
         }
-        Vector2 dir = new Vector2(orgShooter.transform.position.x - transform.position.x, orgShooter.transform.position.y - transform.position.y);
-        transform.up = dir;
+        else  //rasj: in all other cases, die
+        {
+            Destroy(this.gameObject);
+        }
     }
 
 

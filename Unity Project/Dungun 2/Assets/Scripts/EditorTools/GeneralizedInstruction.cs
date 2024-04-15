@@ -48,6 +48,10 @@ public class GeneralizedInstruction
 
     public EnemyBehavior.MovementMode newMovementMode = EnemyBehavior.MovementMode.Idle;
 
+    public float recoilStrength = 1f;
+    public float recoilDuration = .1f;
+    private float oldWaitTime;
+
     [HideInInspector, NonSerialized]
     public GameObject gunObject;
     public Transform defaultTarget;
@@ -60,6 +64,7 @@ public class GeneralizedInstruction
     public void Rotate()
     {
         enemy.transform.RotateAround(enemy.transform.position, new Vector3(0, 0, 1), rotationAngle);
+        //Flip();
     }
 
     public void Point()
@@ -67,6 +72,7 @@ public class GeneralizedInstruction
         if (!target) { target = defaultTarget; }
         Vector2 dir = new Vector2(target.position.x - gunObject.transform.position.x, target.position.y - gunObject.transform.position.y);
         gunObject.transform.up = dir;
+        //Flip();
     }
 
     /*
@@ -81,6 +87,16 @@ public class GeneralizedInstruction
     {
         if (!target) { target = defaultTarget; }
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
+
+        /*rasj: gun recoil when shoot
+        oldWaitTime = waitTime;
+        waitTime = recoilDuration;
+        gunObject.transform.Translate(Vector3.forward * recoilStrength);
+        Wait();
+        gunObject.transform.Translate(Vector3.forward * -recoilStrength);
+        waitTime = oldWaitTime;
+        */
+
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
         newBullet.transform.up = dir;
         newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>();
@@ -105,6 +121,20 @@ public class GeneralizedInstruction
         {
             script = enemy.GetComponent<EnemyBehavior>();
             script.ChangeBehaviour(newMovementMode);
+        }
+    }
+
+    private void Flip()
+    {
+        //rasj: tried to make the gun not opside-down when enemy looking left, idk what went wrong
+        float rotation = gunObject.transform.rotation.z;
+        if (rotation < 180)  //rasj: left
+        {
+            gunObject.transform.GetChild(0).rotation = Quaternion.Euler(0, 180f, 0);
+        }
+        else if (rotation > 180) //rasj: right
+        {
+            gunObject.transform.GetChild(0).rotation = Quaternion.Euler(0, 0, 0);
         }
     }
 }
