@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
@@ -24,6 +25,7 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
         if (collision.gameObject == orgShooter)  //rasj: if hits original shooter
         {
             Destroy(this.gameObject);
+            return;
         }
         Vector2 dir = new Vector2(orgShooter.transform.position.x - transform.position.x, orgShooter.transform.position.y - transform.position.y);
         transform.up = dir;
