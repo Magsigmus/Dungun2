@@ -18,6 +18,8 @@ public class ComponentTilemap
     public Tilemap groundTilemap, wallTilemap, decorationTilemap; //Sig: References to the different tilemaps
     public List<List<(int, Vector2Int)>> freeEntrances; // Char: North = 0, West = 1, South = 2, East = 3
     public List<(Vector2Int, ScriptableRoom)> rooms; // Vector2 to hold the origen of the scripableroom
+    public List<List<SavedTile>> corridorGround, corridorWalls, corridorDecoration;
+    public List<Dictionary<(int,Vector2Int),int>> corridorIndecies;
     public Dictionary<TileType, BaseTile> tileLookupTable = new Dictionary<TileType, BaseTile>();
 
     // Init of the ways the A* algorithm can move
@@ -50,12 +52,21 @@ public class ComponentTilemap
         this.groundTilemap = CloneTilemap(ground, "New Ground Component Tilemap");
         this.wallTilemap = CloneTilemap(walls, "New Walls Component Tilemap");
         this.decorationTilemap = CloneTilemap(decor, "New Decoration Component Tilemap");
-        
+
+        corridorGround = new List<List<SavedTile>>();
+        corridorWalls = new List<List<SavedTile>>();
+        corridorDecoration = new List<List<SavedTile>>();
+
         freeEntrances = new List<List<(int, Vector2Int)>>();
-        while (freeEntrances.Count < nodes) { freeEntrances.Add(new List<(int, Vector2Int)>()); }
+        while (freeEntrances.Count < nodes) 
+        { freeEntrances.Add(new List<(int, Vector2Int)>()); }
         rooms = new List<(Vector2Int, ScriptableRoom)>();
-        while (rooms.Count < nodes) { rooms.Add((new Vector2Int(), new ScriptableRoom())); }
+        while (rooms.Count < nodes) 
+        { rooms.Add((new Vector2Int(), new ScriptableRoom())); }
         origin = new Vector2Int();
+        corridorIndecies = new List<Dictionary<(int, Vector2Int), int>>();
+        while (corridorIndecies.Count < nodes) 
+        { corridorIndecies.Add(new Dictionary<(int, Vector2Int), int>()); }
     }
 
     public ComponentTilemap(ComponentTilemap prefabMap)
@@ -67,6 +78,17 @@ public class ComponentTilemap
         decorationTilemap = CloneTilemap(prefabMap.decorationTilemap);
         freeEntrances = prefabMap.freeEntrances.Select(e => e.Select(e => (e.Item1, e.Item2)).ToList()).ToList();
         rooms = prefabMap.rooms.Select(e => (e.Item1, e.Item2)).ToList();
+
+        corridorGround = CloneCorridorTilemap(prefabMap.corridorGround);
+        corridorWalls = CloneCorridorTilemap(prefabMap.corridorWalls);
+        corridorDecoration = CloneCorridorTilemap(prefabMap.corridorDecoration);
+
+        corridorIndecies = prefabMap.corridorIndecies.Select(e => e.ToDictionary(e => e.Key, e => e.Value)).ToList();
+        
+        List<List<SavedTile>> CloneCorridorTilemap(List<List<SavedTile>> map)
+        {
+            return map.Select(e => e.Select(e => new SavedTile(e.position, e.tile)).ToList()).ToList();
+        }
 
         Tilemap CloneTilemap(Tilemap map){
             GameObject newMap = GameObject.Instantiate(map.gameObject);
@@ -110,11 +132,6 @@ public class ComponentTilemap
         { tiles.ToList().ForEach(e => map.SetTile(e.position, e.tile)); }
     }
 
-    /*public int GetEntranceWithShortestRequiredCorridor()
-    {
-
-    }*/
-
     public bool PlaceRoom(int childIndex, int parentIndex, int parentEntranceIndex, int childEntanceIndex, ScriptableRoom childRoom)
     {
         (int, Vector2Int) parentEntrance = freeEntrances[parentIndex][parentEntranceIndex];
@@ -142,6 +159,7 @@ public class ComponentTilemap
 
         if(CheckPathingOverlap(path)) { return false; }
 
+        LogCorridor(parentIndex, childIndex, parentEntrance, childEntrance);
         PlaceTilemapEntranceAndCorridor((parentEntrance.Item1, parentEntrancePos), (childEntrance.Item1, childEntrancePos), path);
 
         // Corrects the amount of free entrances
@@ -192,8 +210,9 @@ public class ComponentTilemap
 
     private void PlaceCorridor(Vector3Int[] corridorPoints)
     {
-        List<Vector3Int> groundTiles = new List<Vector3Int>();
-        List<Vector3Int> wallTiles = new List<Vector3Int>();
+        List<SavedTile> groundTiles = new List<SavedTile>();
+        List<SavedTile> wallTiles = new List<SavedTile>();
+        List<Vector3Int> unprocessedWallTiles = new List<Vector3Int>();
 
         for (int i = 0; i < corridorPoints.Length; i++)
         {
@@ -201,8 +220,8 @@ public class ComponentTilemap
 
             foreach (Vector3Int newGroundTile in newGroundTiles)
             {
+                groundTiles.Add(new SavedTile(newGroundTile, tileLookupTable[TileType.Ground]));
                 if (groundTilemap.HasTile(newGroundTile)) { continue; }
-                groundTiles.Add(newGroundTile);
                 groundTilemap.SetTile(newGroundTile, tileLookupTable[TileType.Ground]);
             }
         }
@@ -213,19 +232,24 @@ public class ComponentTilemap
 
             foreach (Vector3Int newWallTile in newTiles)
             {
+                groundTiles.Add(new SavedTile(newWallTile, tileLookupTable[TileType.Ground]));
                 if (groundTilemap.HasTile(newWallTile)) { continue; }
-                wallTiles.Add(newWallTile);
+                unprocessedWallTiles.Add(newWallTile);
                 wallTilemap.SetTile(newWallTile, tileLookupTable[TileType.WestWall]);
 
-                groundTiles.Add(newWallTile);
                 groundTilemap.SetTile(newWallTile, tileLookupTable[TileType.Ground]);
             }
         }
 
-        foreach (Vector3Int newWallTile in wallTiles)
+        foreach (Vector3Int newWallTile in unprocessedWallTiles)
         {
+            wallTiles.Add(new SavedTile(newWallTile, PickCorrectTile(newWallTile)));
             wallTilemap.SetTile(newWallTile, PickCorrectTile(newWallTile));
         }
+
+        corridorGround.Add(groundTiles);
+        corridorWalls.Add(wallTiles);
+        corridorDecoration.Add(new List<SavedTile>());
     }
 
     bool[,] CheckIfTilesArePresent(Tilemap map, int distToEdgeOfBox, Vector3Int pos)
@@ -472,6 +496,7 @@ public class ComponentTilemap
 
         OpenEntrance((childEntrance.Item1, childEntrance.Item2 + rooms[childIndex].Item1));
         OpenEntrance((parentEntrance.Item1, parentEntrance.Item2 + rooms[parentIndex].Item1));
+        LogCorridor(parentIndex, childIndex, parentEntrance, childEntrance);
         PlaceCorridor(chosenPath.ToArray());
 
         freeEntrances[parentIndex].Remove(parentEntrance);
@@ -562,9 +587,17 @@ public class ComponentTilemap
                 GameObject newTrigger = GameObject.Instantiate(entranceTriggerPrefab);
                 newTrigger.transform.position = (Vector2)position + new Vector2(0.5f, 0.5f);
                 newTrigger.transform.up = neighbourDirs[GetCorrespondingEntranceDirection(entrance.Item1)];
-                newTrigger.GetComponent<EntranceTriggerBehaviour>().roomIndex = i;
+                EntranceTriggerBehaviour triggerBehaviour = newTrigger.GetComponent<EntranceTriggerBehaviour>();
+                triggerBehaviour.roomIndex = i;
+                triggerBehaviour.thisEntrance = entrance;
             }
         }
+    }
+
+    private void LogCorridor(int parentIndex, int childIndex, (int, Vector2Int) parentEntrance, (int, Vector2Int) childEntrance)
+    {
+        corridorIndecies[parentIndex].Add(parentEntrance, corridorGround.Count);
+        corridorIndecies[childIndex].Add(childEntrance, corridorGround.Count);
     }
 
     private int ManhattanDistance(Vector3Int point1, Vector3Int point2)
@@ -594,6 +627,26 @@ public class ComponentTilemap
 
         Vector3Int[] path = GetStraightPath(thisEntrancePos, otherEntrancePos);
         if (CheckPathingOverlap(path)) { RemoveComponentTilemap(otherComponent, newOrigen); return false; }
+
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            if ((otherComponent.corridorIndecies[i].Count != 0) && (corridorIndecies[i].Count != 0))
+            {
+                Debug.LogError("Doubly assigned corridors!");
+                //return false;
+            }
+            if (otherComponent.corridorIndecies[i].Count != 0)
+            {
+                corridorIndecies[i] = otherComponent.corridorIndecies[i].
+                    ToDictionary(e => e.Key, e => e.Value + corridorGround.Count);
+            }
+        }
+
+        corridorGround.AddRange(Shift2DList((Vector3Int)(newOrigen + localisingVector), otherComponent.corridorGround));
+        corridorWalls.AddRange(Shift2DList((Vector3Int)(newOrigen + localisingVector), otherComponent.corridorWalls));
+        corridorDecoration.AddRange(Shift2DList((Vector3Int)(newOrigen + localisingVector), otherComponent.corridorDecoration));
+
+        LogCorridor(thisRoomIndex, otherRoomIndex, thisEntrance, otherEntrance);
         PlaceTilemapEntranceAndCorridor((thisEntrance.Item1, (Vector2Int)thisEntrancePos), 
             (otherEntrance.Item1, (Vector2Int)otherEntrancePos), path);
 
@@ -620,6 +673,11 @@ public class ComponentTilemap
         }
 
         return true;
+
+        List<List<SavedTile>> Shift2DList(Vector3Int origen, List<List<SavedTile>> list)
+        {
+            return list.Select(e => e.Select(e => new SavedTile(e.position + (Vector3Int)newOrigen, e.tile)).ToList()).ToList();
+        }
     }
 
     private bool CheckPathingOverlap(Vector3Int[] path)

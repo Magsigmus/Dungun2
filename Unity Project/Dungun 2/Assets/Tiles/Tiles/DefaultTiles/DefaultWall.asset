@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99a4835edf548ff4e8af03a77c225c82, type: 3}
-  m_Name: Dungeon_Tileset_51
+  m_Name: DefaultWall
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: -899316426, guid: 26e31adda4822354d8cb7693bb784ccc, type: 3}
+  m_Sprite: {fileID: 237805870, guid: 26e31adda4822354d8cb7693bb784ccc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

@@ -19,6 +19,13 @@ public class LevelMangerEditor : Editor
             script.GenerateLevel(script.levelNumber);
         }
 
+        if (GUILayout.Button("Clear overlap"))
+        {
+            script.overlayTilemap.ClearAllTiles();
+            script.spriteMaskTilemap.ClearAllTiles();
+        }
+
+
         /*if (GUILayout.Button("Assemble Level"))
         {
             script.AssembleComponentTilemaps(script.levelNumber);

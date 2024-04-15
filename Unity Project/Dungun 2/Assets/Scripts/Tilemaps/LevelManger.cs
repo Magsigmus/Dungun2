@@ -6,14 +6,20 @@ using UnityEngine.Tilemaps;
 using UnityEngine.AI;
 using System.Linq;
 using NavMeshPlus.Components;
+using UnityEngine.InputSystem;
+using System.Threading;
 
 public class LevelManger : MonoBehaviour
 {
+    [Header("General")]
+    public GameObject player;
+    public float expandingAnimationTime = 2f;
+
     [Header("Tilemaps")]
     public Tilemap groundTilemap;
     public Tilemap wallTilemap, decorationTilemap; // The tilemaps used to assemble the components
     public Tilemap aStarTilemap;
-    //public Tilemap prefabricationTilemap;
+    public Tilemap spriteMaskTilemap, overlayTilemap;
     
     [Header("Level Generation Settings")]
     public int roomsConsideredInCycle = 3;
@@ -26,19 +32,51 @@ public class LevelManger : MonoBehaviour
 
     private ComponentTilemap level;
     private bool[] spawnedEnemies = null; // An array denoting if there has been spawned enemies in a room yet
+    private bool[] discoveredCorridors = null;
+    Queue<(Vector2Int, SavedTile[])> revealQueue;
+    private Dictionary<TileType, BaseTile> tileLookupMap;
+    private float timer = 0;
+    private bool animating = false;
+
+    private void Start()
+    {
+        GenerateLevel(levelNumber);
+    }
 
     //Sig: Generates a level from a level index
     public void GenerateLevel(int levelIndex)
     {
-        LevelGenerator levelGenerator = new LevelGenerator(groundTilemap, wallTilemap, 
-            decorationTilemap, aStarTilemap, InitializeTileTable(tileLookup));
+        tileLookupMap = InitializeTileTable(tileLookup);
 
+        LevelGenerator levelGenerator = new LevelGenerator(groundTilemap, wallTilemap, 
+            decorationTilemap, aStarTilemap, tileLookupMap);
+
+        
         ComponentTilemap newLevel = levelGenerator.GenerateLevel(levelIndex);
 
         if (!buildCompletely) { return; }
         newLevel.SpawnEntranceTriggers(enemySpawnTriggerPrefab);
         navMesh.BuildNavMesh();
         level = newLevel;
+
+        spawnedEnemies = Enumerable.Repeat(false, level.rooms.Count).ToArray();
+
+        BuildOverlappingTilemaps(level);
+        (Vector2Int, ScriptableRoom) entranceRoom = level.rooms.Where(e => e.Item2.type == RoomType.Entrance).First();
+        SavedTile[] punchThroughTiles = entranceRoom.Item2.ground.Select(e => new SavedTile(e.position, null)).ToArray();
+        TilemapUtility.LoadTiles(entranceRoom.Item1, spriteMaskTilemap, punchThroughTiles);
+        TilemapUtility.LoadTiles(entranceRoom.Item1, overlayTilemap, punchThroughTiles);
+
+        discoveredCorridors = Enumerable.Repeat(false, level.corridorGround.Count).ToArray();
+        revealQueue = new Queue<(Vector2Int, SavedTile[])>();
+    }
+
+    private void BuildOverlappingTilemaps(ComponentTilemap level)
+    {
+        SavedTile[] tiles = TilemapUtility.GetTilesFromMap(level.groundTilemap).
+            Select(e=>new SavedTile(e.position, tileLookupMap[TileType.DefaultWall])).ToArray();
+        TilemapUtility.LoadTiles(level.origin, spriteMaskTilemap, tiles);
+        TilemapUtility.LoadTiles(level.origin, overlayTilemap, tiles);
     }
 
     private Dictionary<TileType, BaseTile> InitializeTileTable(BaseTileTypePair[] keyValueList)
@@ -59,6 +97,7 @@ public class LevelManger : MonoBehaviour
         //Sig:  Checks if the enemies in a room has been spawned
         if (spawnedEnemies == null) { return; }
         if (spawnedEnemies[nodeIndex]) { return; }
+        spawnedEnemies[nodeIndex] = true;
 
         //Sig: Gets the required enemies from the saved room object
         (Vector2Int, ScriptableRoom) room = level.rooms[nodeIndex];
@@ -94,7 +133,52 @@ public class LevelManger : MonoBehaviour
             c++;
         }
 
-        spawnedEnemies[nodeIndex] = true;
+    }
+
+    public void DiscoverRoom(int roomIndex, (int, Vector2Int) entrance)
+    {
+
+        int corridorIndex = level.corridorIndecies[roomIndex][entrance];
+        if (!discoveredCorridors[corridorIndex])
+        {
+            discoveredCorridors[corridorIndex] = true;
+            AnimateDiscovery(new Vector2Int(), level.corridorGround[corridorIndex]);
+        }
+
+        if (spawnedEnemies[roomIndex]) { return; }
+        SpawnEnemies(roomIndex);
+
+        (Vector2Int, ScriptableRoom) entranceRoom = level.rooms[roomIndex];
+        AnimateDiscovery(entranceRoom.Item1, entranceRoom.Item2.ground.ToList());
+    }
+
+    public void AnimateDiscovery(Vector2Int origen, List<SavedTile> tiles)
+    {
+        while(revealQueue.Count > 0) { RevealNextRoomPermentantly(); }
+        player.GetComponent<PlayerBehaviour>().StartExpandAnimation();
+
+        SavedTile[] punchThroughTiles = tiles.Select(e => new SavedTile(e.position, null)).ToArray();
+
+        TilemapUtility.LoadTiles(origen, overlayTilemap, punchThroughTiles);
+
+        revealQueue.Enqueue((origen, punchThroughTiles));
+        timer = expandingAnimationTime;
+        animating = true;
+    }
+
+    public void RevealNextRoomPermentantly()
+    {
+        (Vector2Int, SavedTile[]) callInfo = revealQueue.Dequeue();
+        TilemapUtility.LoadTiles(callInfo.Item1, spriteMaskTilemap, callInfo.Item2);
+    }
+
+    private void Update()
+    {
+        if(timer > expandingAnimationTime && animating)
+        {
+            RevealNextRoomPermentantly();
+            animating = false;
+        }
     }
 }
 
@@ -110,6 +194,7 @@ public enum TileType
     Error,
 
     Ground,
+    DefaultWall,
 
     NorthWall,
     WestWall,

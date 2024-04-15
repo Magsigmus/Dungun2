@@ -1,11 +1,8 @@
-using System.Collections;
+using System;
 using System.Linq;
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEditor;
-using System;
-using System.Collections.Specialized;
 
 public class TilemapManager : MonoBehaviour
 {
@@ -41,10 +38,10 @@ public class TilemapManager : MonoBehaviour
 
         //Sig: Fills that object with information
         newRoom.name = ((roomName == "") ? $"New Room {roomIndex}" : roomName);
-        newRoom.ground = GetTilesFromMap(groundMap).ToArray();
-        newRoom.walls = GetTilesFromMap(wallMap).ToArray();
-        newRoom.decorations = GetTilesFromMap(decorMap).ToArray();
-        newRoom.meta = GetTilesFromMap(metaMap).ToArray();
+        newRoom.ground = TilemapUtility.GetTilesFromMap(groundMap).ToArray();
+        newRoom.walls = TilemapUtility.GetTilesFromMap(wallMap).ToArray();
+        newRoom.decorations = TilemapUtility.GetTilesFromMap(decorMap).ToArray();
+        newRoom.meta = TilemapUtility.GetTilesFromMap(metaMap).ToArray();
         newRoom.type = roomType;
         newRoom.enemies = enemyPrefabs;
 
@@ -81,48 +78,14 @@ public class TilemapManager : MonoBehaviour
             }
             return array;
         }
-
-        // Gets all the tiles in the tilemaps
-        IEnumerable<SavedTile> GetTilesFromMap(Tilemap map)
-        {
-            foreach(Vector3Int pos in map.cellBounds.allPositionsWithin)
-            {
-                if (map.HasTile(pos))
-                {
-                    yield return new SavedTile()
-                    {
-                        position = pos,
-                        tile = map.GetTile<BaseTile>(pos)
-                    };
-                }
-            }
-        }
     }
 #endif
 
-    public void LoadRoom(Vector3Int origenPos, ScriptableRoom room)
+    public void LoadRoom(Vector2Int position, ScriptableRoom room)
     {
-        foreach (SavedTile tile in room.ground)
-        {
-            groundMap.SetTile(tile.position + origenPos, tile.tile);
-        }
-        foreach (SavedTile tile in room.walls)
-        {
-            wallMap.SetTile(tile.position + origenPos, tile.tile);
-        }
-        foreach (SavedTile tile in room.decorations)
-        {
-            decorMap.SetTile(tile.position + origenPos, tile.tile);
-        }
-        foreach (SavedTile tile in room.meta)
-        {
-            metaMap.SetTile(tile.position + origenPos, tile.tile);
-        }
-    }
-
-    public void LoadRoom(Vector2Int origenPos, ScriptableRoom room)
-    {
-        LoadRoom(new Vector3Int(origenPos.x, origenPos.y, 0), room);
+        TilemapUtility.LoadTiles(position, groundMap, room.ground);
+        TilemapUtility.LoadTiles(position, wallMap, room.walls);
+        TilemapUtility.LoadTiles(position, decorMap, room.decorations);
     }
 
     // Clears the map
