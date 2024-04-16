@@ -136,7 +136,12 @@ public class LevelManger : MonoBehaviour
         int c = 0;
         for(int i = 0; i < enemies.Length; i++)
         {
-            enemies[i].prefab.GetComponent<NavMeshAgent>().enabled = false;
+            NavMeshAgent enemyNavMesh = enemies[i].prefab.GetComponent<NavMeshAgent>();
+            
+            if (!enemyNavMesh) { Debug.LogError("You fucked up. You spwaned a(n) "+ enemies[i].prefab.name+" instead of an enemy! \nFIX IT NOW!!!"); continue; }  //rasj: skip if dev fucked up
+
+            enemyNavMesh.enabled = false;
+
             for (int j = 0; j < enemies[i].enemyCount; j++)
             {
                 GameObject newEnemy = Instantiate(enemies[i].prefab);
