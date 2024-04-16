@@ -378,7 +378,7 @@ MonoBehaviour:
     distanceToTarget: 0
     newMovementMode: 0
     defaultTarget: {fileID: 0}
-  - instructionType: 6
+  - instructionType: 7
     waitTime: 0
     enemy: {fileID: 6538225185145312215}
     rotationAngle: 0
@@ -389,7 +389,37 @@ MonoBehaviour:
     newMovementMode: 0
     defaultTarget: {fileID: 0}
   - instructionType: 1
-    waitTime: 5
+    waitTime: 2
+    enemy: {fileID: 6538225185145312215}
+    rotationAngle: 0
+    target: {fileID: 0}
+    bulletPrefab: {fileID: 4107235708702390523, guid: c1951f059987ef940a2f7e41179e0d57, type: 3}
+    realDistanceToTarget: 0
+    distanceToTarget: 0
+    newMovementMode: 0
+    defaultTarget: {fileID: 0}
+  - instructionType: 4
+    waitTime: 2
+    enemy: {fileID: 6538225185145312215}
+    rotationAngle: 0
+    target: {fileID: 0}
+    bulletPrefab: {fileID: 4107235708702390523, guid: c1951f059987ef940a2f7e41179e0d57, type: 3}
+    realDistanceToTarget: 0
+    distanceToTarget: 0
+    newMovementMode: 0
+    defaultTarget: {fileID: 0}
+  - instructionType: 6
+    waitTime: 2
+    enemy: {fileID: 6538225185145312215}
+    rotationAngle: 0
+    target: {fileID: 0}
+    bulletPrefab: {fileID: 4107235708702390523, guid: c1951f059987ef940a2f7e41179e0d57, type: 3}
+    realDistanceToTarget: 0
+    distanceToTarget: 0
+    newMovementMode: 0
+    defaultTarget: {fileID: 0}
+  - instructionType: 1
+    waitTime: 2
     enemy: {fileID: 6538225185145312215}
     rotationAngle: 0
     target: {fileID: 0}

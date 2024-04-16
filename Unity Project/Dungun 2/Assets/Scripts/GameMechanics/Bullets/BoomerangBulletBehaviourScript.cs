@@ -37,27 +37,27 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
     
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Vector2 dir = new Vector2(orgShooter.transform.position.x - transform.position.x, orgShooter.transform.position.y - transform.position.y);
-        bool hasPlayerTag = collision.gameObject.CompareTag("Player");
+        if (orgShooter)
+        {
+            Vector2 dir = new Vector2(orgShooter.transform.position.x - transform.position.x, orgShooter.transform.position.y - transform.position.y);
+            float dist = dir.magnitude;
+            //shooter exists and bullet has hit SOMETHING
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
+                Destroy(this.gameObject);
+            }
+            else if (collision.gameObject == orgShooter || dist <= deletionRadius)  //rasj: if colliding with original enemy or is close enough to it
+            {
+                Destroy(this.gameObject);
+            }
 
-        if (hasPlayerTag)  //rasj: if hit player, make player take damage
-        {
-            collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
-        }
-
-        if (collision.gameObject == orgShooter || hasPlayerTag)  //rasj: if hits original shooter
-        {
-            Destroy(this.gameObject);
-        } else if (orgShooter)  //rasj: if hit and shooter still isn't dead
-        {
-            transform.position += (Vector3)dir.normalized;  //rasj: hopefully get the bullet out of the wall
+            transform.position += (Vector3)dir.normalized;  //rasj: get bullet out of the wall
             transform.up = dir;
             GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
+            return;
         }
-        else  //rasj: in all other cases, die
-        {
-            Destroy(this.gameObject);
-        }
+        Destroy(this.gameObject);
     }
 
 
