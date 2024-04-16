@@ -45,7 +45,7 @@ public class PlayerBehaviour : MonoBehaviour
     public AudioClip shootSound;
     public AudioClip hurtSound;
 
-    private Transform spriteTransform;
+    private GameObject spriteGameobject;
     private Vector2 vel, dir;
     private Rigidbody2D rb2D;
     private PlayerControls playerControls;
@@ -62,7 +62,7 @@ public class PlayerBehaviour : MonoBehaviour
         renderers = GetComponentsInChildren<SpriteRenderer>();
         colliders = GetComponents<Collider2D>();
         animator = GetComponentInChildren<Animator>();
-        spriteTransform = gameObject.transform.Find("Sprite");
+        spriteGameobject = gameObject.transform.Find("Sprite").gameObject;
         healthManager.MaxHitPoints = healthPoints;
         //Debug.Log(animator.gameObject.name);
     }
@@ -104,11 +104,11 @@ public class PlayerBehaviour : MonoBehaviour
         float dirX = playerControls.Default.Move.ReadValue<Vector2>().x;
         if (dirX < 0 )  //rasj: left
         {
-            spriteTransform.rotation = Quaternion.Euler(0, 180f, 0);
+            spriteGameobject.transform.rotation = Quaternion.Euler(0, 180f, 0);
         }
         else if (dirX > 0) //rasj: right
         {
-            spriteTransform.rotation = Quaternion.Euler(0, 0, 0);
+            spriteGameobject.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }
 
@@ -247,6 +247,8 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         //Sig: Makes the dash effect
+        Sprite ghostSprite = spriteGameobject.GetComponent<SpriteRenderer>().sprite;
+
         float distTravelled = 0;
         for (int i = 0; i < numberOfGhosts; i++)
         {
@@ -254,6 +256,9 @@ public class PlayerBehaviour : MonoBehaviour
             distTravelled = Math.Clamp(distTravelled, 0, maxDist);
             GameObject newGhost = Instantiate(ghostPrefab);
             newGhost.transform.position = transform.position + distTravelled * dashDir.ConvertTo<Vector3>();
+            newGhost.GetComponent<GhostBehaviour>().UpdateSprite(ghostSprite);
+            newGhost.transform.rotation = spriteGameobject.transform.rotation;
+            newGhost.transform.localScale = spriteGameobject.transform.lossyScale;
 
             yield return new WaitForSecondsRealtime(dashingTime / (float)numberOfGhosts);
         }

@@ -21,4 +21,9 @@ public class GhostBehaviour : MonoBehaviour
         t.a = 1f - (float)(timeLived / GhostLifeTime);
         sr.color = t;
     }
+
+    public void UpdateSprite(Sprite newSprite)
+    {
+       transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = newSprite;
+    }
 }
