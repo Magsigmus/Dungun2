@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startVelocity: 5
-  desctructionTime: 3
+  desctructionTime: 3.5
   gravitationalForce: 25
   maxGravitationalDistance: 8
   damage: 1

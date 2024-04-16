@@ -595,7 +595,7 @@ MonoBehaviour:
   type: 1
   size: {x: 18, y: 10}
   enemies:
-  - enemyCount: 3
+  - enemyCount: 2
     prefab: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
   metaInformation:
     NorthEntrances: []
