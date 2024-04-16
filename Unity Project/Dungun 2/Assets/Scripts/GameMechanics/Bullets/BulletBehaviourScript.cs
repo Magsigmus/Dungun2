@@ -18,6 +18,10 @@ public class BulletBehaviourScript : MonoBehaviour, BulletInterface
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.tag == "Player")
+        {
+            collision.gameObject.GetComponent<PlayerBehaviour>();
+        }
         Destroy(this.gameObject);
     }
 

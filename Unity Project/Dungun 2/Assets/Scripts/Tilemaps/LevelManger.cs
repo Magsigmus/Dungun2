@@ -195,7 +195,7 @@ public class LevelManger : MonoBehaviour
                 new SavedTile(orthogonalDirection, popupTiles[1]), 
                 new SavedTile(-orthogonalDirection, popupTiles[2]) };
 
-            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2, wallTilemap, tiles);
+            TilemapUtility.LoadTiles(entrance.Item2 - direction * 2, wallTilemap, tiles);
         }
     }
 

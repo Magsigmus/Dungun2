@@ -113,6 +113,8 @@ public class PlayerBehaviour : MonoBehaviour
     //Sig: Makes the player shoot.
     void Shoot()
     {
+        Transform gunObject = transform.Find("Gun");
+
         //Sig: Check if the player can shoot.
         if (cooldown > cooldownTime)
         {
