@@ -64,7 +64,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
                     instruction.Shoot();
                     break;
                 case GeneralizedInstruction.InstructionType.ShootSquare:
-                    instruction.ShootSquare(5);
+                    instruction.ShootSquare(4);
                     break;
                 case GeneralizedInstruction.InstructionType.ShootCircle:
                     instruction.ShootCircle(2, 15);
