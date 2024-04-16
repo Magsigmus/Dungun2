@@ -68,6 +68,7 @@ public class GeneralizedInstruction
     public void Point()
     {
         if (!target) { target = defaultTarget; }
+        if (!target) { return; }
         Vector2 dir = new Vector2(target.position.x - gunObject.transform.position.x, target.position.y - gunObject.transform.position.y);
         gunObject.transform.up = dir;
         Flip();
@@ -76,6 +77,7 @@ public class GeneralizedInstruction
     public void Shoot()
     {
         if (!target) { target = defaultTarget; }
+        if (!target) { return; }
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
 
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
@@ -87,6 +89,7 @@ public class GeneralizedInstruction
     public void ShootSquare(int size)
     {
         if (!target) { target = defaultTarget; }
+        if (!target) { return; }
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
         float angle = Vector2.Angle(dir, Vector2.up);
         float halfSize = (float)Math.Floor((decimal)size / 2);
@@ -100,7 +103,7 @@ public class GeneralizedInstruction
                 diameter = newBullet.gameObject.GetComponent<CircleCollider2D>().radius * 2;
 
                 newBullet.transform.up = dir;   //rasj: set bullet direction
-                newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>() - new Vector2(x - halfSize, y - halfSize);  //rasj: halfSize is to make sure they spawn in the middle of the boss
+                newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>() - new Vector2(x - halfSize, y - halfSize) + (dir * 2);  //rasj: halfSize is to make sure they spawn in the middle of the boss
                 newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);   //rasj: data transfer from old enemy to new
             }
         }
@@ -120,11 +123,13 @@ public class GeneralizedInstruction
         float densityC = outerRingAmount / circumference;  //rasj: bullets per unit based on circumference
         //float densityR = outerRingAmount / radius;
 
-        for (int r = 0;  r < radius; r += bulletRadius)
+        
+
+        for (int r = bulletRadius;  r < radius; r += bulletRadius)
         {
             float c = r * 2 * Mathf.PI;  //rasj: local circumference
-            //amount = (int)Math.Floor(densityC * c);  //rasj: get amount of bullets in current ring
-            amount = (int)Math.Floor(densityC * c);
+            //amount = (int)Math.Floor(densityR * r);  //rasj: amount based on local radius
+            amount = (int)Math.Floor(densityC * c);  //rasj: amount based on local circumference
 
             if (r + bulletRadius >= radius)  //rasj: if last in loop
             {
