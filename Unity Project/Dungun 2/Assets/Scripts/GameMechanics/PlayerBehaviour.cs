@@ -44,7 +44,11 @@ public class PlayerBehaviour : MonoBehaviour
     [Header("Audio Settings")]
     public AudioSource source;
     public AudioClip shootSound;
+    public float shootVolume = 1f;
     public AudioClip hurtSound;
+    public float hurtVolune = 1f;
+    public AudioClip dashSound;
+    public float dashVolune = 1f;
 
     private GameObject spriteGameobject;
     private Vector2 vel, dir;
@@ -125,7 +129,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             cooldown = 0;
 
-            source.PlayOneShot(shootSound);
+            playSound(shootSound, shootVolume);
 
             gunAnimator.SetBool("Shoot", true);
 
@@ -229,8 +233,7 @@ public class PlayerBehaviour : MonoBehaviour
 
             return;
         }
-
-        source.PlayOneShot(shootSound);
+        playSound(hurtSound, hurtVolune);
     }
 
     IEnumerator Dash()
@@ -245,6 +248,8 @@ public class PlayerBehaviour : MonoBehaviour
             dashDir = playerControls.Default.Move.ReadValue<Vector2>().normalized;
             yield return new WaitForEndOfFrame();
         }
+
+        playSound(dashSound, dashVolune);
 
         //Sig: Hides the player and stops it from moving.
         Hide();
@@ -306,5 +311,11 @@ public class PlayerBehaviour : MonoBehaviour
         instantiatedSpriteMask = Instantiate(spriteMaskPrefab);
         instantiatedSpriteMask.transform.parent = transform;
         instantiatedSpriteMask.transform.localPosition = new Vector3();
+    }
+
+    void playSound(AudioClip sound, float volume)
+    {
+        source.volume = volume;
+        source.PlayOneShot(sound);
     }
 }
