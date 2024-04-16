@@ -281,7 +281,8 @@ MonoBehaviour:
   cooldownTime: 0.18
   healthPoints: 5
   source: {fileID: 1975311561263589961}
-  clip: {fileID: 8300000, guid: 474d4a2c6e2396243968bf30908465a8, type: 3}
+  shootSound: {fileID: 8300000, guid: 474d4a2c6e2396243968bf30908465a8, type: 3}
+  hurtSound: {fileID: 8300000, guid: 43dc54ed32c64d14b9c9254fd73abdcf, type: 3}
 --- !u!61 &1344039347137835068
 BoxCollider2D:
   m_ObjectHideFlags: 0

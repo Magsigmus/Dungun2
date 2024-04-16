@@ -111,7 +111,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startVelocity: 5
   desctructionTime: 3
-  gravitationalForce: 45
+  gravitationalForce: 25
   maxGravitationalDistance: 8
 --- !u!1 &6156309483954531159
 GameObject:
