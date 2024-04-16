@@ -149,6 +149,8 @@ public class LevelManger : MonoBehaviour
                 newEnemy.transform.position = (Vector2)randomisedSpawnPoints[c] + new Vector2(0.5f, 0.5f);
                 Debug.Log($"Spawned an enemy at {newEnemy.transform.position}");
                 newEnemy.GetComponent<NavMeshAgent>().enabled = true;
+
+                currentEnemies.Add(newEnemy);
                 c++;
             }
             c++;
