@@ -56,6 +56,7 @@ public class LevelManger : MonoBehaviour
 
     private void Start()
     {
+        player.GetComponent<PlayerBehaviour>().manager = this;
         StartCoroutine(GenerateLevel(levelNumber));
     }
 
@@ -272,6 +273,7 @@ public class LevelManger : MonoBehaviour
 
     public void RevealNextRoomPermentantly()
     {
+        if (revealQueue.Count == 0) { return; }
         (Vector2Int, SavedTile[]) callInfo = revealQueue.Dequeue();
         TilemapUtility.LoadTiles(callInfo.Item1, spriteMaskTilemap, callInfo.Item2);
     }

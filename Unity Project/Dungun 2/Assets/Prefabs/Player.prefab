@@ -441,6 +441,8 @@ MonoBehaviour:
   healthManager: {fileID: 886870305894844403}
   spriteMaskPrefab: {fileID: 7956786754262325316, guid: c75d44989c781704181ea6936fa5a569, type: 3}
   gunAnimator: {fileID: 5842078842960531812}
+  deathVFX: {fileID: 3321494078268414517, guid: 998b452874a7b11418b228155f9b3b27, type: 3}
+  deathVFXtime: 2.75
   source: {fileID: 1975311561263589961}
   shootSound: {fileID: 8300000, guid: 474d4a2c6e2396243968bf30908465a8, type: 3}
   hurtSound: {fileID: 8300000, guid: d84553d52caf42d4f980c0e3defc3128, type: 3}
