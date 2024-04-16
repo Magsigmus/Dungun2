@@ -20,7 +20,8 @@ public class ComponentTilemap
     public List<(Vector2Int, ScriptableRoom)> rooms; // Vector2 to hold the origen of the scripableroom
     public List<List<SavedTile>> corridorGround, corridorWalls, corridorDecoration;
     public List<Dictionary<(int,Vector2Int),int>> corridorIndecies;
-    public Dictionary<TileType, BaseTile> tileLookupTable = new Dictionary<TileType, BaseTile>();
+    public Dictionary<TileType, List<BaseTile>> tileLookupTable = new Dictionary<TileType, List<BaseTile>>();
+    public List<List<(int, Vector2Int)>> usedEntrances;
 
     // Init of the ways the A* algorithm can move
     Vector3Int[] neighbourDirs = new Vector3Int[4] {
@@ -32,7 +33,7 @@ public class ComponentTilemap
     
     public ComponentTilemap() { }
 
-    public ComponentTilemap(int nodes, Dictionary<TileType, BaseTile> tileLookupTable)
+    public ComponentTilemap(int nodes, Dictionary<TileType, List<BaseTile>> tileLookupTable)
     {
         this.tileLookupTable = tileLookupTable;
         
@@ -46,7 +47,7 @@ public class ComponentTilemap
         origin = new Vector2Int();
     }
     
-    public ComponentTilemap(int nodes, Dictionary<TileType, BaseTile> tileLookupTable, Tilemap ground, Tilemap walls, Tilemap decor)
+    public ComponentTilemap(int nodes, Dictionary<TileType, List<BaseTile>> tileLookupTable, Tilemap ground, Tilemap walls, Tilemap decor)
     {
         this.tileLookupTable = tileLookupTable;
         this.groundTilemap = CloneTilemap(ground, "New Ground Component Tilemap");
@@ -84,7 +85,7 @@ public class ComponentTilemap
         corridorDecoration = CloneCorridorTilemap(prefabMap.corridorDecoration);
 
         corridorIndecies = prefabMap.corridorIndecies.Select(e => e.ToDictionary(e => e.Key, e => e.Value)).ToList();
-        
+
         List<List<SavedTile>> CloneCorridorTilemap(List<List<SavedTile>> map)
         {
             return map.Select(e => e.Select(e => new SavedTile(e.position, e.tile)).ToList()).ToList();
@@ -220,9 +221,9 @@ public class ComponentTilemap
 
             foreach (Vector3Int newGroundTile in newGroundTiles)
             {
-                groundTiles.Add(new SavedTile(newGroundTile, tileLookupTable[TileType.Ground]));
+                groundTiles.Add(new SavedTile(newGroundTile, tileLookupTable[TileType.Ground][0]));
                 if (groundTilemap.HasTile(newGroundTile)) { continue; }
-                groundTilemap.SetTile(newGroundTile, tileLookupTable[TileType.Ground]);
+                groundTilemap.SetTile(newGroundTile, tileLookupTable[TileType.Ground][0]);
             }
         }
 
@@ -232,12 +233,12 @@ public class ComponentTilemap
 
             foreach (Vector3Int newWallTile in newTiles)
             {
-                groundTiles.Add(new SavedTile(newWallTile, tileLookupTable[TileType.Ground]));
+                groundTiles.Add(new SavedTile(newWallTile, tileLookupTable[TileType.Ground][0]));
                 if (groundTilemap.HasTile(newWallTile)) { continue; }
                 unprocessedWallTiles.Add(newWallTile);
-                wallTilemap.SetTile(newWallTile, tileLookupTable[TileType.WestWall]);
+                wallTilemap.SetTile(newWallTile, tileLookupTable[TileType.WestWall][0]);
 
-                groundTilemap.SetTile(newWallTile, tileLookupTable[TileType.Ground]);
+                groundTilemap.SetTile(newWallTile, tileLookupTable[TileType.Ground][0]);
             }
         }
 
@@ -269,7 +270,7 @@ public class ComponentTilemap
 
     BaseTile PickCorrectTile(Vector3Int pos)
     {
-        return tileLookupTable[GetCorrectTileType(pos)];
+        return tileLookupTable[GetCorrectTileType(pos)][0];
     }
 
     TileType GetCorrectTileType(Vector3Int pos)
@@ -467,7 +468,7 @@ public class ComponentTilemap
         return result;
     }
 
-    public bool AStarCorridorGeneration(int parentIndex, int childIndex, Dictionary<TileType, BaseTile> tilelookup, 
+    public bool AStarCorridorGeneration(int parentIndex, int childIndex, Dictionary<TileType, List<BaseTile>> tilelookup, 
         Tilemap aStarTilemap, int maxTilesConsidered = 200)
     {
         List<Vector3Int> startToEnd = GetShortestRoomToRoomPath(parentIndex, childIndex, out float startToEndCost, 
@@ -575,6 +576,9 @@ public class ComponentTilemap
 
     public void SpawnEntranceTriggers(GameObject entranceTriggerPrefab)
     {
+        usedEntrances = new List<List<(int, Vector2Int)>>();
+        for(int i = 0; i < rooms.Count; i++) { usedEntrances.Add(new List<(int, Vector2Int)>()); }
+
         for (int i = 0; i < rooms.Count; i++)
         {
             (Vector2Int, ScriptableRoom) room = rooms[i];
@@ -590,6 +594,7 @@ public class ComponentTilemap
                 EntranceTriggerBehaviour triggerBehaviour = newTrigger.GetComponent<EntranceTriggerBehaviour>();
                 triggerBehaviour.roomIndex = i;
                 triggerBehaviour.thisEntrance = entrance;
+                usedEntrances[i].Add(entrance);
             }
         }
     }

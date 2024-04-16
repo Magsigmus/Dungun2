@@ -22,21 +22,29 @@ public class LevelManger : MonoBehaviour
     public Tilemap spriteMaskTilemap, overlayTilemap;
     
     [Header("Level Generation Settings")]
-    public int roomsConsideredInCycle = 3;
     public int levelNumber;
-    public BaseTileTypePair[] tileLookup;
-    public GameObject enemySpawnTriggerPrefab;
-    public NavMeshSurface navMesh;
     public bool buildCompletely = true;
     public int maxTilesConsideredInAStar = 200;
+    public int roomsConsideredInCycle = 3;
+    public GameObject enemySpawnTriggerPrefab;
+    public NavMeshSurface navMesh;
+    public BaseTileTypePair[] tileLookup;
 
+    private int playerRoom = 0;
     private ComponentTilemap level;
     private bool[] spawnedEnemies = null; // An array denoting if there has been spawned enemies in a room yet
     private bool[] discoveredCorridors = null;
-    Queue<(Vector2Int, SavedTile[])> revealQueue;
-    private Dictionary<TileType, BaseTile> tileLookupMap;
+    private Queue<(Vector2Int, SavedTile[])> revealQueue;
+    private Dictionary<TileType, List<BaseTile>> tileLookupMap;
     private float timer = 0;
     private bool animating = false;
+    private List<GameObject> currentEnemies;
+    private Vector3Int[] neighbourDirs = new Vector3Int[4] {
+        new Vector3Int(0, 1), // North
+        new Vector3Int(-1, 0), // West
+        new Vector3Int(0, -1), // South
+        new Vector3Int(1, 0) // East
+    };
 
     private void Start()
     {
@@ -51,7 +59,9 @@ public class LevelManger : MonoBehaviour
         LevelGenerator levelGenerator = new LevelGenerator(groundTilemap, wallTilemap, 
             decorationTilemap, aStarTilemap, tileLookupMap);
 
-        
+        levelGenerator.roomsConsideredInCycle = roomsConsideredInCycle;
+        levelGenerator.maxTilesConsideredInAStar = maxTilesConsideredInAStar;
+
         ComponentTilemap newLevel = levelGenerator.GenerateLevel(levelIndex);
 
         if (!buildCompletely) { return; }
@@ -69,23 +79,28 @@ public class LevelManger : MonoBehaviour
 
         discoveredCorridors = Enumerable.Repeat(false, level.corridorGround.Count).ToArray();
         revealQueue = new Queue<(Vector2Int, SavedTile[])>();
+        currentEnemies = new List<GameObject>();
     }
 
     private void BuildOverlappingTilemaps(ComponentTilemap level)
     {
         SavedTile[] tiles = TilemapUtility.GetTilesFromMap(level.groundTilemap).
-            Select(e=>new SavedTile(e.position, tileLookupMap[TileType.DefaultWall])).ToArray();
+            Select(e=>new SavedTile(e.position, tileLookupMap[TileType.DefaultWall][0])).ToArray();
         TilemapUtility.LoadTiles(level.origin, spriteMaskTilemap, tiles);
         TilemapUtility.LoadTiles(level.origin, overlayTilemap, tiles);
     }
 
-    private Dictionary<TileType, BaseTile> InitializeTileTable(BaseTileTypePair[] keyValueList)
+    private Dictionary<TileType, List<BaseTile>> InitializeTileTable(BaseTileTypePair[] keyValueList)
     {
-        Dictionary<TileType, BaseTile> tileLookupMap = new Dictionary<TileType, BaseTile>();
+        Dictionary<TileType, List<BaseTile>> tileLookupMap = new Dictionary<TileType, List<BaseTile>>();
          
         foreach(BaseTileTypePair value in keyValueList)
         {
-            tileLookupMap[value.type] = value.tile;
+            if(!tileLookupMap.ContainsKey(value.type)) 
+            {
+                tileLookupMap[value.type] = new List<BaseTile>();
+            }
+            tileLookupMap[value.type].Add(value.tile);
         }
 
         return tileLookupMap;
@@ -138,7 +153,6 @@ public class LevelManger : MonoBehaviour
 
     public void DiscoverRoom(int roomIndex, (int, Vector2Int) entrance)
     {
-
         int corridorIndex = level.corridorIndecies[roomIndex][entrance];
         if (!discoveredCorridors[corridorIndex])
         {
@@ -147,10 +161,51 @@ public class LevelManger : MonoBehaviour
         }
 
         if (spawnedEnemies[roomIndex]) { return; }
+        playerRoom = roomIndex;
+
         SpawnEnemies(roomIndex);
 
         (Vector2Int, ScriptableRoom) entranceRoom = level.rooms[roomIndex];
         AnimateDiscovery(entranceRoom.Item1, entranceRoom.Item2.ground.ToList());
+
+        if(currentEnemies.Count > 0)
+        {
+            LockRoom(roomIndex);
+        }
+    }
+
+    private void LockRoom(int roomIndex)
+    {
+        foreach((int, Vector2Int) entrance in level.usedEntrances[roomIndex])
+        {
+            Vector2Int direction = (Vector2Int)neighbourDirs[entrance.Item1];
+            Vector3Int orthogonalDirection = new Vector3Int(-direction.y, direction.x, 0);
+
+            System.Random r = new System.Random();
+            List<BaseTile> popupTiles = tileLookupMap[TileType.PopupWall].OrderBy(e => r.Next()).Take(3).ToList();
+            SavedTile[] tiles = new SavedTile[3] 
+            {   new SavedTile(new Vector3Int(), popupTiles[0]), 
+                new SavedTile(orthogonalDirection, popupTiles[1]), 
+                new SavedTile(-orthogonalDirection, popupTiles[2]) };
+
+            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2, wallTilemap, tiles);
+        }
+    }
+
+    private void OpenRoom(int roomIndex)
+    {
+        foreach ((int, Vector2Int) entrance in level.usedEntrances[roomIndex])
+        {
+            Vector2Int direction = (Vector2Int)neighbourDirs[entrance.Item1];
+            Vector3Int orthogonalDirection = new Vector3Int(-direction.y, direction.x, 0);
+
+            SavedTile[] tiles = new SavedTile[3]
+            {   new SavedTile(new Vector3Int(), null),
+                new SavedTile(orthogonalDirection, null),
+                new SavedTile(-orthogonalDirection, null) };
+
+            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2, wallTilemap, tiles);
+        }
     }
 
     public void AnimateDiscovery(Vector2Int origen, List<SavedTile> tiles)
@@ -179,6 +234,12 @@ public class LevelManger : MonoBehaviour
         {
             RevealNextRoomPermentantly();
             animating = false;
+        }
+
+        currentEnemies.Remove(null);
+        if(currentEnemies.Count == 0)
+        {
+            OpenRoom(playerRoom);
         }
     }
 }
@@ -215,5 +276,7 @@ public enum TileType
     DebugNorth,
     DebugWest,
     DebugSouth,
-    DebugEast
+    DebugEast,
+
+    PopupWall
 }

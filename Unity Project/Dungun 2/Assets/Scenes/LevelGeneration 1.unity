@@ -899,7 +899,7 @@ MonoBehaviour:
   aStarTilemap: {fileID: 245188966}
   spriteMaskTilemap: {fileID: 2097611407}
   overlayTilemap: {fileID: 235292522}
-  roomsConsideredInCycle: 20
+  roomsConsideredInCycle: 3
   levelNumber: 1
   tileLookup:
   - tile: {fileID: 11400000, guid: dcd048cea8a85e5458eb86e1bf251d42, type: 2}
@@ -938,6 +938,8 @@ MonoBehaviour:
     type: 18
   - tile: {fileID: 11400000, guid: ce0c97c7319a9144b8ed0f893d1efe73, type: 2}
     type: 16
+  - tile: {fileID: 11400000, guid: b3fce91b2a3c3f84daf07aa149d7db2e, type: 2}
+    type: 2
   - tile: {fileID: 11400000, guid: b3fce91b2a3c3f84daf07aa149d7db2e, type: 2}
     type: 2
   enemySpawnTriggerPrefab: {fileID: 2503980741333186381, guid: c4a41a2f219bf1848a07bceca84e0053, type: 3}

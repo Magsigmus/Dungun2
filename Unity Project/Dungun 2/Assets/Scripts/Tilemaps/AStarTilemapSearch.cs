@@ -30,7 +30,7 @@ public class AStarTilemapSearch
     }
 
     public List<Vector3Int> AStarPathFinding(Vector3Int start, Vector3Int end, int maxTilesConsidered,
-        Dictionary<TileType, BaseTile> lookup, out float finalFCost)
+        Dictionary<TileType, List<BaseTile>> lookup, out float finalFCost)
     {
         if(overlapFunction(start) || overlapFunction(end)) { finalFCost = -1;  return new List<Vector3Int>(); }
 
@@ -72,7 +72,7 @@ public class AStarTilemapSearch
                 currentTile.hCost = GetHCost(neighborPos);
                 currentTile.parent = currentNode;
                 currentTile.color = Color.green;
-                currentTile.sprite = lookup[TileType.DebugNorth + (i + 2) % 4].sprite;
+                currentTile.sprite = lookup[TileType.DebugNorth + (i + 2) % 4][0].sprite;
                 tilemap.SetTile(neighborPos, currentTile);
 
                 queue.Enqueue(neighborPos, currentTile.fCost); // Adds that neighbour to the queue 
