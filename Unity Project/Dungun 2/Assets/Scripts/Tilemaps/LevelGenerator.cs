@@ -233,7 +233,7 @@ public class LevelGenerator
                     //Sig: If the end of the list of entrances in the start room has been reached, then return false.
                     if (startEntranceIndex == startRoomEntrances.Count)
                     { 
-                        Debug.LogError("Could not find any suitable connection between components!"); 
+                        Debug.Log("Could not find any suitable connection between components!"); 
                         return false; 
                     }
 
