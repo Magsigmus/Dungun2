@@ -8,6 +8,7 @@ using System.Linq;
 using NavMeshPlus.Components;
 using UnityEngine.InputSystem;
 using System.Threading;
+using UnityEngine.WSA;
 
 public class LevelManger : MonoBehaviour
 {
@@ -37,7 +38,7 @@ public class LevelManger : MonoBehaviour
     public GameObject spawingWallEffectPrefab;
     public GameObject spawingEnemyEffectPrefab;
 
-    private int playerRoom = 0;
+    private int lockedRoom = -1;
     private ComponentTilemap level;
     private bool[] spawnedEnemies = null; // An array denoting if there has been spawned enemies in a room yet
     private bool[] discoveredCorridors = null;
@@ -175,13 +176,19 @@ public class LevelManger : MonoBehaviour
         }
 
         if (spawnedEnemies[roomIndex] || GameObject.FindGameObjectsWithTag("Enemy").Length != 0) { yield break; }
-        playerRoom = roomIndex;
         spawnedEnemies[roomIndex] = true;
 
         (Vector2Int, ScriptableRoom) entranceRoom = level.rooms[roomIndex];
         AnimateDiscovery(entranceRoom.Item1, entranceRoom.Item2.ground.ToList());
 
+        (Vector2Int, ScriptableRoom) room = level.rooms[roomIndex];
+        IntGameobjectPair[] enemies = room.Item2.enemies;
+        int numberOfEnemies = enemies.Select(e => e.enemyCount).Sum();
+
+        if (numberOfEnemies == 0) { yield break; }
+
         LockRoom(roomIndex);
+        lockedRoom = roomIndex;
 
         spawningEnemies = true;
 
@@ -210,14 +217,9 @@ public class LevelManger : MonoBehaviour
 
             TilemapUtility.LoadTiles(origen, wallTilemap, tiles);
 
-            foreach(SavedTile tile in tiles)
-            {
-                //Sig: Cant convert from Vector2Int to Vector3, so gotta go through Vector2
-                Vector3 spawingPositon = (Vector3)(Vector2)origen + tile.position + new Vector3(0.5f, 0.5f);
-                //Instantiate(spawingEnemyEffectPrefab, spawingPositon, Quaternion.identity);
-                Destroy(Instantiate(spawingWallEffectPrefab, spawingPositon, Quaternion.identity), spawningWallAnimationTime);
-            }
-
+            //Sig: Cant convert from Vector2Int to Vector3, so gotta go through Vector2
+            Vector3 spawingPositon = (Vector3)(Vector2)origen + new Vector3(0.5f, 0.5f);
+            SpawnWallEffect(spawingPositon, tiles);
         }
     }
 
@@ -233,7 +235,20 @@ public class LevelManger : MonoBehaviour
                 new SavedTile(orthogonalDirection, null),
                 new SavedTile(-orthogonalDirection, null) };
 
-            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2 + level.rooms[roomIndex].Item1, wallTilemap, tiles);
+            Vector2Int origen = entrance.Item2 + direction * 2 + level.rooms[roomIndex].Item1;
+            TilemapUtility.LoadTiles(origen, wallTilemap, tiles);
+
+            Vector3 spawingPositon = (Vector3)(Vector2)origen + new Vector3(0.5f, 0.5f);
+            SpawnWallEffect(spawingPositon, tiles);
+        }
+    }
+
+    private void SpawnWallEffect(Vector3 origen, SavedTile[] tiles)
+    {
+        foreach (SavedTile tile in tiles)
+        {
+            //Instantiate(spawingEnemyEffectPrefab, spawingPositon, Quaternion.identity);
+            Destroy(Instantiate(spawingWallEffectPrefab, origen + tile.position, Quaternion.identity), spawningWallAnimationTime);
         }
     }
 
@@ -265,9 +280,10 @@ public class LevelManger : MonoBehaviour
             animating = false;
         }
 
-        if(GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && !spawningEnemies)
+        if(GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && !spawningEnemies && lockedRoom != -1)
         {
-            OpenRoom(playerRoom);
+            OpenRoom(lockedRoom);
+            lockedRoom = -1;
         }
     }
 }
