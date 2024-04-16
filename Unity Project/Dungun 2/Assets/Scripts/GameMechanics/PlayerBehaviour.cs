@@ -33,10 +33,12 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject bulletPrefab;
     public float cooldownTime = 1f;
     public int healthPoints = 5;
+    public HeathBehaviour healthManager;
 
     [Header("Other Settings")]
     public GameObject spriteMaskPrefab;
     private GameObject instantiatedSpriteMask;
+
     [Header("Audio Settings")]
     public AudioSource source;
     public AudioClip shootSound;
@@ -60,6 +62,7 @@ public class PlayerBehaviour : MonoBehaviour
         colliders = GetComponents<Collider2D>();
         animator = GetComponentInChildren<Animator>();
         spriteTransform = gameObject.transform.Find("Sprite");
+        healthManager.MaxHitPoints = healthPoints;
         //Debug.Log(animator.gameObject.name);
     }
 
@@ -196,12 +199,15 @@ public class PlayerBehaviour : MonoBehaviour
     {
         healthPoints -= damage;
 
+        healthManager.CurrentHitPoints = healthPoints;
+
         if (healthPoints <= 0)
         {
             Debug.Log("PLAYER DEAD!");
 
             return;
         }
+
         source.PlayOneShot(shootSound);
     }
 
@@ -273,6 +279,5 @@ public class PlayerBehaviour : MonoBehaviour
         instantiatedSpriteMask = Instantiate(spriteMaskPrefab);
         instantiatedSpriteMask.transform.parent = transform;
         instantiatedSpriteMask.transform.localPosition = new Vector3();
-        
     }
 }
