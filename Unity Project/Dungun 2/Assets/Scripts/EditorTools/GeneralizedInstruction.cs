@@ -68,6 +68,7 @@ public class GeneralizedInstruction
     public void Point()
     {
         if (!target) { target = defaultTarget; }
+        if (!target) { return; }
         Vector2 dir = new Vector2(target.position.x - gunObject.transform.position.x, target.position.y - gunObject.transform.position.y);
         gunObject.transform.up = dir;
         Flip();
@@ -76,6 +77,7 @@ public class GeneralizedInstruction
     public void Shoot()
     {
         if (!target) { target = defaultTarget; }
+        if (!target) { return; }
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
 
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
@@ -87,6 +89,7 @@ public class GeneralizedInstruction
     public void ShootSquare(int size)
     {
         if (!target) { target = defaultTarget; }
+        if (!target) { return; }
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
         float angle = Vector2.Angle(dir, Vector2.up);
         float halfSize = (float)Math.Floor((decimal)size / 2);
