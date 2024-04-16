@@ -9,6 +9,7 @@ using NavMeshPlus.Components;
 using UnityEngine.InputSystem;
 using System.Threading;
 using UnityEngine.WSA;
+using Unity.VisualScripting;
 
 public class LevelManger : MonoBehaviour
 {
@@ -55,11 +56,11 @@ public class LevelManger : MonoBehaviour
 
     private void Start()
     {
-        GenerateLevel(levelNumber);
+        StartCoroutine(GenerateLevel(levelNumber));
     }
 
     //Sig: Generates a level from a level index
-    public void GenerateLevel(int levelIndex)
+    public IEnumerator GenerateLevel(int levelIndex)
     {
         tileLookupMap = InitializeTileTable(tileLookup);
 
@@ -71,9 +72,8 @@ public class LevelManger : MonoBehaviour
 
         ComponentTilemap newLevel = levelGenerator.GenerateLevel(levelIndex);
 
-        if (!buildCompletely) { return; }
+        if (!buildCompletely) { yield break; }
         newLevel.SpawnEntranceTriggers(enemySpawnTriggerPrefab);
-        navMesh.BuildNavMesh();
         level = newLevel;
 
         spawnedEnemies = Enumerable.Repeat(false, level.rooms.Count).ToArray();
@@ -88,6 +88,10 @@ public class LevelManger : MonoBehaviour
 
         discoveredCorridors = Enumerable.Repeat(false, level.corridorGround.Count).ToArray();
         revealQueue = new Queue<(Vector2Int, SavedTile[])>();
+
+        yield return new WaitForNextFrameUnit();
+
+        navMesh.BuildNavMesh();
     }
 
     private void BuildOverlappingTilemaps(ComponentTilemap level)

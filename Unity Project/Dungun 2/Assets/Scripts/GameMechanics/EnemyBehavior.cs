@@ -44,12 +44,16 @@ public class EnemyBehavior : MonoBehaviour
     [Header("Animation and VFX settings")]
     public Animator spriteAnimator;
 
+    Vector3 lastPosition;
+
     void Start()
     {
         var agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.speed = 2f;
+
+        lastPosition = transform.position;
 
         if (GameObject.FindGameObjectWithTag("Player"))
         {
@@ -73,6 +77,14 @@ public class EnemyBehavior : MonoBehaviour
             */
         }
     }
+
+    private void FixedUpdate()
+    {
+        float speed = Vector3.Distance(lastPosition, transform.position);
+        spriteAnimator.SetFloat("Speed", speed);
+        lastPosition = transform.position;
+    }
+
 
 
 

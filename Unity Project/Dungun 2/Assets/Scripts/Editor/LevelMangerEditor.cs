@@ -14,10 +14,10 @@ public class LevelMangerEditor : Editor
 
         LevelManger script = (LevelManger)target;
 
-        if (GUILayout.Button("Generate Level"))
+        /*if (GUILayout.Button("Generate Level"))
         {
             script.GenerateLevel(script.levelNumber);
-        }
+        }*/
 
         if (GUILayout.Button("Clear overlap"))
         {
