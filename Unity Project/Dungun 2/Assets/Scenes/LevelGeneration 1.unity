@@ -899,8 +899,12 @@ MonoBehaviour:
   aStarTilemap: {fileID: 245188966}
   spriteMaskTilemap: {fileID: 2097611407}
   overlayTilemap: {fileID: 235292522}
-  roomsConsideredInCycle: 3
   levelNumber: 1
+  buildCompletely: 1
+  maxTilesConsideredInAStar: 70
+  roomsConsideredInCycle: 3
+  enemySpawnTriggerPrefab: {fileID: 2503980741333186381, guid: c4a41a2f219bf1848a07bceca84e0053, type: 3}
+  navMesh: {fileID: 264642200}
   tileLookup:
   - tile: {fileID: 11400000, guid: dcd048cea8a85e5458eb86e1bf251d42, type: 2}
     type: 0
@@ -940,12 +944,14 @@ MonoBehaviour:
     type: 16
   - tile: {fileID: 11400000, guid: b3fce91b2a3c3f84daf07aa149d7db2e, type: 2}
     type: 2
-  - tile: {fileID: 11400000, guid: b3fce91b2a3c3f84daf07aa149d7db2e, type: 2}
-    type: 2
-  enemySpawnTriggerPrefab: {fileID: 2503980741333186381, guid: c4a41a2f219bf1848a07bceca84e0053, type: 3}
-  navMesh: {fileID: 264642200}
-  buildCompletely: 1
-  maxTilesConsideredInAStar: 70
+  - tile: {fileID: 11400000, guid: 15b7a2cf4304cc64b8994e4dde42d4fa, type: 2}
+    type: 19
+  - tile: {fileID: 11400000, guid: 67cc2a68b53e2c84b8e13119c6e15221, type: 2}
+    type: 19
+  - tile: {fileID: 11400000, guid: f3d962a41dd58734ab9bee489cdebc45, type: 2}
+    type: 19
+  - tile: {fileID: 11400000, guid: 64c3cf62835983547977aaa0046cbc2d, type: 2}
+    type: 19
 --- !u!4 &893309468
 Transform:
   m_ObjectHideFlags: 0
