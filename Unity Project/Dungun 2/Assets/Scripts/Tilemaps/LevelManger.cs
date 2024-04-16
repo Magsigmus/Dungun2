@@ -38,7 +38,6 @@ public class LevelManger : MonoBehaviour
     private Dictionary<TileType, List<BaseTile>> tileLookupMap;
     private float timer = 0;
     private bool animating = false;
-    private List<GameObject> currentEnemies;
     private Vector3Int[] neighbourDirs = new Vector3Int[4] {
         new Vector3Int(0, 1), // North
         new Vector3Int(-1, 0), // West
@@ -79,7 +78,6 @@ public class LevelManger : MonoBehaviour
 
         discoveredCorridors = Enumerable.Repeat(false, level.corridorGround.Count).ToArray();
         revealQueue = new Queue<(Vector2Int, SavedTile[])>();
-        currentEnemies = new List<GameObject>();
     }
 
     private void BuildOverlappingTilemaps(ComponentTilemap level)
@@ -150,7 +148,6 @@ public class LevelManger : MonoBehaviour
                 Debug.Log($"Spawned an enemy at {newEnemy.transform.position}");
                 newEnemy.GetComponent<NavMeshAgent>().enabled = true;
 
-                currentEnemies.Add(newEnemy);
                 c++;
             }
             c++;
@@ -167,7 +164,7 @@ public class LevelManger : MonoBehaviour
             AnimateDiscovery(new Vector2Int(), level.corridorGround[corridorIndex]);
         }
 
-        if (spawnedEnemies[roomIndex]) { return; }
+        if (spawnedEnemies[roomIndex] || GameObject.FindGameObjectsWithTag("Enemy").Length != 0) { return; }
         playerRoom = roomIndex;
 
         SpawnEnemies(roomIndex);
@@ -175,10 +172,7 @@ public class LevelManger : MonoBehaviour
         (Vector2Int, ScriptableRoom) entranceRoom = level.rooms[roomIndex];
         AnimateDiscovery(entranceRoom.Item1, entranceRoom.Item2.ground.ToList());
 
-        if(currentEnemies.Count > 0)
-        {
-            LockRoom(roomIndex);
-        }
+        LockRoom(roomIndex);
     }
 
     private void LockRoom(int roomIndex)
@@ -195,7 +189,7 @@ public class LevelManger : MonoBehaviour
                 new SavedTile(orthogonalDirection, popupTiles[1]), 
                 new SavedTile(-orthogonalDirection, popupTiles[2]) };
 
-            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2, wallTilemap, tiles);
+            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2 + level.rooms[roomIndex].Item1, wallTilemap, tiles);
         }
     }
 
@@ -211,7 +205,7 @@ public class LevelManger : MonoBehaviour
                 new SavedTile(orthogonalDirection, null),
                 new SavedTile(-orthogonalDirection, null) };
 
-            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2, wallTilemap, tiles);
+            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2 + level.rooms[roomIndex].Item1, wallTilemap, tiles);
         }
     }
 
@@ -243,8 +237,7 @@ public class LevelManger : MonoBehaviour
             animating = false;
         }
 
-        currentEnemies.Remove(null);
-        if(currentEnemies.Count == 0)
+        if(GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
         {
             OpenRoom(playerRoom);
         }
