@@ -340,7 +340,7 @@ public class ComponentTilemap
             return TileType.WestWall;
         }
 
-        Debug.LogError("CANT FIND THE FITTING TILE FOR THE REQUESTED AREA!");
+        Debug.LogWarning("CANT FIND THE FITTING TILE FOR THE REQUESTED AREA!");
         return TileType.Error;
     }
 

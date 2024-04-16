@@ -17,11 +17,13 @@ public class EnemyCombatBehaviour : MonoBehaviour
 
     bool mainDone = false;
     public GameObject gunObject;
+    private Animator gunAnimator;
 
     // Start is called before the first frame update
     void Start()
     {
         gunObject = gameObject.transform.GetChild(0).gameObject;
+        gunAnimator = gunObject.GetComponentInChildren<Animator>();
         StartCoroutine(RunInstructions(OnStart));
     }
 
@@ -62,6 +64,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
                     break;
                 case GeneralizedInstruction.InstructionType.Shoot:
                     instruction.Shoot();
+                    StartCoroutine(StartShootAnimation());
                     break;
                 case GeneralizedInstruction.InstructionType.ShootSquare:
                     instruction.ShootSquare(4);
@@ -93,6 +96,13 @@ public class EnemyCombatBehaviour : MonoBehaviour
         }
         mainDone = true;
         yield return null;
+    }
+
+    public IEnumerator StartShootAnimation()
+    {
+        gunAnimator.SetBool("Shoot", true);
+        yield return new WaitForEndOfFrame();
+        gunAnimator.SetBool("Shoot", false);
     }
 
     /*
