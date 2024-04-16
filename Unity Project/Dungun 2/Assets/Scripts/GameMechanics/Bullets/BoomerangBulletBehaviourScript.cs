@@ -8,6 +8,8 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
     public float startVelocity = 10f;
     public float desctructionTime = 5f;
 
+    public int damage = 1;
+
     public GameObject orgShooter;
 
     //TODO: on collission spawn new bullet/rotate towards original shooter
@@ -24,6 +26,10 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
     {
         if (collision.gameObject == orgShooter || collision.gameObject.tag == "Player")  //rasj: if hits original shooter
         {
+            if (collision.gameObject.tag == "Player")  //rasj: optimize this shit later
+            {
+                collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
+            }
             Destroy(this.gameObject);
         } else if (orgShooter)  //rasj: gotta make sure that the original shooter hasn't been killed by the player
         {
