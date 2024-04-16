@@ -346,6 +346,7 @@ MonoBehaviour:
   healthPoints: 3
   source: {fileID: -4152030256087342297}
   deathSound: {fileID: 8300000, guid: aa37fa377b813c844bf49c496018052a, type: 3}
+  hurtSound: {fileID: 8300000, guid: aa2c820ffa9b5a246a856809842a396f, type: 3}
 --- !u!114 &4971303150314290897
 MonoBehaviour:
   m_ObjectHideFlags: 0
