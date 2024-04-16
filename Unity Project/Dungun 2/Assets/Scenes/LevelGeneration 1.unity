@@ -892,6 +892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1717757104}
+  timeToSpawnEnemy: 0.5
   groundTilemap: {fileID: 1762610685}
   wallTilemap: {fileID: 1810371060}
   decorationTilemap: {fileID: 1507431704}
@@ -952,7 +953,8 @@ MonoBehaviour:
   - tile: {fileID: 11400000, guid: 64c3cf62835983547977aaa0046cbc2d, type: 2}
     type: 19
   expandingAnimationTime: 2
-  spawningAnimationTime: 0.5
+  spawningWallAnimationTime: 0.5
+  spawningEnemyAnimationTime: 0.3
   spawingWallEffectPrefab: {fileID: 8309665969103197412, guid: 851dbd0a92a2cb84b9f96dd7a4d0493a, type: 3}
   spawingEnemyEffectPrefab: {fileID: 657990052890500133, guid: 4480b90fbc7ffe4448f65c6e2d4b2d0e, type: 3}
 --- !u!4 &893309468
