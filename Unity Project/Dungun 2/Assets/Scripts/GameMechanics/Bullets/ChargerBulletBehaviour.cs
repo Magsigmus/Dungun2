@@ -14,7 +14,7 @@ public class ChargerBulletBehaviour : MonoBehaviour, BulletInterface
     public float startVelocity = 1f;
     public float desctructionTime = 5f;
     public int chargerHealth = 0;
-
+    public int damage = 1;
 
     void Start()
     {
@@ -32,6 +32,11 @@ public class ChargerBulletBehaviour : MonoBehaviour, BulletInterface
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision.gameObject.tag == "Player")
+        {
+            collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
+        }
+
         //rasj: spawn the enemy prefab
         GameObject newCharger = Instantiate(chargerPrefab);
         newCharger.transform.position = transform.position;  //rasj: spawn charger at current location

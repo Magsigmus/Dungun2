@@ -38,6 +38,7 @@ public class PlayerBehaviour : MonoBehaviour
     [Header("Other Settings")]
     public GameObject spriteMaskPrefab;
     private GameObject instantiatedSpriteMask;
+    public Animator gunAnimator;
 
     [Header("Audio Settings")]
     public AudioSource source;
@@ -124,6 +125,8 @@ public class PlayerBehaviour : MonoBehaviour
             cooldown = 0;
 
             source.PlayOneShot(shootSound);
+
+            gunAnimator.SetTrigger("Shoot");
 
             //Sig: Spawn bullet
             GameObject newBullet = Instantiate(bulletPrefab);

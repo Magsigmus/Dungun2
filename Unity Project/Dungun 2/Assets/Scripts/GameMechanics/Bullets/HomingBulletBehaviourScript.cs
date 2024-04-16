@@ -11,6 +11,8 @@ public class HomingBulletBehaviourScript : MonoBehaviour, BulletInterface
     public float gravitationalForce = 5f;
     public float maxGravitationalDistance = 5f;
 
+    public int damage = 1;
+
     private GameObject target;
 
     private float dist;
@@ -40,7 +42,10 @@ public class HomingBulletBehaviourScript : MonoBehaviour, BulletInterface
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        if (collision.gameObject.tag == "Player")
+        {
+            collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
+        }
         Destroy(this.gameObject);
     }
 

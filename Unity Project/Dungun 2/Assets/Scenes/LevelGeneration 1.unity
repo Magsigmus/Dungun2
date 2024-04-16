@@ -123,6 +123,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!95 &124410667 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4441041594122499410, guid: 85399d47b44c6704ca682a6572a51c5e, type: 3}
+  m_PrefabInstance: {fileID: 1307371789}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &168659029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1132,6 +1137,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2025664714159822821, guid: 85399d47b44c6704ca682a6572a51c5e, type: 3}
+      propertyPath: gunAnimator
+      value: 
+      objectReference: {fileID: 124410667}
+    - target: {fileID: 2025664714159822821, guid: 85399d47b44c6704ca682a6572a51c5e, type: 3}
+      propertyPath: healthManager
+      value: 
+      objectReference: {fileID: 171077284}
     - target: {fileID: 7290933889151350112, guid: 85399d47b44c6704ca682a6572a51c5e, type: 3}
       propertyPath: m_Name
       value: Player

@@ -280,7 +280,9 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4107235708702390523, guid: 2f36e89f71434364bb46992e9dff6c13, type: 3}
   cooldownTime: 0.18
   healthPoints: 5
+  healthManager: {fileID: 0}
   spriteMaskPrefab: {fileID: 7956786754262325316, guid: c75d44989c781704181ea6936fa5a569, type: 3}
+  gunAnimator: {fileID: 4441041594122499410}
   source: {fileID: 1975311561263589961}
   shootSound: {fileID: 8300000, guid: 474d4a2c6e2396243968bf30908465a8, type: 3}
   hurtSound: {fileID: 8300000, guid: 43dc54ed32c64d14b9c9254fd73abdcf, type: 3}
@@ -482,6 +484,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 633dbc8e95f6bcb43ba2be2d4677e85d, type: 3}
+--- !u!95 &4441041594122499410 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2016920562203686368, guid: 633dbc8e95f6bcb43ba2be2d4677e85d, type: 3}
+  m_PrefabInstance: {fileID: 2764142942300078258}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5804671533103487724 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8562015093343623774, guid: 633dbc8e95f6bcb43ba2be2d4677e85d, type: 3}
