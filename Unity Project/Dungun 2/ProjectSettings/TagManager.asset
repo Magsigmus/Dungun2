@@ -18,8 +18,8 @@ TagManager:
   - PlayerObjects
   - Obstacles
   - EnemyObjects
-  - 
-  - 
+  - EnemyBullets
+  - PlayerBullets
   - 
   - 
   - 

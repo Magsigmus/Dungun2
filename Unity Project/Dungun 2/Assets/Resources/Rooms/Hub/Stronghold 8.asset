@@ -2202,7 +2202,13 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: 4640593b34f41194ab3f8c9daf2adfe4, type: 2}
   type: 0
   size: {x: 41, y: 19}
-  enemies: []
+  enemies:
+  - enemyCount: 1
+    prefab: {fileID: 6538225185145312215, guid: 672f00ea71b1b714690e238527615b13, type: 3}
+  - enemyCount: 1
+    prefab: {fileID: 6538225185145312215, guid: 899206f64239d934c998b1937d82b448, type: 3}
+  - enemyCount: 2
+    prefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
   metaInformation:
     NorthEntrances:
     - {x: -37, y: 0}

@@ -950,7 +950,11 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: 4640593b34f41194ab3f8c9daf2adfe4, type: 2}
   type: 1
   size: {x: 16, y: 21}
-  enemies: []
+  enemies:
+  - enemyCount: 3
+    prefab: {fileID: 6538225185145312215, guid: 7bd9c5230f968ef4db2b1589f5f5628c, type: 3}
+  - enemyCount: 1
+    prefab: {fileID: 6538225185145312215, guid: 899206f64239d934c998b1937d82b448, type: 3}
   metaInformation:
     NorthEntrances:
     - {x: -8, y: 0}

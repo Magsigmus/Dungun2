@@ -366,8 +366,8 @@ MonoBehaviour:
   healthPoints: 5
   spriteMaskPrefab: {fileID: 7956786754262325316, guid: c75d44989c781704181ea6936fa5a569, type: 3}
   source: {fileID: 1975311561263589961}
-  shootSound: {fileID: 0}
-  hurtSound: {fileID: 0}
+  shootSound: {fileID: 8300000, guid: 474d4a2c6e2396243968bf30908465a8, type: 3}
+  hurtSound: {fileID: 8300000, guid: 43dc54ed32c64d14b9c9254fd73abdcf, type: 3}
 --- !u!61 &1344039347137835068
 BoxCollider2D:
   m_ObjectHideFlags: 0

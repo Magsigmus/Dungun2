@@ -88,8 +88,8 @@ public class GeneralizedInstruction
 
     public void ShootSquare(int size)
     {
-        if (!target) { target = defaultTarget; }
-        if (!target) { return; }
+        if (!target) { target = defaultTarget; if (!target) { return; }}
+        
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
         float angle = Vector2.Angle(dir, Vector2.up);
         float halfSize = (float)Math.Floor((decimal)size / 2);
@@ -103,7 +103,7 @@ public class GeneralizedInstruction
                 diameter = newBullet.gameObject.GetComponent<CircleCollider2D>().radius * 2;
 
                 newBullet.transform.up = dir;   //rasj: set bullet direction
-                newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>() - new Vector2(x - halfSize, y - halfSize) + (dir * 2);  //rasj: halfSize is to make sure they spawn in the middle of the boss
+                newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>() - new Vector2(x - halfSize, y - halfSize);  //rasj: halfSize is to make sure they spawn in the middle of the boss
                 newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);   //rasj: data transfer from old enemy to new
             }
         }
