@@ -44,7 +44,7 @@ public class LevelManger : MonoBehaviour
     private Queue<(Vector2Int, SavedTile[])> revealQueue;
     private Dictionary<TileType, List<BaseTile>> tileLookupMap;
     private float timer = 0;
-    private bool animating = false;
+    private bool animating = false, spawningEnemies = false;
     private Vector3Int[] neighbourDirs = new Vector3Int[4] {
         new Vector3Int(0, 1), // North
         new Vector3Int(-1, 0), // West
@@ -183,9 +183,13 @@ public class LevelManger : MonoBehaviour
 
         LockRoom(roomIndex);
 
+        spawningEnemies = true;
+
         yield return new WaitForSeconds(timeToSpawnEnemy);
 
         SpawnEnemies(roomIndex);
+
+        spawningEnemies = false;
     }
 
     private void LockRoom(int roomIndex)
@@ -261,7 +265,7 @@ public class LevelManger : MonoBehaviour
             animating = false;
         }
 
-        if(GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
+        if(GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && !spawningEnemies)
         {
             OpenRoom(playerRoom);
         }
