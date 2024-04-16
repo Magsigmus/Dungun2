@@ -116,11 +116,6 @@ public class LevelManger : MonoBehaviour
     // Called from a entrance trigger, spawn enemies in a room
     public void SpawnEnemies(int nodeIndex)
     {
-        //Sig:  Checks if the enemies in a room has been spawned
-        if (spawnedEnemies == null) { return; }
-        if (spawnedEnemies[nodeIndex]) { return; }
-        spawnedEnemies[nodeIndex] = true;
-
         //Sig: Gets the required enemies from the saved room object
         (Vector2Int, ScriptableRoom) room = level.rooms[nodeIndex];
         IntGameobjectPair[] enemies = room.Item2.enemies;
@@ -179,8 +174,9 @@ public class LevelManger : MonoBehaviour
             AnimateDiscovery(new Vector2Int(), level.corridorGround[corridorIndex]);
         }
 
-        if (spawnedEnemies[roomIndex] || GameObject.FindGameObjectsWithTag("Enemy").Length != 0) { return; }
+        if (spawnedEnemies[roomIndex] || GameObject.FindGameObjectsWithTag("Enemy").Length != 0) { yield break; }
         playerRoom = roomIndex;
+        spawnedEnemies[roomIndex] = true;
 
         (Vector2Int, ScriptableRoom) entranceRoom = level.rooms[roomIndex];
         AnimateDiscovery(entranceRoom.Item1, entranceRoom.Item2.ground.ToList());
