@@ -15,13 +15,15 @@ public class EnemyBehavior : MonoBehaviour
         Chasing
     }
 
-    /*Cooldowns and timers*/
+    [Header("Cooldown")]
     public float shootCooldownTime = 1f;  //rasj: 1 second
     private float shootCooldown = 0f;
 
+    [Header("Target distance settings")]
     public float minTargetDistance = 3f;
     public float maxTargetDistance = 10f;
 
+    [Header("Wander Settings")]
     private Vector3 wanderDestination = new Vector3(0f, 0f, 0f);
     public float maxWanderDistance = 5f;
     public float maxWanderTime = 15f;
@@ -34,7 +36,9 @@ public class EnemyBehavior : MonoBehaviour
 
     public int healthPoints = 3;
 
-    public int sstate = 0;
+    [Header("Audio Settings")]
+    public AudioSource source;
+    public AudioClip deathSound;
 
     void Start()
     {
@@ -182,6 +186,7 @@ public class EnemyBehavior : MonoBehaviour
 
     public void Death()
     {
+        if (source && deathSound) { source.PlayOneShot(deathSound); }
         GameObject.Destroy(gameObject);
         //GetComponent<EnemyCombatBehaviour>().RunInstructions(GetComponent<EnemyCombatBehaviour>().OnDeath, "death");  //rasj: basically die
         //Destroy(this.gameObject);

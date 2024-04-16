@@ -88,8 +88,9 @@ public class GeneralizedInstruction
 
     public void ShootSquare(int size)
     {
-        if (!target) { target = defaultTarget; if (!target) { return; }}
-        
+        if (!target) { target = defaultTarget; }
+        if (!target) { return; }
+
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
         float angle = Vector2.Angle(dir, Vector2.up);
         float halfSize = (float)Math.Floor((decimal)size / 2);
@@ -178,7 +179,7 @@ public class GeneralizedInstruction
     {
         bool condition = distanceToTarget < 0; //rasj: if "none" and distance is negative, always run, as negative distance don't exist
 
-        if (!condition)  //rasj: if distance is not negative
+        if (!condition)  //rasj: if distance is not negative; if condition should not be ignored
         {
             float dist = Vector3.Distance(enemy.transform.position, target.transform.position);
             switch (realDistanceToTarget)
@@ -212,9 +213,10 @@ public class GeneralizedInstruction
             gunObject.transform.GetChild(0).localScale = new Vector3(1, 1, 1);
         }
     }
-
+    /*
     private float lerp(float start, float end, float t)
     {
         return (1 - t) * start + t * end;
     }
+    */
 }
