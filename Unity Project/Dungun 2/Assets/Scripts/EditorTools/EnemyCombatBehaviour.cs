@@ -1,10 +1,8 @@
 using Assets.Scripts.GameMechanics;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEditor;
 
 public class EnemyCombatBehaviour : MonoBehaviour
 {
@@ -49,7 +47,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
             switch (instruction.instructionType)
             {
                 case GeneralizedInstruction.InstructionType.Wait:
-                    //rasj: only yield return on ienumerators bc then it waits to be done
+                    //rasj: only yield return on ienumerators cuz then it waits to be done
                     yield return instruction.Wait();
                     break;
                 case GeneralizedInstruction.InstructionType.Rotate:
@@ -63,6 +61,12 @@ public class EnemyCombatBehaviour : MonoBehaviour
                     break;
                 case GeneralizedInstruction.InstructionType.Shoot:
                     instruction.Shoot();
+                    break;
+                case GeneralizedInstruction.InstructionType.ShootSquare:
+                    instruction.ShootSquare(5);
+                    break;
+                case GeneralizedInstruction.InstructionType.ShootCircle:
+                    instruction.ShootCircle(2, 15);
                     break;
                 case GeneralizedInstruction.InstructionType.Die:
                     //rasj: if die is not in ondeath

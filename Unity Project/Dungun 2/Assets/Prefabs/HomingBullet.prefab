@@ -109,10 +109,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f76c0fd81a08c9a4289fd626e949b1e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startVelocity: 10
+  startVelocity: 5
   desctructionTime: 3
-  gravitationalForce: 40
-  maxGravitationalDistance: 5
+  gravitationalForce: 45
+  maxGravitationalDistance: 8
 --- !u!1 &6156309483954531159
 GameObject:
   m_ObjectHideFlags: 0
