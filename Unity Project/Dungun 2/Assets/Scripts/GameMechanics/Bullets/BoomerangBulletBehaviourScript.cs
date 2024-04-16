@@ -24,17 +24,21 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject == orgShooter || collision.gameObject.tag == "Player")  //rasj: if hits original shooter
+        bool hasPlayerTag = collision.gameObject.CompareTag("Player");
+        if (hasPlayerTag)  //rasj: if hit player, make player take damage
         {
-            if (collision.gameObject.tag == "Player")  //rasj: optimize this shit later
-            {
-                collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
-            }
+            collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
+        }
+
+        if (collision.gameObject == orgShooter || hasPlayerTag)  //rasj: if hits original shooter
+        {
             Destroy(this.gameObject);
-        } else if (orgShooter)  //rasj: gotta make sure that the original shooter hasn't been killed by the player
+        } else if (orgShooter)  //rasj: if hit and shooter still isn't dead
         {
             Vector2 dir = new Vector2(orgShooter.transform.position.x - transform.position.x, orgShooter.transform.position.y - transform.position.y);
+            transform.position += (Vector3)dir.normalized;  //rasj: hopefully get the bullet out of the wall
             transform.up = dir;
+            Debug.DrawRay(transform.position, dir);
         }
         else  //rasj: in all other cases, die
         {
