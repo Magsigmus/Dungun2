@@ -86,6 +86,7 @@ public class TilemapManager : MonoBehaviour
         TilemapUtility.LoadTiles(position, groundMap, room.ground);
         TilemapUtility.LoadTiles(position, wallMap, room.walls);
         TilemapUtility.LoadTiles(position, decorMap, room.decorations);
+        TilemapUtility.LoadTiles(position, metaMap, room.meta);
     }
 
     // Clears the map
