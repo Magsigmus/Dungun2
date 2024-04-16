@@ -34,6 +34,9 @@ public class PlayerBehaviour : MonoBehaviour
     public float cooldownTime = 1f;
     public int healthPoints = 5;
 
+    [Header("Other Settings")]
+    public GameObject spriteMaskPrefab;
+    private GameObject instantiatedSpriteMask;
     [Header("Audio Settings")]
     public AudioSource source;
     public AudioClip shootSound;
@@ -262,5 +265,14 @@ public class PlayerBehaviour : MonoBehaviour
     {
         foreach (SpriteRenderer rnd in renderers) { rnd.enabled = true; }
         foreach (Collider2D col in colliders) { col.enabled = true; }
+    }
+
+    public void StartExpandAnimation()
+    {
+        if(instantiatedSpriteMask != null) { Destroy(instantiatedSpriteMask); }
+        instantiatedSpriteMask = Instantiate(spriteMaskPrefab);
+        instantiatedSpriteMask.transform.parent = transform;
+        instantiatedSpriteMask.transform.localPosition = new Vector3();
+        
     }
 }
