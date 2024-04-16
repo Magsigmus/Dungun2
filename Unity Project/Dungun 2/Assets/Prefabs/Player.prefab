@@ -440,6 +440,7 @@ MonoBehaviour:
   healthPoints: 5
   healthManager: {fileID: 886870305894844403}
   spriteMaskPrefab: {fileID: 7956786754262325316, guid: c75d44989c781704181ea6936fa5a569, type: 3}
+  gunAnimator: {fileID: 5842078842960531812}
   source: {fileID: 1975311561263589961}
   shootSound: {fileID: 8300000, guid: 474d4a2c6e2396243968bf30908465a8, type: 3}
   hurtSound: {fileID: 8300000, guid: 43dc54ed32c64d14b9c9254fd73abdcf, type: 3}
@@ -644,6 +645,11 @@ PrefabInstance:
 --- !u!4 &5804671533103487724 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8562015093343623774, guid: 633dbc8e95f6bcb43ba2be2d4677e85d, type: 3}
+  m_PrefabInstance: {fileID: 2764142942300078258}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &5842078842960531812 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8597106281688322518, guid: 633dbc8e95f6bcb43ba2be2d4677e85d, type: 3}
   m_PrefabInstance: {fileID: 2764142942300078258}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &8079159849693857926 stripped

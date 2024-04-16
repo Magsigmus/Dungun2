@@ -13,6 +13,7 @@ public class LevelManger : MonoBehaviour
 {
     [Header("General")]
     public GameObject player;
+    public float timeToSpawnEnemy = 0.5f;
 
     [Header("Tilemaps")]
     public Tilemap groundTilemap;
@@ -31,7 +32,8 @@ public class LevelManger : MonoBehaviour
 
     [Header("Visual effects settings")]
     public float expandingAnimationTime = 2f;
-    public float spawningAnimationTime = 0.5f;
+    public float spawningWallAnimationTime = 0.5f;
+    public float spawningEnemyAnimationTime = 0.3f;
     public GameObject spawingWallEffectPrefab;
     public GameObject spawingEnemyEffectPrefab;
 
@@ -156,7 +158,7 @@ public class LevelManger : MonoBehaviour
                 newEnemy.transform.position = spawnPosition;
 
                 //Instantiate(spawingEnemyEffectPrefab, spawnPosition, Quaternion.identity);
-                Destroy(Instantiate(spawingEnemyEffectPrefab, spawnPosition, Quaternion.identity), spawningAnimationTime);
+                Destroy(Instantiate(spawingEnemyEffectPrefab, spawnPosition, Quaternion.identity), spawningEnemyAnimationTime);
 
                 Debug.Log($"Spawned an enemy at {newEnemy.transform.position}");
                 newEnemy.GetComponent<NavMeshAgent>().enabled = true;
@@ -168,7 +170,7 @@ public class LevelManger : MonoBehaviour
 
     }
 
-    public void DiscoverRoom(int roomIndex, (int, Vector2Int) entrance)
+    public IEnumerator DiscoverRoom(int roomIndex, (int, Vector2Int) entrance)
     {
         int corridorIndex = level.corridorIndecies[roomIndex][entrance];
         if (!discoveredCorridors[corridorIndex])
@@ -180,12 +182,14 @@ public class LevelManger : MonoBehaviour
         if (spawnedEnemies[roomIndex] || GameObject.FindGameObjectsWithTag("Enemy").Length != 0) { return; }
         playerRoom = roomIndex;
 
-        SpawnEnemies(roomIndex);
-
         (Vector2Int, ScriptableRoom) entranceRoom = level.rooms[roomIndex];
         AnimateDiscovery(entranceRoom.Item1, entranceRoom.Item2.ground.ToList());
 
         LockRoom(roomIndex);
+
+        yield return new WaitForSeconds(timeToSpawnEnemy);
+
+        SpawnEnemies(roomIndex);
     }
 
     private void LockRoom(int roomIndex)
@@ -211,7 +215,7 @@ public class LevelManger : MonoBehaviour
                 //Sig: Cant convert from Vector2Int to Vector3, so gotta go through Vector2
                 Vector3 spawingPositon = (Vector3)(Vector2)origen + tile.position + new Vector3(0.5f, 0.5f);
                 //Instantiate(spawingEnemyEffectPrefab, spawingPositon, Quaternion.identity);
-                Destroy(Instantiate(spawingWallEffectPrefab, spawingPositon, Quaternion.identity), spawningAnimationTime);
+                Destroy(Instantiate(spawingWallEffectPrefab, spawingPositon, Quaternion.identity), spawningWallAnimationTime);
             }
 
         }

@@ -95,10 +95,8 @@ public class PlayerBehaviour : MonoBehaviour
         //Sig: Ensures that the player can shoot.
         if (playerControls.Default.Shoot.phase == InputActionPhase.Performed)
         {
-            Shoot();
+            StartCoroutine(Shoot());
         }
-
-        
     }
 
     void Flip()
@@ -115,7 +113,7 @@ public class PlayerBehaviour : MonoBehaviour
     }
 
     //Sig: Makes the player shoot.
-    void Shoot()
+    IEnumerator Shoot()
     {
         Transform gunObject = transform.Find("Gun");
 
@@ -126,13 +124,17 @@ public class PlayerBehaviour : MonoBehaviour
 
             source.PlayOneShot(shootSound);
 
-            gunAnimator.SetTrigger("Shoot");
+            gunAnimator.SetBool("Shoot", true);
 
             //Sig: Spawn bullet
             GameObject newBullet = Instantiate(bulletPrefab);
             newBullet.transform.up = dir;
             newBullet.transform.position = dir + transform.position.ConvertTo<Vector2>();
         }
+
+        yield return new WaitForEndOfFrame();
+
+        gunAnimator.SetBool("Shoot", false);
     }
 
     //Sig: Find the direction the bullets should point in

@@ -18,6 +18,6 @@ public class EntranceTriggerBehaviour : MonoBehaviour
     {
         if(collision.tag != "Player") { return; }
         Debug.Log($"Detected player in room {roomIndex}");
-        manager.DiscoverRoom(roomIndex, thisEntrance);
+        StartCoroutine(manager.DiscoverRoom(roomIndex, thisEntrance));
     }
 }
