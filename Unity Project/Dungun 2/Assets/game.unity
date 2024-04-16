@@ -2162,7 +2162,7 @@ PrefabInstance:
       objectReference: {fileID: 1270647177}
     - target: {fileID: 4971303150314290897, guid: d2c25f56456f70447b3993ace98fde51, type: 3}
       propertyPath: Main.Array.data[1].instructionType
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5146900579757251866, guid: d2c25f56456f70447b3993ace98fde51, type: 3}
       propertyPath: m_Enabled

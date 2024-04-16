@@ -111,6 +111,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startVelocity: 10
   desctructionTime: 5
+  damage: 1
 --- !u!1 &6156309483954531159
 GameObject:
   m_ObjectHideFlags: 0

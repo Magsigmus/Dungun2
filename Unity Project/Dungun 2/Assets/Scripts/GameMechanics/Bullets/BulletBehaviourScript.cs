@@ -6,6 +6,7 @@ public class BulletBehaviourScript : MonoBehaviour, BulletInterface
 {
     public float startVelocity = 1f;
     public float desctructionTime = 5f;
+    public int damage = 1;
 
     void Start()
     {
@@ -20,7 +21,7 @@ public class BulletBehaviourScript : MonoBehaviour, BulletInterface
     {
         if (collision.gameObject.tag == "Player")
         {
-            collision.gameObject.GetComponent<PlayerBehaviour>();
+            collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
         }
         Destroy(this.gameObject);
     }

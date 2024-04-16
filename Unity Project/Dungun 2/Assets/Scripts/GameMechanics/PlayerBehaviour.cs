@@ -197,7 +197,7 @@ public class PlayerBehaviour : MonoBehaviour
         return result;
     }
 
-    void TakeDamage(int damage)  //rasj: check for enemybullet tag, when colliding with something
+    public void TakeDamage(int damage)  //rasj: check for enemybullet tag, when colliding with something
     {
         healthPoints -= damage;
 
