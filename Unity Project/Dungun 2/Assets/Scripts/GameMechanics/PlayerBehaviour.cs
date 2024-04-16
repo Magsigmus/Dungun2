@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using UnityEngine.UIElements.Experimental;
 using static UnityEngine.InputSystem.Controls.AxisControl;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
+using UnityEngine.SceneManagement;
 
 public class PlayerBehaviour : MonoBehaviour
 {
@@ -224,6 +225,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (healthPoints <= 0)
         {
             Debug.Log("PLAYER DEAD!");
+            SceneManager.LoadScene(1);  //rasj: 1 is the Game Over scene in build settings
 
             return;
         }
