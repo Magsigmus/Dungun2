@@ -739,9 +739,7 @@ MonoBehaviour:
   enemies:
   - enemyCount: 1
     prefab: {fileID: 6538225185145312215, guid: 7bd9c5230f968ef4db2b1589f5f5628c, type: 3}
-  - enemyCount: 1
-    prefab: {fileID: 6538225185145312215, guid: c59a68dbd3d420047a8cf66203f67000, type: 3}
-  - enemyCount: 1
+  - enemyCount: 2
     prefab: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
   - enemyCount: 1
     prefab: {fileID: 6538225185145312215, guid: 672f00ea71b1b714690e238527615b13, type: 3}

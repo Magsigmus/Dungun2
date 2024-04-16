@@ -39,6 +39,7 @@ public class EnemyBehavior : MonoBehaviour
     [Header("Audio Settings")]
     public AudioSource source;
     public AudioClip deathSound;
+    public AudioClip hurtSound;
 
     void Start()
     {
@@ -176,6 +177,7 @@ public class EnemyBehavior : MonoBehaviour
 
     void TakeDamage(int damage)
     {
+        if (source && hurtSound) { source.PlayOneShot(hurtSound); }
         healthPoints -= damage;
 
         if (healthPoints <= 0)
