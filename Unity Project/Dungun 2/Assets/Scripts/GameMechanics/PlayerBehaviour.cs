@@ -53,6 +53,7 @@ public class PlayerBehaviour : MonoBehaviour
     private SpriteRenderer[] renderers;
     private Collider2D[] colliders;
     private Animator animator;
+    private GameObject gunSpriteGameObject;
 
 
     private void Awake()
@@ -64,6 +65,7 @@ public class PlayerBehaviour : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         spriteGameobject = gameObject.transform.Find("Sprite").gameObject;
         healthManager.MaxHitPoints = healthPoints;
+        gunSpriteGameObject = gunObject.transform.GetChild(0).gameObject;
         //Debug.Log(animator.gameObject.name);
     }
 
@@ -158,6 +160,17 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         gunObject.transform.up = dir;
+
+        FlipGun();
+    }
+
+    private void FlipGun()
+    {
+        int side = Math.Sign(gunObject.transform.eulerAngles.z - 180);
+        side = ((side == 0) ? 1 : side);
+        Vector3 newScale = gunSpriteGameObject.transform.localScale;
+        newScale.y = Math.Abs(newScale.y) * side;
+        gunSpriteGameObject.transform.localScale = newScale;
     }
 
     //Sig: Gets the vector that points to the mouse.

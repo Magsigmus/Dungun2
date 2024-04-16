@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System;
 
 public class EnemyCombatBehaviour : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gunObject = gameObject.transform.GetChild(0).gameObject;
+        //gunObject = gameObject.transform.GetChild(0).gameObject;
         gunAnimator = gunObject.GetComponentInChildren<Animator>();
         StartCoroutine(RunInstructions(OnStart));
     }
@@ -36,6 +37,8 @@ public class EnemyCombatBehaviour : MonoBehaviour
             mainDone = false;
             StartCoroutine(RunInstructions(Main));
         }
+
+        FlipGun();
     }
 
     public IEnumerator RunInstructions(List<GeneralizedInstruction> instructions) //rasj: todo: run as ienumerator (to make to a coroutine)
@@ -96,6 +99,16 @@ public class EnemyCombatBehaviour : MonoBehaviour
         }
         mainDone = true;
         yield return null;
+    }
+
+    private void FlipGun()
+    {
+        GameObject gunSpriteGameObject = gunObject.transform.GetChild(0).gameObject;
+        int side = Math.Sign(gunObject.transform.eulerAngles.z - 180);
+        side = ((side == 0) ? 1 : side);
+        Vector3 newScale = gunSpriteGameObject.transform.localScale;
+        newScale.y = Math.Abs(newScale.y) * side;
+        gunSpriteGameObject.transform.localScale = newScale;
     }
 
     public IEnumerator StartShootAnimation()

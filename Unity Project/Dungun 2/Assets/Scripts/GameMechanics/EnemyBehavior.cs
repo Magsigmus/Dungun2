@@ -41,6 +41,9 @@ public class EnemyBehavior : MonoBehaviour
     public AudioClip deathSound;
     public AudioClip hurtSound;
 
+    [Header("Animation and VFX settings")]
+    public Animator spriteAnimator;
+
     void Start()
     {
         var agent = GetComponent<NavMeshAgent>();
@@ -70,6 +73,8 @@ public class EnemyBehavior : MonoBehaviour
             */
         }
     }
+
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
