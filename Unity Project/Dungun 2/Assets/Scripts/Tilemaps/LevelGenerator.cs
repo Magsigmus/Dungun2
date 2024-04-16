@@ -17,7 +17,7 @@ public class LevelGenerator
     public int maxTilesConsideredInAStar = 200;
 
     //Sig: A lookup-table for the corresponding tiles to each tile-type
-    Dictionary<TileType, BaseTile> tileLookupMap;
+    Dictionary<TileType, List<BaseTile>> tileLookupMap;
 
     //Sig: Key is indexed with first byte being 0, second byte being the value of the roomType casted to a byte, third byte being the number of entrances, and the fourth byte being the direction of one of the entances.
     //Sig: North -> 0, West -> 1, South -> 2, East -> 3
@@ -35,7 +35,7 @@ public class LevelGenerator
     ComponentTilemap[] componentTilemaps; //Sig: An array of tilemaps containing layouts of the generated components
 
     public LevelGenerator(Tilemap groundTilemap, Tilemap wallTilemap, Tilemap decorationTilemap, 
-        Tilemap aStarTilemap, Dictionary<TileType, BaseTile> tileLookupTable)
+        Tilemap aStarTilemap, Dictionary<TileType, List<BaseTile>> tileLookupTable)
     {
         prefabGroundTilemap = groundTilemap;
         prefabWallTilemap = wallTilemap;
