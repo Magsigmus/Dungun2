@@ -140,7 +140,7 @@ public class LevelManger : MonoBehaviour
             for (int j = 0; j < enemies[i].enemyCount; j++)
             {
                 GameObject newEnemy = Instantiate(enemies[i].prefab);
-                newEnemy.GetComponent<GeneralizedInstruction>().target = player.transform;
+                //newEnemy.GetComponent<EnemyCombatBehaviour>().defaultTarget = player.transform;
                 newEnemy.transform.position = (Vector2)randomisedSpawnPoints[c] + new Vector2(0.5f, 0.5f);
                 Debug.Log($"Spawned an enemy at {newEnemy.transform.position}");
                 newEnemy.GetComponent<NavMeshAgent>().enabled = true;

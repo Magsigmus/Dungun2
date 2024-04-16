@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class EnemyCombatBehaviour : MonoBehaviour
 {
+    //public Transform defaultTarget = GameObject.FindWithTag("Player").transform;
     public List<GeneralizedInstruction> OnStart = new List<GeneralizedInstruction>();
     public List<GeneralizedInstruction> Main = new List<GeneralizedInstruction>();
     public List<GeneralizedInstruction> OnDeath = new List<GeneralizedInstruction>();
@@ -42,7 +43,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
         foreach (GeneralizedInstruction instruction in instructions)
         {
             instruction.gunObject = gunObject;
-            instruction.defaultTarget = GameObject.FindGameObjectWithTag("Player").transform;
+            instruction.target = GameObject.FindGameObjectWithTag("Player").transform;
 
             switch (instruction.instructionType)
             {

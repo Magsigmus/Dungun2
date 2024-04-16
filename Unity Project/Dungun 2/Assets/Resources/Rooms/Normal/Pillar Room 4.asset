@@ -426,7 +426,9 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: 4640593b34f41194ab3f8c9daf2adfe4, type: 2}
   type: 1
   size: {x: 12, y: 10}
-  enemies: []
+  enemies:
+  - enemyCount: 2
+    prefab: {fileID: 6538225185145312215, guid: c59a68dbd3d420047a8cf66203f67000, type: 3}
   metaInformation:
     NorthEntrances:
     - {x: -6, y: 0}

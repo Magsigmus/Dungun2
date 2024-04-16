@@ -335,7 +335,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnStart:
-  - instructionType: 6
+  - instructionType: 8
     waitTime: 0
     enemy: {fileID: 0}
     rotationAngle: 0
@@ -345,37 +345,7 @@ MonoBehaviour:
     distanceToTarget: 0
     newMovementMode: 0
     defaultTarget: {fileID: 0}
-  Main:
-  - instructionType: 3
-    waitTime: 0
-    enemy: {fileID: 6538225185145312215}
-    rotationAngle: 0
-    target: {fileID: 0}
-    bulletPrefab: {fileID: 4107235708702390523, guid: d711c2a78972beb4b98ecab760050146, type: 3}
-    realDistanceToTarget: 1
-    distanceToTarget: 0
-    newMovementMode: 3
-    defaultTarget: {fileID: 0}
-  - instructionType: 3
-    waitTime: 0
-    enemy: {fileID: 6538225185145312215}
-    rotationAngle: 0
-    target: {fileID: 0}
-    bulletPrefab: {fileID: 4107235708702390523, guid: d711c2a78972beb4b98ecab760050146, type: 3}
-    realDistanceToTarget: 2
-    distanceToTarget: 2.5
-    newMovementMode: 1
-    defaultTarget: {fileID: 0}
-  - instructionType: 4
-    waitTime: 0
-    enemy: {fileID: 6538225185145312215}
-    rotationAngle: 0
-    target: {fileID: 0}
-    bulletPrefab: {fileID: 4107235708702390523, guid: d711c2a78972beb4b98ecab760050146, type: 3}
-    realDistanceToTarget: 2
-    distanceToTarget: 2.5
-    newMovementMode: 1
-    defaultTarget: {fileID: 0}
+  Main: []
   OnDeath:
   - instructionType: 1
     waitTime: 1
