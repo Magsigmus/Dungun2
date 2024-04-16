@@ -13,7 +13,6 @@ public class LevelManger : MonoBehaviour
 {
     [Header("General")]
     public GameObject player;
-    public float expandingAnimationTime = 2f;
 
     [Header("Tilemaps")]
     public Tilemap groundTilemap;
@@ -29,6 +28,12 @@ public class LevelManger : MonoBehaviour
     public GameObject enemySpawnTriggerPrefab;
     public NavMeshSurface navMesh;
     public BaseTileTypePair[] tileLookup;
+
+    [Header("Visual effects settings")]
+    public float expandingAnimationTime = 2f;
+    public float spawningAnimationTime = 0.5f;
+    public GameObject spawingWallEffectPrefab;
+    public GameObject spawingEnemyEffectPrefab;
 
     private int playerRoom = 0;
     private ComponentTilemap level;
@@ -75,6 +80,8 @@ public class LevelManger : MonoBehaviour
         SavedTile[] punchThroughTiles = entranceRoom.Item2.ground.Select(e => new SavedTile(e.position, null)).ToArray();
         TilemapUtility.LoadTiles(entranceRoom.Item1, spriteMaskTilemap, punchThroughTiles);
         TilemapUtility.LoadTiles(entranceRoom.Item1, overlayTilemap, punchThroughTiles);
+
+        spawnedEnemies[level.rooms.IndexOf(entranceRoom)] = true;
 
         discoveredCorridors = Enumerable.Repeat(false, level.corridorGround.Count).ToArray();
         revealQueue = new Queue<(Vector2Int, SavedTile[])>();
@@ -144,7 +151,13 @@ public class LevelManger : MonoBehaviour
             {
                 GameObject newEnemy = Instantiate(enemies[i].prefab);
                 //newEnemy.GetComponent<EnemyCombatBehaviour>().defaultTarget = player.transform;
-                newEnemy.transform.position = (Vector2)randomisedSpawnPoints[c] + new Vector2(0.5f, 0.5f);
+
+                Vector2 spawnPosition = (Vector2)randomisedSpawnPoints[c] + new Vector2(0.5f, 0.5f);
+                newEnemy.transform.position = spawnPosition;
+
+                //Instantiate(spawingEnemyEffectPrefab, spawnPosition, Quaternion.identity);
+                Destroy(Instantiate(spawingEnemyEffectPrefab, spawnPosition, Quaternion.identity), spawningAnimationTime);
+
                 Debug.Log($"Spawned an enemy at {newEnemy.transform.position}");
                 newEnemy.GetComponent<NavMeshAgent>().enabled = true;
 
@@ -189,7 +202,18 @@ public class LevelManger : MonoBehaviour
                 new SavedTile(orthogonalDirection, popupTiles[1]), 
                 new SavedTile(-orthogonalDirection, popupTiles[2]) };
 
-            TilemapUtility.LoadTiles(entrance.Item2 + direction * 2 + level.rooms[roomIndex].Item1, wallTilemap, tiles);
+            Vector2Int origen = entrance.Item2 + direction * 2 + level.rooms[roomIndex].Item1;
+
+            TilemapUtility.LoadTiles(origen, wallTilemap, tiles);
+
+            foreach(SavedTile tile in tiles)
+            {
+                //Sig: Cant convert from Vector2Int to Vector3, so gotta go through Vector2
+                Vector3 spawingPositon = (Vector3)(Vector2)origen + tile.position + new Vector3(0.5f, 0.5f);
+                //Instantiate(spawingEnemyEffectPrefab, spawingPositon, Quaternion.identity);
+                Destroy(Instantiate(spawingWallEffectPrefab, spawingPositon, Quaternion.identity), spawningAnimationTime);
+            }
+
         }
     }
 
