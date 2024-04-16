@@ -305,4 +305,9 @@ public class PlayerBehaviour : MonoBehaviour
         instantiatedSpriteMask.transform.parent = transform;
         instantiatedSpriteMask.transform.localPosition = new Vector3();
     }
+
+    private void Death()
+    {
+
+    }
 }
