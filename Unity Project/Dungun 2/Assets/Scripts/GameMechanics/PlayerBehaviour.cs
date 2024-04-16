@@ -12,6 +12,7 @@ using UnityEngine.UIElements.Experimental;
 using static UnityEngine.InputSystem.Controls.AxisControl;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using UnityEngine.SceneManagement;
+using System.Linq.Expressions;
 
 public class PlayerBehaviour : MonoBehaviour
 {
@@ -36,15 +37,20 @@ public class PlayerBehaviour : MonoBehaviour
     public int healthPoints = 5;
     public HeathBehaviour healthManager;
 
-    [Header("Other Settings")]
+    [Header("Animation and VFX Settings")]
     public GameObject spriteMaskPrefab;
     private GameObject instantiatedSpriteMask;
     public Animator gunAnimator;
+    public GameObject deathVFX;
+    public float deathVFXtime = 2f;
 
     [Header("Audio Settings")]
     public AudioSource source;
     public AudioClip shootSound;
     public AudioClip hurtSound;
+
+    [HideInInspector]
+    public LevelManger manager;
 
     private GameObject spriteGameobject;
     private Vector2 vel, dir;
@@ -55,7 +61,7 @@ public class PlayerBehaviour : MonoBehaviour
     private Collider2D[] colliders;
     private Animator animator;
     private GameObject gunSpriteGameObject;
-
+    private bool dead = false;
 
     private void Awake()
     {
@@ -75,6 +81,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Update()
     {
+        if (dead) { return; }
         cooldown += Time.deltaTime;
         dashingTimer += Time.deltaTime;
         animator.SetFloat("Speed", vel.magnitude);  //rasj: set animation speed to speed of player
@@ -82,6 +89,8 @@ public class PlayerBehaviour : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (dead) { return; }
+
         //Sig: Dash handling
         if (dashing) { return; }
         if (dashingTimer > dashingCooldown &&
@@ -224,9 +233,9 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (healthPoints <= 0)
         {
+            if(dead) { return; }
             Debug.Log("PLAYER DEAD!");
-            SceneManager.LoadScene(1);  //rasj: 1 is the Game Over scene in build settings
-
+            StartCoroutine(Death());
             return;
         }
 
@@ -308,8 +317,22 @@ public class PlayerBehaviour : MonoBehaviour
         instantiatedSpriteMask.transform.localPosition = new Vector3();
     }
 
-    private void Death()
+    private IEnumerator Death()
     {
+        dead = true;
 
+        gunSpriteGameObject.GetComponent<SpriteRenderer>().enabled = false;
+        Destroy(instantiatedSpriteMask);
+        GetComponentInChildren<SpriteMask>().enabled = false;
+        rb2D.velocity = new Vector2();
+        rb2D.isKinematic = true;
+        animator.SetBool("Dead", true);
+        manager.RevealNextRoomPermentantly();
+
+        Instantiate(deathVFX, gameObject.transform.position, Quaternion.identity);
+
+        yield return new WaitForSeconds(deathVFXtime);
+
+        SceneManager.LoadScene(1);  //rasj: 1 is the Game Over scene in build settings
     }
 }
