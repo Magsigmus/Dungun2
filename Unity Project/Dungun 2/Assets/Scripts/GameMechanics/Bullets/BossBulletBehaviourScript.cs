@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class HomingBulletBehaviourScript : MonoBehaviour, BulletInterface
+public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
 {
     public float startVelocity = 1f;
     public float desctructionTime = 5f;
 
     public float gravitationalForce = 5f;
     public float maxGravitationalDistance = 5f;
+
+    public GameObject enemyPrefab;
+    public GameObject homingEnemyPrefab;
+    public GameObject boomerangEnemyPrefab;
 
     public int damage = 1;
 
@@ -44,6 +48,26 @@ public class HomingBulletBehaviourScript : MonoBehaviour, BulletInterface
         if (collision.gameObject.tag == "Player")
         {
             collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
+        } else
+        {
+            GameObject newEnemy;
+            int randInt = (int)Random.Range(0, 6f);  //rasj: 3 slots where no enemies spawn
+            switch (randInt)
+            {
+                case 0:
+                    newEnemy = Instantiate(enemyPrefab);
+                    newEnemy.transform.position = transform.position;
+                    break;
+                case 1:
+                    newEnemy = Instantiate(homingEnemyPrefab);
+                    newEnemy.transform.position = transform.position;
+                    break;
+                case 2:
+                    newEnemy = Instantiate(boomerangEnemyPrefab);
+                    newEnemy.transform.position = transform.position;
+                    break;
+                //rasj: no 3 bc one needs to be empty for balance
+            }
         }
         Destroy(this.gameObject);
     }
