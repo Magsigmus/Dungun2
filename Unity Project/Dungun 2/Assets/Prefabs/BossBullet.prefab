@@ -43,8 +43,8 @@ GameObject:
   - component: {fileID: 1761816862978937291}
   - component: {fileID: 8301960744753763698}
   - component: {fileID: 5468298806351607092}
-  - component: {fileID: -2602586897006797181}
   - component: {fileID: 8243096925825724366}
+  - component: {fileID: 3289143384272711474}
   m_Layer: 9
   m_Name: BossBullet
   m_TagString: EnemyBullet
@@ -130,23 +130,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-2602586897006797181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4107235708702390523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f76c0fd81a08c9a4289fd626e949b1e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startVelocity: 5
-  desctructionTime: 3.5
-  gravitationalForce: 25
-  maxGravitationalDistance: 8
-  damage: 1
 --- !u!82 &8243096925825724366
 AudioSource:
   m_ObjectHideFlags: 0
@@ -243,6 +226,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3289143384272711474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4107235708702390523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6c29ed99db047f4791eec8b5be05db1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startVelocity: 10
+  desctructionTime: 5
+  gravitationalForce: 25
+  maxGravitationalDistance: 10
+  enemyPrefab: {fileID: 6538225185145312215, guid: 75b1a101d9408274bb5a4f53f4e408fc, type: 3}
+  homingEnemyPrefab: {fileID: 6538225185145312215, guid: 7bd9c5230f968ef4db2b1589f5f5628c, type: 3}
+  boomerangEnemyPrefab: {fileID: 6538225185145312215, guid: 899206f64239d934c998b1937d82b448, type: 3}
+  damage: 1
 --- !u!1 &6156309483954531159
 GameObject:
   m_ObjectHideFlags: 0

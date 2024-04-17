@@ -45,6 +45,7 @@ public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        Vector2 vel = gameObject.GetComponent<Rigidbody2D>().velocity;
         if (collision.gameObject.tag == "Player")
         {
             collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
@@ -56,15 +57,15 @@ public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
             {
                 case 0:
                     newEnemy = Instantiate(enemyPrefab);
-                    newEnemy.transform.position = transform.position;
+                    newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -1);
                     break;
                 case 1:
                     newEnemy = Instantiate(homingEnemyPrefab);
-                    newEnemy.transform.position = transform.position;
+                    newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -1);
                     break;
                 case 2:
                     newEnemy = Instantiate(boomerangEnemyPrefab);
-                    newEnemy.transform.position = transform.position;
+                    newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -1);
                     break;
                 //rasj: no 3 bc one needs to be empty for balance
             }
