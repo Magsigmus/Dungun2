@@ -41,8 +41,9 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject spriteMaskPrefab;
     private GameObject instantiatedSpriteMask;
     public Animator gunAnimator;
-    public GameObject deathVFX;
-    public float deathVFXtime = 2f;
+    public GameObject SwitchSceneVFX;
+    public float switchSceneVFXtime = 2f;
+    public CameraBehaviour camera;
 
     [Header("Audio Settings")]
     public AudioSource source;
@@ -62,7 +63,7 @@ public class PlayerBehaviour : MonoBehaviour
     private Collider2D[] colliders;
     private Animator animator;
     private GameObject gunSpriteGameObject;
-    private bool dead = false;
+    private bool frozen = false;
 
     private void Awake()
     {
@@ -82,7 +83,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Update()
     {
-        if (dead) { return; }
+        if (frozen) { return; }
         cooldown += Time.deltaTime;
         dashingTimer += Time.deltaTime;
         animator.SetFloat("Speed", vel.magnitude);  //rasj: set animation speed to speed of player
@@ -90,7 +91,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (dead) { return; }
+        if (frozen) { return; }
 
         //Sig: Dash handling
         if (dashing) { return; }
@@ -144,6 +145,8 @@ public class PlayerBehaviour : MonoBehaviour
             newBullet.transform.up = dir;
             newBullet.transform.position = dir + transform.position.ConvertTo<Vector2>();
         }
+
+        camera.StartScreenShake();
 
         yield return new WaitForEndOfFrame();
 
@@ -234,10 +237,15 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (healthPoints <= 0)
         {
-            if (dead) { return; }
+            if(frozen) { return; }
+            Debug.Log("PLAYER DEAD!");
+            Death();
             source.PlayOneShot(deathSound);
-            StartCoroutine(Death());
             return;
+        }
+        else
+        {
+            camera.StartScreenShake();
         }
 
         source.PlayOneShot(hurtSound);
@@ -318,22 +326,29 @@ public class PlayerBehaviour : MonoBehaviour
         instantiatedSpriteMask.transform.localPosition = new Vector3();
     }
 
-    private IEnumerator Death()
+    private void Death()
     {
-        dead = true;
+        frozen = true;
 
+        animator.SetBool("Dead", true);
+
+        StartCoroutine(SwitchScene("GameOver"));
+    }
+
+    public IEnumerator SwitchScene(string sceneName)
+    {
+        frozen = true;
         gunSpriteGameObject.GetComponent<SpriteRenderer>().enabled = false;
         Destroy(instantiatedSpriteMask);
         GetComponentInChildren<SpriteMask>().enabled = false;
         rb2D.velocity = new Vector2();
         rb2D.isKinematic = true;
-        animator.SetBool("Dead", true);
         manager.RevealNextRoomPermentantly();
 
-        Instantiate(deathVFX, gameObject.transform.position, Quaternion.identity);
+        Instantiate(SwitchSceneVFX, gameObject.transform.position, Quaternion.identity);
 
-        yield return new WaitForSeconds(deathVFXtime);
+        yield return new WaitForSeconds(switchSceneVFXtime);
 
-        SceneManager.LoadScene(1);  //rasj: 1 is the Game Over scene in build settings
+        SceneManager.LoadScene(sceneName);  //rasj: 1 is the Game Over scene in build settings
     }
 }
