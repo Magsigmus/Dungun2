@@ -81,9 +81,9 @@ public class GeneralizedInstruction
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
 
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
-        newBullet.transform.up = dir;   //rasj: set bullet direction
-        newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>();   //rasj: set bullet position
-        newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);   //rasj: data transfer from old enemy to new
+        newBullet.transform.up = dir;
+        newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>();
+        //newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);  //rasj: data transfer for charger
     }
 
     public void ShootSquare(int size)
@@ -92,19 +92,16 @@ public class GeneralizedInstruction
         if (!target) { return; }
 
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
-        float angle = Vector2.Angle(dir, Vector2.up);
         float halfSize = (float)Math.Floor((decimal)size / 2);
-        float diameter;
 
         for (int x = 0;  x < size; x++)
         {
             for (int y = 0; y < size; y++)
             {
                 GameObject newBullet = GameObject.Instantiate(bulletPrefab);
-                diameter = newBullet.gameObject.GetComponent<CircleCollider2D>().radius * 2;
 
                 newBullet.transform.up = dir;   //rasj: set bullet direction
-                newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>() - new Vector2(x - halfSize, y - halfSize);  //rasj: halfSize is to make sure they spawn in the middle of the boss
+                newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>() - new Vector2(x - halfSize, y - halfSize);
                 newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);   //rasj: data transfer from old enemy to new
             }
         }
@@ -114,43 +111,32 @@ public class GeneralizedInstruction
     {
         if (!target) { target = defaultTarget; }
         Vector2 dir = new Vector2(target.position.x - enemy.transform.position.x, target.position.y - enemy.transform.position.y);
-        float angle = Vector2.Angle(dir, Vector2.up);
+        float angle;
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
         int bulletRadius = (int)Math.Ceiling(newBullet.gameObject.GetComponent<CircleCollider2D>().radius);  //rasj: get bullet radius as an int
-        float bulletDiameter = bulletRadius * 2;
 
         float circumference = radius * 2 * Mathf.PI;
+        float c;
         int amount;
         float densityC = outerRingAmount / circumference;  //rasj: bullets per unit based on circumference
         //float densityR = outerRingAmount / radius;
 
         
 
-        for (int r = bulletRadius;  r < radius; r += bulletRadius)
+        for (int r = 0;  r < radius; r += bulletRadius)
         {
-            float c = r * 2 * Mathf.PI;  //rasj: local circumference
+            c = r * 2 * Mathf.PI;  //rasj: local circumference
             //amount = (int)Math.Floor(densityR * r);  //rasj: amount based on local radius
             amount = (int)Math.Floor(densityC * c);  //rasj: amount based on local circumference
 
             if (r + bulletRadius >= radius)  //rasj: if last in loop
             {
-                for (int i = 0; i < outerRingAmount; i++)
-                {
-                    newBullet = GameObject.Instantiate(bulletPrefab);
-                    //bulletDiameter = newBullet.gameObject.GetComponent<CircleCollider2D>().radius * 2;
-                    angle = i * Mathf.PI * 2 / outerRingAmount;  //rasj: angle in radians
-
-                    newBullet.transform.up = dir;
-                    newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>() - radius * new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-                    newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);
-                }
-                break;
+                amount = outerRingAmount;
             }
 
             for (int i = 0; i < amount; i++)
             {
                 newBullet = GameObject.Instantiate(bulletPrefab);
-                //bulletDiameter = newBullet.gameObject.GetComponent<CircleCollider2D>().radius * 2;
                 angle = i * Mathf.PI * 2 / amount;  //rasj: angle in radians
 
                 newBullet.transform.up = dir;
@@ -158,21 +144,6 @@ public class GeneralizedInstruction
                 newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);
             }
         }
-
-        /*
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
-            {
-                GameObject newBullet = GameObject.Instantiate(bulletPrefab);
-                diameter = newBullet.gameObject.GetComponent<CircleCollider2D>().radius * 2;
-
-                newBullet.transform.up = dir;   //rasj: set bullet direction
-                newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>() - new Vector2(x - halfSize, y - halfSize);  //rasj: halfSize is to make sure they spawn in the middle of the boss
-                newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);   //rasj: data transfer from old enemy to new
-            }
-        }
-        */
     }
 
     public void ChangeBehaviour()
