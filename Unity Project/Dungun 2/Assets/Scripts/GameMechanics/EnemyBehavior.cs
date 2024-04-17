@@ -39,7 +39,9 @@ public class EnemyBehavior : MonoBehaviour
     [Header("Audio Settings")]
     public AudioSource source;
     public AudioClip deathSound;
+    public float deathVolume = 1f;
     public AudioClip hurtSound;
+    public float hurtVolume = 1f;
 
     [Header("Animation and VFX settings")]
     public Animator spriteAnimator;
@@ -195,6 +197,7 @@ public class EnemyBehavior : MonoBehaviour
     void TakeDamage(int damage)
     {
         if (source && hurtSound) { source.PlayOneShot(hurtSound); }
+        playSound(hurtSound, hurtVolume);
         healthPoints -= damage;
 
         if (healthPoints <= 0)
@@ -205,9 +208,16 @@ public class EnemyBehavior : MonoBehaviour
 
     public void Death()
     {
-        if (source && deathSound) { source.PlayOneShot(deathSound); }
+        //if (source && deathSound) { source.PlayOneShot(deathSound); }
+        playSound(deathSound, deathVolume);
         GameObject.Destroy(gameObject);
         //GetComponent<EnemyCombatBehaviour>().RunInstructions(GetComponent<EnemyCombatBehaviour>().OnDeath, "death");  //rasj: basically die
         //Destroy(this.gameObject);
+    }
+
+    void playSound(AudioClip sound, float volume)
+    {
+        source.volume = volume;
+        source.PlayOneShot(sound);
     }
 }

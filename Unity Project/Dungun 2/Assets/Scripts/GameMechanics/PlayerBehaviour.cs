@@ -49,6 +49,7 @@ public class PlayerBehaviour : MonoBehaviour
     public AudioSource source;
     public AudioClip shootSound;
     public AudioClip hurtSound;
+    public AudioClip deathSound;
 
     [HideInInspector]
     public LevelManger manager;
@@ -228,7 +229,7 @@ public class PlayerBehaviour : MonoBehaviour
         return result;
     }
 
-    public void TakeDamage(int damage)  //rasj: check for enemybullet tag, when colliding with something
+    public void TakeDamage(int damage)
     {
         healthPoints -= damage;
 
@@ -239,6 +240,7 @@ public class PlayerBehaviour : MonoBehaviour
             if(frozen) { return; }
             Debug.Log("PLAYER DEAD!");
             Death();
+            source.PlayOneShot(deathSound);
             return;
         }
         else
@@ -246,7 +248,7 @@ public class PlayerBehaviour : MonoBehaviour
             camera.StartScreenShake();
         }
 
-        source.PlayOneShot(shootSound);
+        source.PlayOneShot(hurtSound);
     }
 
     IEnumerator Dash()
