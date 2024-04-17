@@ -18,12 +18,16 @@ public class HomingBulletBehaviourScript : MonoBehaviour, BulletInterface
     private float dist;
     private Vector2 relativeDir;
     private Rigidbody2D rb;
+    private GameObject spriteGameobject;
 
     void Start()
     {
         target = GameObject.FindWithTag("Player");
 
-        GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
+        spriteGameobject = transform.GetChild(0).gameObject;
+        rb = GetComponent<Rigidbody2D>();
+
+        rb.velocity = transform.up * startVelocity;
         if (desctructionTime >= 0)  //rasj: if i.e. -1, then don't destroy after some time
         {  
             Destroy(this.gameObject, desctructionTime);
@@ -36,8 +40,10 @@ public class HomingBulletBehaviourScript : MonoBehaviour, BulletInterface
         if (dist < maxGravitationalDistance)
         {
             relativeDir = (Vector2)(target.transform.position - transform.position).normalized;
-            GetComponent<Rigidbody2D>().AddForce(relativeDir * gravitationalForce);
+            rb.AddForce(relativeDir * gravitationalForce);
         }
+
+        spriteGameobject.transform.up = rb.velocity;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

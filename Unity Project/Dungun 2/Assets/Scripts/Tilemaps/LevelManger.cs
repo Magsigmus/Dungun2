@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 using System.Threading;
 using UnityEngine.WSA;
 using Unity.VisualScripting;
+using static UnityEditor.Rendering.FilterWindow;
 
 public class LevelManger : MonoBehaviour
 {
@@ -46,7 +47,9 @@ public class LevelManger : MonoBehaviour
     private Queue<(Vector2Int, SavedTile[])> revealQueue;
     private Dictionary<TileType, List<BaseTile>> tileLookupMap;
     private float timer = 0;
-    private bool animating = false, spawningEnemies = false;
+    private bool animating = false, spawningEnemies = false, switchingScene = false;
+    private PlayerBehaviour playerBehaviour;
+    private int bossRoomIndex = 0;
     private Vector3Int[] neighbourDirs = new Vector3Int[4] {
         new Vector3Int(0, 1), // North
         new Vector3Int(-1, 0), // West
@@ -56,7 +59,8 @@ public class LevelManger : MonoBehaviour
 
     private void Start()
     {
-        player.GetComponent<PlayerBehaviour>().manager = this;
+        playerBehaviour = player.GetComponent<PlayerBehaviour>();
+        playerBehaviour.manager = this;
         StartCoroutine(GenerateLevel(levelNumber));
     }
 
@@ -89,6 +93,10 @@ public class LevelManger : MonoBehaviour
 
         discoveredCorridors = Enumerable.Repeat(false, level.corridorGround.Count).ToArray();
         revealQueue = new Queue<(Vector2Int, SavedTile[])>();
+
+        bossRoomIndex = level.rooms.
+            Select((element, index) => (element.Item2.type == RoomType.Boss, index)).
+            Where(e => e.Item1).First().Item2;
 
         yield return new WaitForNextFrameUnit();
 
@@ -260,14 +268,14 @@ public class LevelManger : MonoBehaviour
     public void AnimateDiscovery(Vector2Int origen, List<SavedTile> tiles)
     {
         while(revealQueue.Count > 0) { RevealNextRoomPermentantly(); }
-        player.GetComponent<PlayerBehaviour>().StartExpandAnimation();
+        playerBehaviour.StartExpandAnimation();
 
         SavedTile[] punchThroughTiles = tiles.Select(e => new SavedTile(e.position, null)).ToArray();
 
         TilemapUtility.LoadTiles(origen, overlayTilemap, punchThroughTiles);
 
         revealQueue.Enqueue((origen, punchThroughTiles));
-        timer = expandingAnimationTime;
+        timer = expandingAnimationTime - 0.1f;
         animating = true;
     }
 
@@ -280,7 +288,9 @@ public class LevelManger : MonoBehaviour
 
     private void Update()
     {
-        if(timer > expandingAnimationTime && animating)
+        if(switchingScene) { return; }
+
+        if(timer > 0 && animating)
         {
             RevealNextRoomPermentantly();
             animating = false;
@@ -288,9 +298,17 @@ public class LevelManger : MonoBehaviour
 
         if(GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && !spawningEnemies && lockedRoom != -1)
         {
+            if(bossRoomIndex == lockedRoom)
+            {
+                StartCoroutine(playerBehaviour.SwitchScene(""));
+
+            }
+
             OpenRoom(lockedRoom);
             lockedRoom = -1;
         }
+
+        timer -= Time.deltaTime;
     }
 }
 
