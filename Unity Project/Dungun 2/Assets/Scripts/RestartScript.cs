@@ -1,13 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class RestartScript : MonoBehaviour
 {
     [SerializeField]
     private Button button;
+    private PlayerControls playerControls;
+
+    private void Awake()
+    {
+        playerControls = new PlayerControls();
+    }
+
+
+    private void OnEnable() { playerControls.Enable(); }
+    private void OnDisable() { playerControls.Disable(); }
 
     void Start()
     {
@@ -19,8 +31,17 @@ public class RestartScript : MonoBehaviour
         });
     }
 
+    public void Update()
+    {
+        //Debug.Log(playerControls.Menu.Enter.phase);
+        if(playerControls.Menu.Enter.phase == InputActionPhase.Performed)
+        {
+            LoadScene();
+        }
+    }
+
     public void LoadScene()
     {
-        SceneManager.LoadScene(0);  //rasj: 0 is the Level Generation 1 scene in build settings
+        SceneManager.LoadScene("MainScene");  //rasj: 0 is the Level Generation 1 scene in build settings
     }
 }

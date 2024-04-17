@@ -25,6 +25,7 @@ public class PlayerBehaviour : MonoBehaviour
     public float dashingTime;
     public float dashingCooldown = 1;
     public float inputBufferingTime = 0.2f;
+    public float dashIntoWallPushback = 0.5f;
     public int numberOfGhosts = 5;
     public GameObject ghostPrefab;
     private bool dashing = false;
@@ -231,6 +232,8 @@ public class PlayerBehaviour : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if(dashing) { return; }
+
         healthPoints -= damage;
 
         healthManager.CurrentHitPoints = healthPoints;
@@ -254,7 +257,7 @@ public class PlayerBehaviour : MonoBehaviour
     IEnumerator Dash()
     {
         dashing = true;
-
+                
         //Sig: Gives the player some time to change the direction equal to inputBufferingTime
         Vector2 dashDir = vel.normalized;
         float t = Time.time;
@@ -268,15 +271,22 @@ public class PlayerBehaviour : MonoBehaviour
         Hide();
         rb2D.velocity = new Vector2();
 
+
+        if (frozen) { yield break; }
+
         //Sig: Casts a ray which finds out how long the player can dash
         RaycastHit2D hit = Physics2D.Raycast(
             transform.position, dashDir, dashingDistance, LayerMask.GetMask("Obstacles"));
+
+        Debug.DrawRay(transform.position, dashDir * dashingDistance, Color.red);
 
         //Sig: Finds the max distance the player can dash
         float maxDist = dashingDistance;
         if (hit.collider != null)
         {
-            maxDist = Vector2.Distance(transform.position, hit.point - dashDir);
+            Vector3 endPosition = hit.point + hit.normal * dashIntoWallPushback;
+            maxDist = Vector2.Distance(transform.position, endPosition);
+            dashDir = (endPosition - transform.position).normalized;
         }
 
         //Sig: Makes the dash effect

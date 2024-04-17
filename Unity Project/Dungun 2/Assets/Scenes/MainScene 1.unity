@@ -192,24 +192,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   graphIndex: 0
-  levelIndex: 3
+  levelIndex: 4
   adjecenyList:
   - type: 1
-    connections: 0700000001000000
-  - type: 1
+    connections: 0200000001000000
+  - type: 0
     connections: 0000000002000000
   - type: 1
-    connections: 0100000003000000
-  - type: 1
-    connections: 0200000004000000
-  - type: 1
-    connections: 0300000005000000
-  - type: 1
-    connections: 0400000006000000
-  - type: 1
-    connections: 0500000007000000
-  - type: 1
-    connections: 0600000000000000
+    connections: 0100000000000000
 --- !u!114 &168659034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -959,7 +949,7 @@ MonoBehaviour:
   aStarTilemap: {fileID: 245188966}
   spriteMaskTilemap: {fileID: 2097611407}
   overlayTilemap: {fileID: 235292522}
-  levelNumber: 1
+  levelNumber: 4
   buildCompletely: 1
   maxTilesConsideredInAStar: 70
   roomsConsideredInCycle: 3

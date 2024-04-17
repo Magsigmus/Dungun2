@@ -31,12 +31,11 @@ public class HeathBehaviour : MonoBehaviour
             {
                 GameObject newHeart = Instantiate(heartPrefab);
 
-                newHeart.transform.parent = canvas.transform;
+                newHeart.transform.SetParent(canvas.transform);
 
-                Vector3 heartPosition = (heartImages.Count) * (heartSize + heartPadding) + heartOffset;
+                Vector3 heartPosition = (heartImages.Count) * new Vector3(heartSize.x + heartPadding.x, 0) + (Vector3)heartOffset;
                 RectTransform heartTransform = newHeart.GetComponent<RectTransform>();
                 heartTransform.anchoredPosition = heartPosition;
-
 
                 heartImages.Add(newHeart.GetComponent<Image>());
             }

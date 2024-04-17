@@ -275,7 +275,7 @@ public class LevelManger : MonoBehaviour
         TilemapUtility.LoadTiles(origen, overlayTilemap, punchThroughTiles);
 
         revealQueue.Enqueue((origen, punchThroughTiles));
-        timer = expandingAnimationTime - 0.1f;
+        timer = expandingAnimationTime;
         animating = true;
     }
 
@@ -290,7 +290,7 @@ public class LevelManger : MonoBehaviour
     {
         if(switchingScene) { return; }
 
-        if(timer > 0 && animating)
+        if(timer < 0 && animating)
         {
             RevealNextRoomPermentantly();
             animating = false;
@@ -300,8 +300,8 @@ public class LevelManger : MonoBehaviour
         {
             if(bossRoomIndex == lockedRoom)
             {
-                StartCoroutine(playerBehaviour.SwitchScene(""));
-
+                StartCoroutine(playerBehaviour.SwitchScene("Win"));
+                switchingScene = true;
             }
 
             OpenRoom(lockedRoom);

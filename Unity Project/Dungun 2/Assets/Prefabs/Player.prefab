@@ -243,7 +243,7 @@ MonoBehaviour:
   canvas: {fileID: 2256910602346361325}
   heartOffset: {x: 35, y: -35}
   heartPadding: {x: 20, y: 0}
-  heartSize: {x: 30, y: 0}
+  heartSize: {x: 30, y: 30}
 --- !u!1 &2256910602346361325
 GameObject:
   m_ObjectHideFlags: 0
@@ -276,6 +276,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8442355149339342066}
+  - {fileID: 5108883101419851042}
   m_Father: {fileID: 8972084569001387161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -318,7 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 1
+  m_UiScaleMode: 2
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -346,6 +347,41 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &6203501192917554760
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5108883101419851042}
+  m_Layer: 5
+  m_Name: HeartParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5108883101419851042
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6203501192917554760}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4589425408308802243}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0.5}
+  m_SizeDelta: {x: -700, y: -195}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7290933889151350112
 GameObject:
   m_ObjectHideFlags: 0
@@ -441,8 +477,9 @@ MonoBehaviour:
   healthManager: {fileID: 886870305894844403}
   spriteMaskPrefab: {fileID: 7956786754262325316, guid: c75d44989c781704181ea6936fa5a569, type: 3}
   gunAnimator: {fileID: 5842078842960531812}
-  deathVFX: {fileID: 3321494078268414517, guid: 998b452874a7b11418b228155f9b3b27, type: 3}
-  deathVFXtime: 2.75
+  SwitchSceneVFX: {fileID: 3321494078268414517, guid: 998b452874a7b11418b228155f9b3b27, type: 3}
+  switchSceneVFXtime: 2.8
+  camera: {fileID: 0}
   source: {fileID: 1975311561263589961}
   shootSound: {fileID: 8300000, guid: 474d4a2c6e2396243968bf30908465a8, type: 3}
   hurtSound: {fileID: 8300000, guid: d84553d52caf42d4f980c0e3defc3128, type: 3}

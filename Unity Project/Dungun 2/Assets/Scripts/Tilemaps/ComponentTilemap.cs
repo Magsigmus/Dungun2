@@ -472,9 +472,9 @@ public class ComponentTilemap
         Tilemap aStarTilemap, int maxTilesConsidered = 200)
     {
         List<Vector3Int> startToEnd = GetShortestRoomToRoomPath(parentIndex, childIndex, out float startToEndCost, 
-            out (int, Vector2Int) startToEndChildEntrance, out (int, Vector2Int) startToEndParentEntrance), 
+            out (int, Vector2Int) startToEndParentEntrance, out (int, Vector2Int) startToEndChildEntrance), 
             endToStart = GetShortestRoomToRoomPath(childIndex, parentIndex, out float endToStartCost,
-            out (int, Vector2Int) endToStartChildEntrance, out (int, Vector2Int) endToStartParentEntrance);
+            out (int, Vector2Int) endToStartChildEntrance , out (int, Vector2Int) endToStartParentEntrance);
        
         if(startToEndCost == -1 && endToStartCost == -1) { return false; }
 

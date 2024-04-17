@@ -9,16 +9,16 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/MainScene.unity
-    guid: fd3df913d9d61b448bedcdb0a9bb16f5
+    path: Assets/Scenes/Start.unity
+    guid: 1adfd45333a4e1a4db3f56433c4e38f7
   - enabled: 1
     path: Assets/Scenes/GameOver.unity
     guid: bd37cc5c307615e4db48235beed76f12
   - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: 68b9770707f471c4c91549466d9d829a
+  - enabled: 1
     path: Assets/Scenes/Win.unity
     guid: 6e58ae354a0e32447907611c38ead9aa
-  - enabled: 1
-    path: Assets/Scenes/Start.unity
-    guid: 1adfd45333a4e1a4db3f56433c4e38f7
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 3634294ca33e4ed45928f7811678a35b, type: 2}

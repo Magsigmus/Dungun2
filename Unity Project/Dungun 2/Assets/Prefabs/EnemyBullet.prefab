@@ -113,6 +113,9 @@ MonoBehaviour:
   startVelocity: 10
   desctructionTime: 5
   damage: 1
+  gravitationalForce: -5
+  maxGravitationalDistance: 5
+  boss: {fileID: 0}
 --- !u!82 &1395342677596200440
 AudioSource:
   m_ObjectHideFlags: 0
@@ -304,7 +307,7 @@ Animator:
   m_GameObject: {fileID: 6156309483954531159}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0edd3f8cdf2523946aa7514d8f62d450, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

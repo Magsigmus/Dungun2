@@ -83,7 +83,7 @@ public class EnemyBehavior : MonoBehaviour
     private void FixedUpdate()
     {
         float speed = Vector3.Distance(lastPosition, transform.position);
-        spriteAnimator.SetFloat("Speed", speed);
+        spriteAnimator.SetFloat("Speed", speed * 100);
         lastPosition = transform.position;
     }
 

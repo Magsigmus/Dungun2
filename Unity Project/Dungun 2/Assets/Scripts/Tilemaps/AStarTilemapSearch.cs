@@ -151,7 +151,7 @@ public class AStarTilemapSearch
             failedPath.transform.parent = tilemap.gameObject.transform.parent;
             failedPath.SetActive(false);
             */
-            Debug.Log($"Could not find any path between the points {start} and {end} using A*!");
+            //Debug.Log($"Could not find any path between the points {start} and {end} using A*!");
             tilemap.ClearAllTiles();
         }
     }
