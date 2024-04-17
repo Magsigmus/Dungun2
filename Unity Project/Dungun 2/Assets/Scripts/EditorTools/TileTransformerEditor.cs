@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(TileTransformer))]
 public class TileTransformerEditor : Editor
 {
@@ -22,3 +23,4 @@ public class TileTransformerEditor : Editor
         }
     }
 }
+#endif

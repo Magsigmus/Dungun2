@@ -9,7 +9,6 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using static UnityEditor.Progress;
 
 //Sig: A class to represent a component of the graph placed on a tilemap.
 public class ComponentTilemap

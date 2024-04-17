@@ -45,7 +45,7 @@ public class GeneralizedInstruction
 
     /*Comparison*/
     private EnemyBehavior script;
-    public ComparisonMode realDistanceToTarget = ComparisonMode.None;
+    public ComparisonMode distanceComparisonMode = ComparisonMode.None;
     public float distanceToTarget;
 
     public EnemyBehavior.MovementMode newMovementMode = EnemyBehavior.MovementMode.Idle;
@@ -153,13 +153,16 @@ public class GeneralizedInstruction
         if (!condition)  //rasj: if distance is not negative; if condition should not be ignored
         {
             float dist = Vector3.Distance(enemy.transform.position, target.transform.position);
-            switch (realDistanceToTarget)
+            switch (distanceComparisonMode)
             {
                 case ComparisonMode.Less:       //rasj: expected distance to target is more than real distance to target 
                     condition = distanceToTarget > dist;
                     break;
                 case ComparisonMode.Greater:    //rasj: expected distance to target is less than real distance to target
                     condition = distanceToTarget < dist;
+                    break;
+                case ComparisonMode.None:
+                    condition = true;
                     break;
             }
         }

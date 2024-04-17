@@ -322,7 +322,7 @@ NavMeshAgent:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6538225185145312215}
-  m_Enabled: 1
+  m_Enabled: 0
   m_AgentTypeID: 0
   m_Radius: 0.7
   m_Speed: 3.5
@@ -429,12 +429,12 @@ MonoBehaviour:
   maxTargetDistance: 10
   maxWanderDistance: 5
   maxWanderTime: 15
-  healthPoints: 80
+  healthPoints: 40
   source: {fileID: -8816700450151941940}
   deathSound: {fileID: 8300000, guid: aa37fa377b813c844bf49c496018052a, type: 3}
   deathVolume: 1
   hurtSound: {fileID: 8300000, guid: aa2c820ffa9b5a246a856809842a396f, type: 3}
-  hurtVolume: 1
+  hurtVolume: 0.5
   spriteAnimator: {fileID: 9191223771443331259}
 --- !u!114 &4971303150314290897
 MonoBehaviour:

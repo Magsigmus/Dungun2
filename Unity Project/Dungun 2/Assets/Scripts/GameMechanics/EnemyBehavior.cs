@@ -5,7 +5,7 @@ public class EnemyBehavior : MonoBehaviour
 {
     [SerializeField] Transform target;
     [SerializeField] NavMeshAgent agent;
-    [SerializeField] GameObject bulletPrefab;
+    //[SerializeField] GameObject bulletPrefab;
 
     public enum MovementMode
     {
@@ -15,22 +15,22 @@ public class EnemyBehavior : MonoBehaviour
         Chasing
     }
 
-    [Header("Cooldown")]
+    /*[Header("Cooldown")]
     public float shootCooldownTime = 1f;  //rasj: 1 second
-    private float shootCooldown = 0f;
-
+    private float shootCooldown = 0f;*/
+    /*
     [Header("Target distance settings")]
     public float minTargetDistance = 3f;
     public float maxTargetDistance = 10f;
-
+    */
     [Header("Wander Settings")]
     private Vector3 wanderDestination = new Vector3(0f, 0f, 0f);
     public float maxWanderDistance = 5f;
     public float maxWanderTime = 15f;
     private float wanderTime = 0f;
-    private bool wandering = false;
+    //private bool wandering = false;
 
-    private MovementMode MMode;
+    public MovementMode MMode = MovementMode.Idle;
 
     //Gameobject enemy = gameobj.GetComponent<Enemy>();
 
@@ -65,10 +65,10 @@ public class EnemyBehavior : MonoBehaviour
 
     void Update()
     {
-        shootCooldown += Time.deltaTime;
+        //shootCooldown += Time.deltaTime;
         wanderTime += Time.deltaTime;
-        Move(target.position, minTargetDistance, maxTargetDistance);
-        if (!wandering)
+        Move(target.position/*, minTargetDistance, maxTargetDistance*/);
+        /*if (!wandering)
         {
             Shoot(target.position);
             /*
@@ -76,19 +76,14 @@ public class EnemyBehavior : MonoBehaviour
             instruction.gunObject = GetComponent<EnemyCombatBehaviour>().gunObject;
             instruction.defaultTarget = GameObject.FindGameObjectWithTag("Player").transform;
             instruction.Shoot();
-            */
-        }
+            
+        }*/
     }
 
     private void FixedUpdate()
     {
-        float speed = Vector3.Distance(lastPosition, transform.position);
-        spriteAnimator.SetFloat("Speed", speed * 100);
-        lastPosition = transform.position;
+        spriteAnimator.SetFloat("Speed", agent.velocity.magnitude);
     }
-
-
-
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -98,18 +93,18 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    void Move(Vector3 targetPos, float minDist, float maxDist)
+    void Move(Vector3 targetPos/*, float minDist, float maxDist*/)
     {
-        wandering = false;
+        //wandering = false;
 
         if (MMode == MovementMode.Chasing)  //rasj: if enemy is far enough away from target  dist > minDist && dist < maxDist
         {
             agent.SetDestination(targetPos);  //rasj: Sets destination to target
             Flip(targetPos);
         }
-        else if (MMode == MovementMode.Idle || MMode == MovementMode.Wandering)  //rasj: if enemy is too far away from target  dist > maxDist
+        else if (/*MMode == MovementMode.Idle ||*/ MMode == MovementMode.Wandering)  //rasj: if enemy is too far away from target  dist > maxDist
         {
-            wandering = true;
+            //wandering = true;
             Wander(-maxWanderDistance, maxWanderDistance);
         }
         else  //rasj: if (MMode == MovementMode.Waiting) if enemy is too close to target
@@ -166,7 +161,7 @@ public class EnemyBehavior : MonoBehaviour
         }
     }
 
-    void Shoot(Vector3 targetPos)
+    /*void Shoot(Vector3 targetPos)
     {
         Vector3 dir = PointTo(targetPos);
 
@@ -183,8 +178,8 @@ public class EnemyBehavior : MonoBehaviour
             //todo: set bullet health to currect health
             Death();
         }
-        */
-    }
+        
+    }*/
 
     Vector2 PointTo(Vector2 targetPos)  //rasj: Gets rotation
     {
@@ -197,7 +192,7 @@ public class EnemyBehavior : MonoBehaviour
     void TakeDamage(int damage)
     {
         if (source && hurtSound) { source.PlayOneShot(hurtSound); }
-        playSound(hurtSound, hurtVolume);
+        PlaySound(hurtSound, hurtVolume);
         healthPoints -= damage;
 
         if (healthPoints <= 0)
@@ -209,13 +204,13 @@ public class EnemyBehavior : MonoBehaviour
     public void Death()
     {
         //if (source && deathSound) { source.PlayOneShot(deathSound); }
-        playSound(deathSound, deathVolume);
+        PlaySound(deathSound, deathVolume);
         GameObject.Destroy(gameObject);
         //GetComponent<EnemyCombatBehaviour>().RunInstructions(GetComponent<EnemyCombatBehaviour>().OnDeath, "death");  //rasj: basically die
         //Destroy(this.gameObject);
     }
 
-    void playSound(AudioClip sound, float volume)
+    void PlaySound(AudioClip sound, float volume)
     {
         source.volume = volume;
         source.PlayOneShot(sound);

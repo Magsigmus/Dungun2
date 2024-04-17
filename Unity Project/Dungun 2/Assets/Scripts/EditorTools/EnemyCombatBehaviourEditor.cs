@@ -5,7 +5,7 @@ using UnityEditor;
 using Assets.Scripts.GameMechanics;
 using Unity.VisualScripting;
 
-
+#if UNITY_EDITOR
 [CustomEditor(typeof(EnemyCombatBehaviour))]
 [CanEditMultipleObjects]
 public class EnemyCombatBehaviourEditor : Editor
@@ -120,3 +120,4 @@ public class EnemyCombatBehaviourEditor : Editor
         }*/
     }
 }
+#endif

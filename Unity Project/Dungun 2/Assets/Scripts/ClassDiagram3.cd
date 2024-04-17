@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="LevelGenerator">
+    <Position X="4" Y="2.5" Width="4.5" />
+    <Members>
+      <Field Name="componentAdjecenyList" Hidden="true" />
+      <Field Name="compositeAdjecenyList" Hidden="true" />
+    </Members>
+    <AssociationLine Name="allRooms" Type="ScriptableRoom" FixedToPoint="true">
+      <Path>
+        <Point X="4" Y="2.562" />
+        <Point X="3" Y="2.562" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.17" Y="0.042" Height="0.182" Width="2.798" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="componentTilemaps" Type="ComponentTilemap" FixedFromPoint="true">
+      <Path>
+        <Point X="8.5" Y="2.562" />
+        <Point X="9.75" Y="2.562" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-1.187" Y="0.148" Height="0.182" Width="3.139" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="currentComponentTilemap" Type="ComponentTilemap" FixedFromPoint="true">
+      <Path>
+        <Point X="8.5" Y="8.375" />
+        <Point X="9.75" Y="8.375" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.253" Y="-0.353" Height="0.182" Width="2.02" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAgCAAIAAhAAAiCLACgAQBgAAAEQQAEQQAEABgQAAII=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\LevelGenerator.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="currentComponentTilemap" />
+      <Field Name="levelGraph" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="allRooms" />
+      <Field Name="componentTilemaps" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="ScriptableRoom" Collapsed="true">
+    <Position X="1.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAKAAAAAAgAABAAARAIAAAAAAABA=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\ScriptableRoom.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ComponentTilemap">
+    <Position X="9.75" Y="2.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>jBAISQAEBAEACACgoKIAIIACADAIAAAmBBIDAACRABE=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\ComponentTilemap.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ScriptableLevelGraph" Collapsed="true">
+    <Position X="1.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAQgAAEAAQIAAAAEAwAAAABAEAQABEAAAAgAAAAAg=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\ScriptableLevelGraph.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

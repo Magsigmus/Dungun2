@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="ScriptableRoom">
+    <Position X="4" Y="10.75" Width="3.25" />
+    <InheritanceLine Type="UnityEngine.ScriptableObject" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.25" Y="11.125" />
+        <Point X="4" Y="11.125" />
+      </Path>
+    </InheritanceLine>
+    <AssociationLine Name="walls" Type="SavedTile">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.069" Y="0.607" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="metaInformation" Type="RoomMetaInformation">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.01" Y="0.048" Height="0.182" Width="1.247" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="meta" Type="SavedTile">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.328" Y="0.058" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="enemies" Type="IntGameobjectPair" FixedToPoint="true">
+      <Path>
+        <Point X="7.25" Y="10.812" />
+        <Point X="7.75" Y="10.812" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-1.95" Y="0.115" Height="0.182" Width="2.529" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="decorations" Type="SavedTile">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.461" Y="0.87" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="ground" Type="SavedTile">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.187" Y="0.288" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAKAAAAAAgAABAAARAIAAAAAAABA=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\ScriptableRoom.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="type" />
+      <Field Name="metaInformation" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="walls" />
+      <Field Name="meta" />
+      <Field Name="enemies" />
+      <Field Name="decorations" />
+      <Field Name="ground" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="RoomMetaInformation">
+    <Position X="4" Y="12.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAQAAAAEAAAIAAAACQAAQIAAAA=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\ScriptableRoom.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SavedTile">
+    <Position X="4.75" Y="8" Width="2.5" />
+    <AssociationLine Name="tile" Type="BaseTile">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.096" Y="0.047" Height="0.182" Width="0.576" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\ScriptableRoom.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="tile" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="IntGameobjectPair">
+    <Position X="7.75" Y="10.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\TilemapManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BaseTile">
+    <Position X="4.5" Y="6.5" Width="3" />
+    <AssociationLine Name="type" Type="MetaTileType">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.116" Y="0.027" Height="0.182" Width="0.637" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\BaseTile.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="type" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="UnityEngine.Tilemaps.Tile" Collapsed="true">
+    <Position X="2.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="UnityEngine.ScriptableObject" Collapsed="true">
+    <Position X="1.75" Y="10.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Enum Name="RoomType">
+    <Position X="1.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>DAAAAAAAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\ScriptableRoom.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="MetaTileType">
+    <Position X="8" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAEAAAAAAIAAACAAAAAAAAAAEAQAAAAAACQAEAA=</HashCode>
+      <FileName>Assets\Scripts\Tilemaps\BaseTile.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

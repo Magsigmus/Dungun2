@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using JetBrains.Annotations;
-using UnityEditor.Experimental.GraphView;
 
 public class ScriptableLevelGraph : ScriptableObject
 {

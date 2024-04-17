@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
 
 public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
@@ -16,6 +17,9 @@ public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
     public GameObject boomerangEnemyPrefab;
 
     public int damage = 1;
+
+    public int maxRandIntForSpawn = 12;
+    public int maxEnemies = 16;
 
     private GameObject target;
 
@@ -52,21 +56,26 @@ public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
         } else
         {
             GameObject newEnemy;
-            int randInt = (int)Random.Range(0, 6f);  //rasj: 3 slots where no enemies spawn
+            int randInt = (int)Random.Range(0, maxRandIntForSpawn);  //rasj: 3 slots where no enemies spawn
             switch (randInt)
             {
                 case 0:
+                    if(GameObject.FindGameObjectsWithTag("Enemy").Length > maxEnemies) { break; }
+
+                    
                     newEnemy = Instantiate(enemyPrefab);
-                    newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -1);
+                    //Sig: collision.GetContact(0).normal is the normal vector to the collider collided with.
+                    newEnemy.transform.position = transform.position + (Vector3)collision.GetContact(0).normal * -2;
+                    newEnemy.GetComponent<NavMeshAgent>().enabled = true;
                     break;
-                case 1:
+                /*case 1:
                     newEnemy = Instantiate(homingEnemyPrefab);
-                    newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -1);
+                    newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -2);
                     break;
                 case 2:
                     newEnemy = Instantiate(boomerangEnemyPrefab);
                     newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -1);
-                    break;
+                    break;*/
                 //rasj: no 3 bc one needs to be empty for balance
             }
         }

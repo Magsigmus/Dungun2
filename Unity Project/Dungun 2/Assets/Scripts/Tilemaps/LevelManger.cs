@@ -8,9 +8,7 @@ using System.Linq;
 using NavMeshPlus.Components;
 using UnityEngine.InputSystem;
 using System.Threading;
-using UnityEngine.WSA;
 using Unity.VisualScripting;
-using static UnityEditor.Rendering.FilterWindow;
 
 public class LevelManger : MonoBehaviour
 {

@@ -113,7 +113,7 @@ Transform:
   m_GameObject: {fileID: 2853263616821107463}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -334,7 +334,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 1.2
-  m_BaseOffset: 1
+  m_BaseOffset: 0.53
   m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
 --- !u!50 &5041524878630013827
@@ -396,7 +396,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.44}
+  m_Offset: {x: 0, y: 0.07}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -423,16 +423,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   agent: {fileID: 5146900579757251866}
-  bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
-  shootCooldownTime: 1e+9
-  minTargetDistance: 3
-  maxTargetDistance: 10
   maxWanderDistance: 5
   maxWanderTime: 15
+  MMode: 0
   healthPoints: 3
   source: {fileID: -3856229425530239809}
   deathSound: {fileID: 8300000, guid: aa37fa377b813c844bf49c496018052a, type: 3}
+  deathVolume: 1
   hurtSound: {fileID: 8300000, guid: aa2c820ffa9b5a246a856809842a396f, type: 3}
+  hurtVolume: 1
   spriteAnimator: {fileID: 8212570627846791821}
 --- !u!114 &4971303150314290897
 MonoBehaviour:
@@ -446,7 +445,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 601835c6f0bc4c442bd2aa8293c8bf79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnStart: []
+  OnStart:
+  - instructionType: 3
+    waitTime: 0
+    enemy: {fileID: 6538225185145312215}
+    rotationAngle: 0
+    target: {fileID: 0}
+    bulletPrefab: {fileID: 0}
+    distanceComparisonMode: 0
+    distanceToTarget: 0
+    newMovementMode: 3
+    defaultTarget: {fileID: 0}
   Main:
   - instructionType: 4
     waitTime: 0
@@ -454,7 +463,7 @@ MonoBehaviour:
     rotationAngle: 0
     target: {fileID: 0}
     bulletPrefab: {fileID: 4107235708702390523, guid: 4a8e82508736390498ca0b9b371615b3, type: 3}
-    realDistanceToTarget: 2
+    distanceComparisonMode: 0
     distanceToTarget: 2.5
     newMovementMode: 1
     defaultTarget: {fileID: 0}
@@ -464,7 +473,7 @@ MonoBehaviour:
     rotationAngle: 0
     target: {fileID: 0}
     bulletPrefab: {fileID: 4107235708702390523, guid: 4a8e82508736390498ca0b9b371615b3, type: 3}
-    realDistanceToTarget: 2
+    distanceComparisonMode: 0
     distanceToTarget: 2.5
     newMovementMode: 1
     defaultTarget: {fileID: 0}
@@ -474,7 +483,7 @@ MonoBehaviour:
     rotationAngle: 0
     target: {fileID: 0}
     bulletPrefab: {fileID: 6538225185145312215}
-    realDistanceToTarget: 2
+    distanceComparisonMode: 0
     distanceToTarget: 2.5
     newMovementMode: 1
     defaultTarget: {fileID: 0}

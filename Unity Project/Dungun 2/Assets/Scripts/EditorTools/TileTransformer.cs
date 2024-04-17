@@ -9,6 +9,7 @@ public class TileTransformer : MonoBehaviour
     public Tile[] template;
     public MetaTileType type;
 
+#if UNITY_EDITOR
     public void TranformTileToBaseTile(Tile template, MetaTileType type)
     {
         BaseTile result = new BaseTile(template);
@@ -16,4 +17,5 @@ public class TileTransformer : MonoBehaviour
         AssetDatabase.CreateAsset(result, "Assets/Tiles/Tiles/" + template.name + ".asset");
         AssetDatabase.SaveAssets();
     }
+#endif
 }
