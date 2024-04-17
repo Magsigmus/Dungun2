@@ -53,10 +53,10 @@ public class GeneralizedInstruction
     [HideInInspector, NonSerialized]
     public GameObject gunObject;
     public Transform defaultTarget;
-
-    public IEnumerator Wait()  //rasj: run as ienumerator (to make to a coroutine)
+    
+    public IEnumerator Wait()
     {
-        yield return new WaitForSeconds(waitTime);  //rasj: wait the correct amount of time
+        yield return new WaitForSeconds(waitTime);
     }
 
     public void Rotate()

@@ -14,8 +14,8 @@ public class RestartScript : MonoBehaviour
         //rasj: on button click, load scene
         button.onClick.AddListener(() => 
         {
+            button.gameObject.SetActive(false);
             LoadScene();
-            Destroy(button);
         });
     }
 
