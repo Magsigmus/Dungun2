@@ -41,17 +41,20 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
         {
             Vector2 dir = new Vector2(orgShooter.transform.position.x - transform.position.x, orgShooter.transform.position.y - transform.position.y);
             float dist = dir.magnitude;
-            //shooter exists and bullet has hit SOMETHING
+
             if (collision.gameObject.CompareTag("Player"))
             {
+                Debug.Log("Boomerang bullet collided with player");
                 collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
                 Destroy(this.gameObject);
             }
             else if (collision.gameObject == orgShooter || dist <= deletionRadius)  //rasj: if colliding with original enemy or is close enough to it
             {
+                Debug.Log("Boomerang bullet collided with boomerang enemy");
                 Destroy(this.gameObject);
             }
 
+            Debug.Log("Boomerang bullet collided with wall");
             transform.position += (Vector3)dir.normalized;  //rasj: get bullet out of the wall
             transform.up = dir;
             GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
