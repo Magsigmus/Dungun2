@@ -246,7 +246,7 @@ MonoBehaviour:
   homingEnemyPrefab: {fileID: 6538225185145312215, guid: 7bd9c5230f968ef4db2b1589f5f5628c, type: 3}
   boomerangEnemyPrefab: {fileID: 6538225185145312215, guid: 899206f64239d934c998b1937d82b448, type: 3}
   damage: 1
-  maxRandIntForSpawn: 12
+  maxRandIntForSpawn: 1
   maxEnemies: 8
 --- !u!1 &6156309483954531159
 GameObject:

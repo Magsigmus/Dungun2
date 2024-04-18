@@ -51,7 +51,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="ComponentGraphEdge">
-    <Position X="9" Y="5.25" Width="2.5" />
+    <Position X="9.5" Y="5.25" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAgAAA=</HashCode>
       <FileName>Assets\Scripts\Tilemaps\ScriptableLevelGraph.cs</FileName>

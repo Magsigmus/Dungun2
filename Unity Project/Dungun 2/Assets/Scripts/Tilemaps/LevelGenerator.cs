@@ -287,7 +287,7 @@ public class LevelGenerator
             if (generated[neighbour]) { continue; }
             generated[neighbour] = true;
 
-            //Sig: If the node still is denoted as being neither a tree or a cycle, then something as gone wrong.
+            //Sig: If the node still is denoted as being neither a tree or a cycle, then something has gone wrong.
             if (compositeAdjecenyList[startingNode].id[0] == 'N') 
             { 
                 Debug.LogError($"Uninitialized {startingNode} node"); 
