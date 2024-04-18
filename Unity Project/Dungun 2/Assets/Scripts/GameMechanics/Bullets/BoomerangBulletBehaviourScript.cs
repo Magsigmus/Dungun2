@@ -13,8 +13,6 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
 
     public GameObject orgShooter;
 
-    //TODO: on collission spawn new bullet/rotate towards original shooter
-
     void Start()
     {
         GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
@@ -44,17 +42,14 @@ public class BoomerangBulletBehaviourScript : MonoBehaviour, BulletInterface
 
             if (collision.gameObject.CompareTag("Player"))
             {
-                Debug.Log("Boomerang bullet collided with player");
                 collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
                 Destroy(this.gameObject);
             }
             else if (collision.gameObject == orgShooter || dist <= deletionRadius)  //rasj: if colliding with original enemy or is close enough to it
             {
-                Debug.Log("Boomerang bullet collided with boomerang enemy");
                 Destroy(this.gameObject);
             }
 
-            Debug.Log("Boomerang bullet collided with wall");
             transform.position += (Vector3)dir.normalized;  //rasj: get bullet out of the wall
             transform.up = dir;
             GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;

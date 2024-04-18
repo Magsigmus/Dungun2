@@ -83,7 +83,7 @@ public class GeneralizedInstruction
         GameObject newBullet = GameObject.Instantiate(bulletPrefab);
         newBullet.transform.up = dir;
         newBullet.transform.position = enemy.transform.position.ConvertTo<Vector2>();
-        //newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);  //rasj: data transfer for charger
+        newBullet.GetComponent<BulletInterface>().OnSpawn(enemy);  //rasj: data transfer for charger
     }
 
     public void ShootSquare(int size)
