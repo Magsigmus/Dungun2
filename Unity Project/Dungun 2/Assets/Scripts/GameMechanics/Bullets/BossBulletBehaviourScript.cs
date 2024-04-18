@@ -20,6 +20,7 @@ public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
 
     public int maxRandIntForSpawn = 12;
     public int maxEnemies = 16;
+    public float spawnDistToHit = 2;
 
     private GameObject target;
 
@@ -65,7 +66,7 @@ public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
                     
                     newEnemy = Instantiate(enemyPrefab);
                     //Sig: collision.GetContact(0).normal is the normal vector to the collider collided with.
-                    newEnemy.transform.position = transform.position + (Vector3)collision.GetContact(0).normal * -2;
+                    newEnemy.transform.position = transform.position + (Vector3)collision.GetContact(0).normal * spawnDistToHit;
                     newEnemy.GetComponent<NavMeshAgent>().enabled = true;
                     break;
                 /*case 1:
