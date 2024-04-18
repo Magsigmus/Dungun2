@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99a4835edf548ff4e8af03a77c225c82, type: 3}
-  m_Name: DebugTile1
+  m_Name: RedTile
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: -1012209004, guid: feef67a1864c84b40b4e28585935fe14, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: c7eb9b86d40dd004e8564bd52e56075a, type: 3}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Transform:
     e00: 1
     e01: 0
@@ -34,4 +34,4 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
-  type: 40
+  type: 0

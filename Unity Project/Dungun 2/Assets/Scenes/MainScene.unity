@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38fa3b7a0be72d41ae51c91c4349d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomIndex: 51
+  roomIndex: 52
   roomType: 1
   roomName: Blocky Room NS
   enemyPrefabs: []

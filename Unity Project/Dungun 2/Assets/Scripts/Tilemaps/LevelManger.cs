@@ -59,6 +59,10 @@ public class LevelManger : MonoBehaviour
     {
         playerBehaviour = player.GetComponent<PlayerBehaviour>();
         playerBehaviour.manager = this;
+
+        //ComponentTilemap map = new ComponentTilemap(1, InitializeTileTable(tileLookup), groundTilemap, wallTilemap, decorationTilemap);
+        //map.PlaceCorridor(map.GetStraightPath(new Vector3Int(), new Vector3Int(20, 10, 0)));
+
         StartCoroutine(GenerateLevel(levelNumber));
     }
 
