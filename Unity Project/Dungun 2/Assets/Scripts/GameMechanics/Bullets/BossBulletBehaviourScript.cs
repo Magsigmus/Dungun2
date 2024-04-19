@@ -50,34 +50,20 @@ public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Vector2 vel = gameObject.GetComponent<Rigidbody2D>().velocity;
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.CompareTag("Player"))
         {
             collision.gameObject.GetComponent<PlayerBehaviour>().TakeDamage(damage);
-        } else
-        {
-            GameObject newEnemy;
-            int randInt = (int)Random.Range(0, maxRandIntForSpawn);  //rasj: 3 slots where no enemies spawn
-            switch (randInt)
+        } else {
+            int randInt = (int)Random.Range(0, maxRandIntForSpawn);
+            if (randInt == 0)
             {
-                case 0:
-                    if(GameObject.FindGameObjectsWithTag("Enemy").Length > maxEnemies) { break; }
+                if (GameObject.FindGameObjectsWithTag("Enemy").Length > maxEnemies) { Destroy(this.gameObject); }
 
-                    
-                    newEnemy = Instantiate(enemyPrefab);
-                    //Sig: collision.GetContact(0).normal is the normal vector to the collider collided with.
-                    newEnemy.transform.position = transform.position + (Vector3)collision.GetContact(0).normal * spawnDistToHit;
-                    newEnemy.GetComponent<NavMeshAgent>().enabled = true;
-                    break;
-                /*case 1:
-                    newEnemy = Instantiate(homingEnemyPrefab);
-                    newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -2);
-                    break;
-                case 2:
-                    newEnemy = Instantiate(boomerangEnemyPrefab);
-                    newEnemy.transform.position = transform.position + ((Vector3)vel.normalized * -1);
-                    break;*/
-                //rasj: no 3 bc one needs to be empty for balance
+
+                GameObject newEnemy = Instantiate(enemyPrefab);
+                //Sig: collision.GetContact(0).normal is the normal vector to the collider collided with.
+                newEnemy.transform.position = transform.position + (Vector3)collision.GetContact(0).normal * spawnDistToHit;
+                newEnemy.GetComponent<NavMeshAgent>().enabled = true;
             }
         }
         Destroy(this.gameObject);
