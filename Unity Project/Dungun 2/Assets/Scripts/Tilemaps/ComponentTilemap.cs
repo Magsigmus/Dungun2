@@ -132,7 +132,8 @@ public class ComponentTilemap
         { tiles.ToList().ForEach(e => map.SetTile(e.position, e.tile)); }
     }
 
-    public bool PlaceRoom(int childIndex, int parentIndex, int parentEntranceIndex, int childEntanceIndex, ScriptableRoom childRoom)
+    public bool PlaceRoom(int childIndex, int parentIndex, int parentEntranceIndex, 
+        int childEntanceIndex, ScriptableRoom childRoom)
     {
         (int, Vector2Int) parentEntrance = freeEntrances[parentIndex][parentEntranceIndex];
         (int, Vector2Int) childEntrance = childRoom.metaInformation.AllEntrances[childEntanceIndex];
@@ -208,7 +209,7 @@ public class ComponentTilemap
         wallTilemap.SetTile((Vector3Int)entrance.Item2 - dir, null);
     }
 
-    private void PlaceCorridor(Vector3Int[] corridorPoints)
+    public void PlaceCorridor(Vector3Int[] corridorPoints)
     {
         List<SavedTile> groundTiles = new List<SavedTile>();
         List<SavedTile> wallTiles = new List<SavedTile>();
@@ -343,7 +344,7 @@ public class ComponentTilemap
         return TileType.Error;
     }
 
-    private Vector3Int[] GetStraightPath(Vector3Int startPosition, Vector3Int endPosition)
+    public Vector3Int[] GetStraightPath(Vector3Int startPosition, Vector3Int endPosition)
     {
         List<Vector3Int> path = new List<Vector3Int>();
         Vector3Int difference = endPosition - startPosition;
@@ -409,36 +410,13 @@ public class ComponentTilemap
         return result.ToArray();
     }
 
+    //Sig: UPDATE PARAMETERS
     private Vector2Int GetChildRoomOrigenInComponentSpace(int parentIndex, Vector2Int childSize,
         (int, Vector2Int) parentEntrance, (int, Vector2Int) childEntrance)
     {
-        Vector2Int parentRoomSize = rooms[parentIndex].Item2.size;
-
         // Gets the position of the new room
-        Vector2Int result = new Vector2Int();
-        switch (parentEntrance.Item1)
-        {
-            case 0: // North
-                result = new Vector2Int(
-                    parentEntrance.Item2.x - childEntrance.Item2.x,
-                    childSize.y);
-                break;
-            case 1: // West
-                result = new Vector2Int(
-                    -parentRoomSize.x,
-                    parentEntrance.Item2.y - childEntrance.Item2.y);
-                break;
-            case 2: // South
-                result = new Vector2Int(
-                    parentEntrance.Item2.x - childEntrance.Item2.x,
-                    -parentRoomSize.y);
-                break;
-            case 3: // East
-                result = new Vector2Int(
-                    childSize.x,
-                    parentEntrance.Item2.y - childEntrance.Item2.y);
-                break;
-        }
+        Vector2Int result = parentEntrance.Item2 - childEntrance.Item2;
+
         // Applies the parents origen to that offset
         result += rooms[parentIndex].Item1;
 

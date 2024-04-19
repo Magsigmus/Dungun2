@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1718894b7ad9a904c881056f91abeecd
+guid: feef67a1864c84b40b4e28585935fe14
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -94,19 +94,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
     buildTarget: Server
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -119,11 +106,24 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: debugshit_0
+      name: debugshit 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -137,14 +137,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c652b8a5d95cea743a106cf52c6149b6
-      internalID: 434240052
+      spriteID: b9a52a3d0858b274597eaa74a19405e9
+      internalID: -1012209004
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: debugshit_1
+      name: debugshit 1_1
       rect:
         serializedVersion: 2
         x: 16
@@ -158,14 +158,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 512b43e8e1472a1408c5eb30c6c6d53f
-      internalID: 1296086667
+      spriteID: 1a42ff77afb3b2540bd760b0ed98a03d
+      internalID: 559856577
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: debugshit_2
+      name: debugshit 1_2
       rect:
         serializedVersion: 2
         x: 32
@@ -179,14 +179,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c1cdbb274bb64c94f92e8446103a15ca
-      internalID: -56994630
+      spriteID: e7a47ca5ca0e28b4bb6f158571cb03d9
+      internalID: 742195762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: debugshit_3
+      name: debugshit 1_3
       rect:
         serializedVersion: 2
         x: 48
@@ -200,14 +200,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f2386e035d5723c49a6adb0899d57317
-      internalID: -277768398
+      spriteID: b0e80c745c49f444a94d659813459d5e
+      internalID: 156104393
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: debugshit_4
+      name: debugshit 1_4
       rect:
         serializedVersion: 2
         x: 64
@@ -221,14 +221,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d9c0d6ab6fb13db47be9937c0ee1a311
-      internalID: -215599100
+      spriteID: 869cd694923008249ad2d2560637245b
+      internalID: 1635615380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: debugshit_5
+      name: debugshit 1_5
       rect:
         serializedVersion: 2
         x: 80
@@ -242,14 +242,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2eb08d424ac5a2e4ab77c1a33278a516
-      internalID: 346671087
+      spriteID: f5754cf58d13d82489137d7ce6d66d5b
+      internalID: -987070523
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: debugshit_6
+      name: debugshit 1_6
       rect:
         serializedVersion: 2
         x: 96
@@ -263,14 +263,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 54d18378552a0f24d9c06a4611363515
-      internalID: 786325396
+      spriteID: 89c41bfa04e72ef48bce54df06d80419
+      internalID: 384576448
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: debugshit_7
+      name: debugshit 1_7
       rect:
         serializedVersion: 2
         x: 112
@@ -284,8 +284,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8bca537383e11304fb2204c33a31f469
-      internalID: 2144710640
+      spriteID: 285a7810f5e528f40a9165c7dac1a214
+      internalID: 220025728
       vertices: []
       indices: 
       edges: []
@@ -301,14 +301,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      debugshit_0: 434240052
-      debugshit_1: 1296086667
-      debugshit_2: -56994630
-      debugshit_3: -277768398
-      debugshit_4: -215599100
-      debugshit_5: 346671087
-      debugshit_6: 786325396
-      debugshit_7: 2144710640
+      debugshit 1_0: -1012209004
+      debugshit 1_1: 559856577
+      debugshit 1_2: 742195762
+      debugshit 1_3: 156104393
+      debugshit 1_4: 1635615380
+      debugshit 1_5: -987070523
+      debugshit 1_6: 384576448
+      debugshit 1_7: 220025728
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

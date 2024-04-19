@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99a4835edf548ff4e8af03a77c225c82, type: 3}
-  m_Name: TemporaryTile
+  m_Name: YellowTile
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: c7eb9b86d40dd004e8564bd52e56075a, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.92926645, b: 0, a: 1}
   m_Transform:
     e00: 1
     e01: 0
