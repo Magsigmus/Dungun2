@@ -92,7 +92,7 @@ public class LevelGenerator
                 continue;
             }
 
-            //Sig: If the gneration did succed, then save the new component to the correct place in the array.
+            //Sig: If the generation did succed, then save the new component to the correct place in the array.
             int componentIndex = levelGraph.nodeComponents[i];
             componentTilemaps[componentIndex] = newComponentTilemap;
 
@@ -505,7 +505,7 @@ public class LevelGenerator
 
         ScriptableRoom childRoom = GetRandomRoom(parentEntranceIndex, parentNode, nodeIndex, out int childEntranceIndex);
 
-        if ((length * 2) / 3 <= depth)
+        if (length / 2 <= depth)
         {
             ScriptableRoom[] roomList = GetRandomRoomList(parentEntranceIndex, parentNode, nodeIndex, roomsConsideredInCycle, out byte trash1);
             float bestRoomDistance = float.MaxValue;

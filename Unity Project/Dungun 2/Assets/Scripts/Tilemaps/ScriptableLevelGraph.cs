@@ -150,7 +150,7 @@ public class ScriptableLevelGraph : ScriptableObject
     private void MakeCompositeCycles() // Make the composite cycles
     {
         int startLength = cycleAdjecenyLists.Count;
-        // Goes through all the compinations of simple cycles
+        // Goes through all the combinations of simple cycles
         for (int i = 1; i < startLength; i++)
         {
             for (int j = 0; j < startLength && j != i; j++)

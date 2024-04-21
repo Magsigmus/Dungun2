@@ -52,6 +52,9 @@ public class PlayerBehaviour : MonoBehaviour
     public AudioClip hurtSound;
     public AudioClip deathSound;
 
+    [Header("Other")]
+    public bool buildForArcade = false;
+
     [HideInInspector]
     public LevelManger manager;
 
@@ -160,6 +163,8 @@ public class PlayerBehaviour : MonoBehaviour
         bool joyStickConnected = ((Input.GetJoystickNames().Length > 0) ? (Input.GetJoystickNames()[0] != "") : false);
         //TODO: potentially add dualshock 4 compatability
 
+        joyStickConnected = buildForArcade || joyStickConnected;
+
         Vector2 zeroV = Vector2.zero;
 
         if (joyStickConnected)
@@ -216,6 +221,7 @@ public class PlayerBehaviour : MonoBehaviour
             result = Math.Clamp(result + change * acceleration,
                 -maxSpeed * Math.Abs(change),
                 maxSpeed * Math.Abs(change));
+            //Sig: Abs of change is multiplied to find the maximum length of this component of the velocity vector
         }
         else
         {
