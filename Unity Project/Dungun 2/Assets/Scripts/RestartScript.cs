@@ -42,6 +42,6 @@ public class RestartScript : MonoBehaviour
 
     public void LoadScene()
     {
-        SceneManager.LoadScene("MainScene");  //rasj: 0 is the Level Generation 1 scene in build settings
+        SceneManager.LoadScene("MainScene");
     }
 }

@@ -132,7 +132,7 @@ NavMeshAgent:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6538225185145312215}
-  m_Enabled: 0
+  m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.45
   m_Speed: 3.5
@@ -233,16 +233,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   agent: {fileID: 5146900579757251866}
-  bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
-  shootCooldownTime: 9
-  minTargetDistance: 3
-  maxTargetDistance: 10
   maxWanderDistance: 5
   maxWanderTime: 15
+  MMode: 0
   healthPoints: 3
   source: {fileID: -4657798508984176596}
   deathSound: {fileID: 8300000, guid: aa37fa377b813c844bf49c496018052a, type: 3}
+  deathVolume: 1
   hurtSound: {fileID: 8300000, guid: aa2c820ffa9b5a246a856809842a396f, type: 3}
+  hurtVolume: 1
   spriteAnimator: {fileID: 198225018146278651}
 --- !u!114 &4971303150314290897
 MonoBehaviour:
@@ -263,7 +262,7 @@ MonoBehaviour:
     rotationAngle: 0
     target: {fileID: 0}
     bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
-    realDistanceToTarget: 0
+    distanceComparisonMode: 0
     distanceToTarget: 0
     newMovementMode: 3
     defaultTarget: {fileID: 0}
@@ -274,7 +273,7 @@ MonoBehaviour:
     rotationAngle: 0
     target: {fileID: 0}
     bulletPrefab: {fileID: 0}
-    realDistanceToTarget: 0
+    distanceComparisonMode: 0
     distanceToTarget: 0
     newMovementMode: 0
     defaultTarget: {fileID: 0}
@@ -284,7 +283,7 @@ MonoBehaviour:
     rotationAngle: 0
     target: {fileID: 0}
     bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
-    realDistanceToTarget: 0
+    distanceComparisonMode: 0
     distanceToTarget: 0
     newMovementMode: 0
     defaultTarget: {fileID: 0}
@@ -294,7 +293,7 @@ MonoBehaviour:
     rotationAngle: 0
     target: {fileID: 0}
     bulletPrefab: {fileID: 4107235708702390523, guid: 1f9a21b82f66625469abc187d622e498, type: 3}
-    realDistanceToTarget: 0
+    distanceComparisonMode: 0
     distanceToTarget: 0
     newMovementMode: 0
     defaultTarget: {fileID: 0}

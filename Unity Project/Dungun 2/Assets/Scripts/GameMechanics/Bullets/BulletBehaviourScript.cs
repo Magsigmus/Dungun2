@@ -9,34 +9,17 @@ public class BulletBehaviourScript : MonoBehaviour, BulletInterface
     public float desctructionTime = 5f;
     public int damage = 1;
 
-    public float gravitationalForce = -5f;
-    public float maxGravitationalDistance = 5f;
-
-    public GameObject boss;
+    //public GameObject boss;
 
     private float dist;
     private Vector2 relativeDir;
 
     void Start()
     {
-        boss = GameObject.Find("Boss");
         GetComponent<Rigidbody2D>().velocity = transform.up * startVelocity;
         if (desctructionTime >= 0)  //rasj: if i.e. -1, then don't destroy after some time
         {  
             Destroy(this.gameObject, desctructionTime);
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (boss)
-        {
-            dist = Vector3.Distance(boss.transform.position, transform.position);
-            if (dist < maxGravitationalDistance)
-            {
-                relativeDir = (Vector2)(boss.transform.position - transform.position).normalized;
-                GetComponent<Rigidbody2D>().AddForce(relativeDir * gravitationalForce);
-            }
         }
     }
 

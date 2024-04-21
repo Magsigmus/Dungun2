@@ -13,8 +13,8 @@ public class BossBulletBehaviourScript : MonoBehaviour, BulletInterface
     public float maxGravitationalDistance = 5f;
 
     public GameObject enemyPrefab;
-    public GameObject homingEnemyPrefab;
-    public GameObject boomerangEnemyPrefab;
+    //public GameObject homingEnemyPrefab;
+    //public GameObject boomerangEnemyPrefab;
 
     public int damage = 1;
 
